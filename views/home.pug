@@ -1,0 +1,25 @@
+extends main.pug 
+
+append HEAD 
+	+meta("Home", "Home page")
+
+	link(rel="stylesheet" href="/css/home.css")
+
+	title !{i18n('HOME')} | !{Web.config.get("text.title")}
+
+block BODY 
+	div.title !{i18n("WELCOME")}
+	if !WebRequest.userExists
+		a.login(href="/login") 
+			btn.btn-full !{i18n("LOGIN")}
+	div.section
+		span.title !{i18n("APPLICATIONS")}
+		div.applications
+			each app in apps
+				a.application(data-name=app.name href=app.link)
+					div.img
+						if app.img.startsWith("icon:")
+							span.lafs !{app.img.substring(5)}
+						else 
+							img(src=app.img alt=app.name+"icon")
+					div.name !{conditionalI18n(app.text)}

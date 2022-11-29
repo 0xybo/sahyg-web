@@ -1,0 +1,44 @@
+extends main.pug 
+include components/navigation.pug
+
+append HEAD 
+	+meta("Flora", "Flora page")
+
+	link(rel="stylesheet" href="/css/flora.css")
+	script(src="/js/flora.js") 
+
+	title !{i18n('FLORA')} | !{Web.config.get("text.title")}
+
+block BODY
+	app
+		if languageAvailable
+			+c_horizontalTabs("tab", [{id: "identification", title: i18n("IDENTIFICATION")}, {id: "search", title: i18n("SEARCH")}, {id: "glossary", title: i18n("GLOSSARY")}], "identification")
+				div(data-horizontal-tabs-id="identification")
+					div.actions
+						btn.btn-full.start !{i18n("START")}
+						btn.btn-full.previous.disabled !{i18n("PREVIOUS")}
+					div(id="1" class="visible possibilities question")
+						each possibility in identification.possibilities
+							div.possibility(target=possibility.target) !{possibility.text}
+				div(data-horizontal-tabs-id="search")
+					div.search-bar
+						div.ta.ta-search
+							input#flora-search(type="text" name="flora-search" placeholder=i18n("FLORA_SEARCH"))
+						btn.confirm.btn-full !{i18n("CONFIRM")}
+					div.counter
+						| !{i18n("FLORA_COUNTER")}
+						span.value 0
+						| / 100 (max)
+					div.results
+				div(data-horizontal-tabs-id="glossary")
+					+c_verticalTabs("definition", glossaryMenu, "0", true, "all")
+						each item, index in Object.entries(glossary)
+							div(data-vertical-tabs-id=index)
+								+c_pageTitle(item[0])
+								span !{item[1].description.replace("\n", "<br/><br/>")}
+								br
+								br
+								if item[1].img
+									img(src="/img/flora_glossary/"+item[0].replace("/", " - ")+".jpg", alt=item[0] loading="lazy" data-viewer="open zoom")
+		else 
+			span.no_language !{i18n("FLORA_NOT_LANGUAGE")}

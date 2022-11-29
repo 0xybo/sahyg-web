@@ -1,0 +1,327 @@
+container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	max-width: 70rem;
+
+	--moves-width: 17rem;
+	--history-width: 28rem;
+}
+c-horizontal-tabs-container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+}
+app {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	gap: 3rem;
+}
+app[status="pending"]:before {
+	content: attr("data-pending-text");
+}
+app .grid {
+	display: grid;
+	width: 30rem;
+	height: 30rem;
+	grid-template-columns: repeat(3, 10rem);
+	grid-template-rows: repeat(3, 10rem);
+}
+app .grid .cell {
+	border-left: 1px solid var(--divider-color);
+	border-bottom: 1px solid var(--divider-color);
+}
+app[status="playing"] .grid .cell {
+	cursor: pointer;
+}
+app .grid .cell[data-column="2"] {
+	border-right: 1px solid var(--divider-color);
+}
+app .grid .cell[data-row="0"] {
+	border-top: 1px solid var(--divider-color);
+}
+app .grid .cell[data-player="0"],
+app .grid .cell[data-player="1"] {
+	cursor: unset;
+}
+app[status="playing"] .grid .cell:hover {
+	background-color: var(--background-secondary-color);
+}
+app .grid .cell[data-player="0"]:hover,
+app .grid .cell[data-player="1"]:hover {
+	background-color: unset;
+}
+app .grid .cell:before {
+	width: 100%;
+	height: 100%;
+	display: block;
+	font-size: 10rem;
+}
+app .grid .cell[data-player="0"]:before {
+	content: "\f00d";
+	font-family: "Line Awesome Free Solid";
+}
+app .grid .cell[data-player="1"]:before {
+	content: "\f111";
+	font-family: "Line Awesome Free Regular";
+}
+
+app .interactive-panel {
+	max-width: 30rem;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 1rem;
+}
+app .interactive-panel .title {
+	font-size: 1.5rem;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+app .interactive-panel .commands .buttons-container {
+	gap: 1rem;
+	display: flex;
+	flex-direction: column;
+	max-width: 18rem;
+	width: 100%;
+}
+app .interactive-panel .commands btn {
+	max-width: 18rem;
+}
+app .interactive-panel .commands .buttons-container > div {
+	display: flex;
+	gap: 1rem;
+	flex-direction: row;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	height: 35px;
+	align-items: center;
+	justify-content: space-between;
+}
+app .interactive-panel .commands c-select-current {
+	background-color: var(--accent-color);
+	color: var(--background-color);
+	font-weight: 600;
+	font-size: 0.875rem;
+}
+app .interactive-panel .player {
+	display: flex;
+	gap: 1rem;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+app .interactive-panel .opponent {
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+app .interactive-panel .player .current {
+	-ms-user-select: text;
+	-webkit-user-select: text;
+	user-select: text;
+}
+app .interactive-panel > div {
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+}
+@media screen and (max-width: 800px) {
+	app {
+		flex-direction: column;
+		align-items: center;
+	}
+	app .interactive-panel {
+		width: 100%;
+	}
+}
+@media screen and (max-width: 600px) {
+	.history,
+	.history .title {
+		align-self: auto !important;
+	}
+}
+@media screen and (max-width: 34rem) {
+	app .grid {
+		width: calc(100vw - 64px);
+		height: calc(100vw - 64px);
+		grid-template-columns: repeat(3, calc((100vw - 64px) / 3));
+		grid-template-rows: repeat(3, calc((100vw - 64px) / 3));
+	}
+	app .grid .cell:before {
+		font-size: calc((100vw - 64px) / 3);
+	}
+}
+.history {
+	overflow-x: scroll;
+	display: flex;
+	flex-direction: column;
+	max-width: 40rem;
+	align-self: center;
+	width: 100%;
+}
+.history > span {
+	margin-bottom: 1rem;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.history > .container {
+	overflow-x: scroll;
+	width: 100%;
+}
+.history .title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 1rem;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	align-self: center;
+}
+.history .header {
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	min-width: 30rem;
+	display: flex;
+	background-color: var(--background-secondary-color);
+	border-radius: 0.5rem 0.5rem 0 0;
+	border: 1px solid var(--background-secondary-color);
+	border-bottom: none;
+	min-width: var(--history-width);
+}
+.history .header > div {
+	flex: 1;
+	padding: 0.5rem 0;
+}
+.history .header > .win {
+	padding-left: 1rem;
+}
+.history .header > .moves {
+	text-align: center;
+	min-width: var(--moves-width);
+}
+.history .body {
+	min-width: 30rem;
+	border: 1px solid var(--divider-color);
+	border-top: none;
+	border-radius: 0 0 0.5rem 0.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: var(--history-width);
+}
+.history .body:empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.history .body:empty:before {
+	content: attr(data-empty);
+	padding: 0.5rem 1rem;
+}
+.history .body .row {
+	display: flex;
+	padding: 0.5rem 0;
+}
+.history .body .row:nth-child(2n + 2) {
+	background-color: var(--background-tertiary-color);
+}
+.history .body .row .cell {
+	flex: 1;
+}
+.history .body .row .cell.win {
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding-left: 1rem;
+}
+.history .body .row .cell.win:before {
+	font-family: "Line Awesome Free Solid";
+	font-size: 1.5rem;
+}
+.history .body .row .cell.win.victory:before {
+	content: "\f00c";
+	color: var(--success-color);
+}
+.history .body .row .cell.win.defeat:before {
+	content: "\f00d";
+	color: var(--danger-color);
+}
+.history .body .row .cell.win.draw:before {
+	content: "\f52c";
+	color: var(--warning-color);
+}
+.history .body .row .cell.opponent {
+	display: flex;
+	align-items: center;
+}
+.history .body .row .cell.moves {
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	min-width: var(--moves-width);
+}
+.history .body .row .cell.moves .grid {
+	display: grid;
+	grid-template-rows: repeat(3, 1fr);
+	grid-template-columns: repeat(3, 1fr);
+	width: calc(9rem + 5px);
+	height: calc(9rem + 5px);
+	border: 1px solid var(--divider-color);
+}
+.history .body .row .cell.moves .grid .cell[data-column="0"],
+.history .body .row .cell.moves .grid .cell[data-column="1"] {
+	border-right: 1px solid var(--divider-color);
+}
+.history .body .row .cell.moves .grid .cell[data-row="0"],
+.history .body .row .cell.moves .grid .cell[data-row="1"] {
+	border-bottom: 1px solid var(--divider-color);
+}
+.history .body .row .cell.moves .grid .cell:before {
+	font-size: 3rem;
+	display: none;
+}
+.history .body .row .cell.moves .grid .cell[data-player="0"]:before {
+	content: "\f00d";
+	font-family: "Line Awesome Free Solid";
+}
+.history .body .row .cell.moves .grid .cell[data-player="1"]:before {
+	content: "\f111";
+	font-family: "Line Awesome Free Regular";
+}
+.history .body .row .cell.moves .grid[data-move="0"] .cell[data-index="0"]:before,
+.history
+	.body
+	.row
+	.cell.moves
+	.grid[data-move="1"]
+	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):not([data-index="2"]):before,
+.history .body .row .cell.moves .grid[data-move="2"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):before,
+.history .body .row .cell.moves .grid[data-move="3"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):before,
+.history .body .row .cell.moves .grid[data-move="4"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):before,
+.history .body .row .cell.moves .grid[data-move="5"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):before,
+.history .body .row .cell.moves .grid[data-move="6"] .cell:not([data-index="8"]):not([data-index="7"]):before,
+.history .body .row .cell.moves .grid[data-move="7"] .cell:not([data-index="8"]):before,
+.history .body .row .cell.moves .grid[data-move="8"] .cell:before {
+	display: unset;
+}
+.history .body .row .cell.moves .commands {
+	display: flex;
+	column-gap: 0.5rem;
+}
+.history .body .row .cell.moves .commands btn {
+	padding: 0;
+}

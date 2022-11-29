@@ -1,0 +1,27 @@
+extends main.pug 
+
+append HEAD 
+	+meta("Login", "Login page")
+
+	script(src="/js/login.js") 
+	link(rel="stylesheet" href="/css/login.css")
+
+	title !{i18n('LOGIN')} | !{Web.config.get("text.title")}
+
+block BODY 
+	div.title !{i18n('LOGIN')}
+	form(action="/login" method="post") 
+		label(for="login") !{i18n("IDENTIFIER")}
+		div.ta.ta-login
+			input#login(type="text" name="login" placeholder=i18n("IDENTIFIER") autofocus autocomplete="username" )
+		label(for="password") !{i18n("PASSWORD")}
+		div.ta.ta-password
+			input#password(type="password" name="password" placeholder=i18n("PASSWORD") spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="current-password")
+		btn.btn.btn-full !{i18n("SUBMIT")}
+		input(type="submit")
+	div.links
+		a.forget-password(href="/reset_password") !{i18n("FORGET_PASSWORD")}
+		span !{i18n("OR")}
+		span 
+			| !{i18n("NO_ACCOUNT")}
+			a(href="/signup") !{i18n("CREATE_ACCOUNT")}

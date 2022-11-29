@@ -1,0 +1,115 @@
+extends main.pug 
+include components/navigation.pug
+include components/inputs.pug
+
+append HEAD
+	+meta("Settings", "Settings page")
+
+	link(rel="stylesheet" href="/css/settings.css")
+	script(src="/js/settings.js") 
+
+	title !{i18n("SETTINGS")} | !{Web.config.get("text.title")}
+
+append BODY 
+	- let tabs = [{id: "general", "title": "i18n:GENERAL"}] 
+	- if(user) tabs.push({id: "profile", "title": "i18n:PROFILE"}, {id: "share", "title": "i18n:SHARE"})
+	+c_horizontalTabs("tab", tabs, "general") 
+		div.category(data-horizontal-tabs-id="general")
+			div.setting
+				div.informations
+					div.title !{i18n("THEME")}
+					div.description !{i18n("THEME_DESCRIPTION")}
+				div.value
+					+c_select([{"title": "i18n:LIGHT","value": "light"},{"title": "i18n:DARK","value": "dark"}], "theme", theme, !settings.theme.edit)
+			div.setting
+				div.informations
+					div.title !{i18n("LANGUAGE")}
+					div.description !{i18n("LANGUAGE_DESCRIPTION")}
+				div.value
+					+c_select([{"title": "Français","value": "fr-FR"},{"title": "English","value": "en-UK"}], "locale", lang, !settings.locale.edit)
+		if user
+			div.category(data-horizontal-tabs-id="profile")
+				if (settings.avatar.display)
+					div.avatar(data-editable=settings.avatar.edit)
+						div.current
+							if user.avatar
+								img(data-viewer src="/resources/avatar/"+user.username)
+							else
+								div.lafs &#xf007;
+						div.panel
+							div.actions
+								btn#avatar-add(class="btn-full add"+(user.avatar? " disabled" : "")) !{i18n("ADD")}
+								btn#avatar-edit(class="btn-full change"+(user.avatar? "" : " disabled")) !{i18n("CHANGE")}
+								btn#avatar-remove(class="btn-full remove"+(user.avatar? "" : " disabled")) !{i18n("REMOVE")}
+							div.infos !{i18n("SETTINGS_AVATAR_INFOS").replace(/\n/gm, "<br>")}
+				if (settings.username.display)
+					div.setting.username(data-editable=settings.username.edit)
+						div.informations
+							div.title !{i18n("USERNAME")}
+							div.description !{i18n("SETTINGS_USERNAME_DESCRIPTION")}
+						div.value 
+							+c_text("username", "key", i18n("USERNAME"), user.username)
+				if (settings.firstname.display)
+					div.setting.firstname(data-editable=settings.firstname.edit)
+						div.informations
+							div.title !{i18n("FIRSTNAME")}
+							div.description !{i18n("SETTINGS_FIRSTNAME_DESCRIPTION")}
+						div.value 
+							+c_text("firstname", "user", i18n("FIRSTNAME"), user.firstname)
+				if (settings.lastname.display)
+					div.setting.lastname(data-editable=settings.lastname.edit)
+						div.informations
+							div.title !{i18n("LASTNAME")}
+							div.description !{i18n("SETTINGS_LASTNAME_DESCRIPTION")}
+						div.value 
+							+c_text("lastname", "user", i18n("LASTNAME"), user.lastname)
+				if (settings.email.display)
+					div.setting.email(data-editable=settings.email.edit)
+						div.informations
+							div.title !{i18n("EMAIL")}
+							div.description !{i18n("SETTINGS_EMAIL_DESCRIPTION")}
+						div.value 
+							+c_text("email", "email", i18n("EMAIL"), user.email)
+				if (settings.about.display)
+					div.about(data-editable=settings.about.edit)
+						div.informations
+							div.title !{i18n("ABOUT")}
+							div.description 
+								| !{i18n("SETTINGS_ABOUT_DESCRIPTION")}
+								br
+								span.chart-counter !{user.about.length}
+								| / 1024
+						div.value
+							div.ta.no-padding
+								textarea#about !{user.about}
+				if (settings.custom.display)
+					div.custom(data-editable=settings.custom.edit)
+						div.informations
+							div.title !{i18n("CUSTOM")}
+							div.description !{i18n("SETTINGS_CUSTOM_DESCRIPTION")}
+						div.value
+							+c_list([
+								{type: "text", name: "customLinkName", displayName: i18n("NAME"), placeholder: i18n("NAME"), contentType: undefined},
+								{type: "text", name: "customLinkValue", displayName: i18n("VALUE"), placeholder: i18n("VALUE"), contentType: undefined},
+							], Object.entries(user.custom).map(([name, value]) => {return {customLinkName: name, customLinkValue: value}}))
+			div.category(data-horizontal-tabs-id="share")
+				each shareableItem in config.get("shareable")
+					if (!shareableItem.startsWith("custom"))
+						div(class="setting shareable-"+shareableItem)
+							div.informations
+								div.title !{i18n(shareableItem.toUpperCase())}
+								div.description !{i18n(`SHARE_${shareableItem.toUpperCase()}_DESCRIPTION`)}
+							div.value
+								+c_boolean(shareableItem, user.shared.includes(shareableItem))
+					else 
+						each val, key in user.custom
+							div(class="setting shareable-custom."+key)
+								div.informations
+									div.title !{i18n("CUSTOM")} : !{key}
+									div.description 
+								div.value
+									+c_boolean("custom."+key, user.shared.includes("custom."+key))
+
+
+	btn.save-button.btn-full.btn-rounded.hidden !{i18n("SAVE")}
+

@@ -1,0 +1,434 @@
+{
+	"Adventives (Racines)":{
+		"img":true,
+		"description":"On nomme ainsi les racines provenant d'une tige, que la tige soit située dans l'air, dans l'eau, ou sous la terre\nExemples : 1, racines adventives sur une tige aquatique ; 2, 3, 4, racines adventives sur des tiges souterraines"
+	},
+	"Aérien":{
+		"img":false,
+		"description":"On dit qu'un organe est aérien lorsqu'il est développé dans l'air ; telles sont les tiges aériennes, ainsi nommées par opposition aux tiges souterraines qui se développent sous le sol"
+	},
+	"Aiguillon":{
+		"img":true,
+		"description":"Parties terminées en pointe, situées çà et là sur la tige ou sur d'autres organes\nExemples : 5, 6, aiguillons sur des tiges ; 7, aiguillons sur un fruit"
+	},
+	"Aile - Ailé":{
+		"img":true,
+		"description":"Aile : Partie mince et plate faisant saillie sur un organe\nAilé : Organe portant des ailes\nExemples : 8, 9, 10, tiges ailées ; 11, coupe transversale d'une tige à 4 ailes ; 12, coupe transversale d'un fruit à 4 ailes ; 13, coupe transversale d'un fruit à 8 ailes"
+	},
+	"Ailes":{
+		"img":true,
+		"description":"On désigne sous ce nom les deux pétales situés à droite et à gauche dans la fleur des plantes de la famille des papilionacées (a, a Fig 14)\nExemples : 14, fleur de Papilionacées montrant les 2 pétales (a, a) appelés ailes ; 15, pétales séparés de la même fleur montrant les ailes (a,a)"
+	},
+	"Alterne":{
+		"img":true,
+		"description":"On appelle feuilles alternes des feuilles qui sont attachées isolément sur la tige en des points différents\nExemples : 16, 17 plante portant des feuilles ou des rameaux alternes"
+	},
+	"Annuel":{
+		"img":false,
+		"description":"Une plante annuelle ne vit que pendant une saison ; elle meurt complètement avant l'hiver. On reconnaît, en général, une plante annuelle à ses racines grêles et surtout à l'absence de tige souterraine développée"
+	},
+	"Anthère":{
+		"img":true,
+		"description":"Partie de l'étamine ordinairement renflée et contenant du pollen (a, Fig 18). L'anthère est le plus souvent divisée en 2 parties appelées loges de l'anthère\nExemples : 18, étamine avec une anthère (a) à 2 loges rapprochées, et portées sur un  filet (f) ; 19, étamine avec une anthère à 2 loges écartées"
+	},
+	"Arête":{
+		"img":true,
+		"description":"Fil raide attaché sur le dos ou au sommet d'un organe\nExemples : 20. 21, arête terminales ; 22, arête sur le dos d'une écaille"
+	},
+	"Avorté":{
+		"img":false,
+		"description":"Un organe avorté est un organe qui ne s'est pas développé chez une plante à un endroit ou il se développe chez les plantes analogues"
+	},
+	"Bec":{
+		"img":true,
+		"description":"Prolongement plus ou moins étroit d'un fruit\nExemples : 22, fruit à bec recourbé ; 23, fruit à bec aplati ; 24, fruit à bec allongé et terminé par une aigrette ; 25, 26, fruits ayant un bec à 2 dents"
+	},
+	"Bisannuel":{
+		"img":false,
+		"description":"Une plante bisannuelle vit pendant 2 saisons successives. En général, elle ne développe qu'une tige courte, des feuilles et des racines pendant la première saison ; elle produit des fleurs, le plus souvent dans la seconde saison, puis elle meurt."
+	},
+	"Bractée":{
+		"img":true,
+		"description":"Feuille située au voisinage immédiat des fleurs, le plus souvent à la base des pédoncules.\nExemples : 27, bractées opposées ; 28, bractée à la base du pédoncule d'une fleur ; 29, bractées formant un involucre à la base d'un capitule ; 30, bractées formant un involucre à la base d'une ombelle ; 31, bractées allongées, à la base d'une inflorescence"
+	},
+	"Bulbe":{
+		"img":false,
+		"description":"Partie renflée formée le plus souvent par la base de la tige (Fig G) entourée de nombreuses feuilles épaissies en forme d'écaille qui se recouvrent les unes les autres"
+	},
+	"Calice":{
+		"img":true,
+		"description":"On désigne sous ce nom l'enveloppe la plus extérieure de la fleur, formée par de petites feuilles particulières qu'on appelle sépales. Le calice peut être formé par des sépales séparés plus ou moins soudés entre eux. Le calice peut être aussi plus ou moins soudé aux autres parties de la fleur (voyer Ovaire). Lorsque la fleur n'a qu'une enveloppe, on dit encore que c'est un calice. Les sépales assez souvent vertes ; parfois ils sont colorés comme les pétales de la corolle.\nExemples : 32, calice à sépales séparés, au dessous d'une corolle ; 33, calice à sépales soudés entre eux dans leur moitié inférieure ; 34, calice à sépales soudés sauf au sommet ; 35, un calice isolé, à sépales soudés, sauf au sommet ; 36, fleur à calice semblable à la corolle ; les parties extérieures sont les sépales, les parties intérieures les pétales."
+	},
+	"Calicule":{
+		"img":true,
+		"description":"Certaines fleurs on un calice dont les sépales sont accompagnées de sépales supplémentaires situés en dehors et dans l'intervalle des sépales ordinaires ; on dit que ces sépales supplémentaires forment un calicule qui double pour ainsi dire le calice\nExemples : 37, fleur ayant corolle, calice et calicule ; 38, calice et calicule d'une fleur dont on a enlevé les pétales ; les parties les plus petites sont les feuilles du calicule."
+	},
+	"Capitule":{
+		"img":true,
+		"description":"C'est une inflorescence dans laquelle toutes les fleurs sont sans pédoncule (f, Fig A) et insérées les unes à coté des autres sur une partie élargie qui termine la tige fleurie et qu'on nomme le réceptacle du capitule (r, Fig A). L'ensemble des fleurs est entouré par une collerette de bractées extérieures appelées involucre du capitule (i, Fig A). En outre, chaque fleur, à l'intérieur du capitule, peut être accompagnée d'une petite bractée en forme d'écaille qu'on nomme écaille du capitule.\nExemples : 39, 40, capitules de fleurs ; 41, capitule de fleurs sans involucre ; 42, coupe en long d'un capitule montrant le réceptacle comme arrondi"
+	},
+	"Carène":{
+		"img":true,
+		"description":"On désigne sous ce nom les deux pétales plus ou moins soudés entre eux et formant ensemble comme une carène de bateau, à la partie inférieure des fleurs de la famille des papilionacées (cc, Fig 43)"
+	},
+	"Carpelle":{
+		"img":true,
+		"description":"Le pistil, situé au milieu de la fleur, est formé pur un ou plusieurs carpelles. Les carpelles sont des feuilles modifiées.\nLe cas le plus facile à comprendre est celui ou les carpelles sont libres entres eux, situés à coté les uns des autres, au milieu de la fleur ; on voit alors que chaque carpelle se compose ordinairement : \n\n 1- à la base, d'une partie renflée renfermant un ou plusieurs petits corps blancs arrondis nommés ovules (ov, Fig B), c'est l'ovaire du carpelle (o, Fig B) ; \n2- d'une partie plus mince située au dessus de l'ovaire et que l'on nomme le style (s, Fig B) ;\n3- d'une petite masse visqueuse placée au sommet et que l'on nomme stigmate (sg, Fig B). Le stigmate retient la poussière du pollen qui s'échappe des étamines et qui doit arriver sur le pistil pour que les ovules puissent se transformer en graines lorsque la fleur est passée.\nDans d'autres cas, les carpelles sont réunis seulement par leurs ovaires, et l'on dit que le pistil possède un seul ovaire et plusieurs styles ou, au moins, plusieurs stigmates.\nLes carpelles peuvent aussi être complètement soudés de façon que le pistil semble n'avoir qu'un seul ovaire, un seul style et un seul stigmate.\nExemples : 44, pistil formé de nombreux carpelles libres, disposés en tête ; 45, 46,coupe d'une fleur montrant le pistil à nombreux carpelles libres ; 47, pistil à nombreux carpelles disposés en cercle ; 48, 49, pistil à deux carpelles soudés et à styles libres entre eux ; 50, pistil à deux carpelles complètement soudés en un seul ovaire, un seul style et un seul stigmate ; 51, pistil à trois carpelles soudés seulement par leurs ovaires"
+	},
+	"Cilié":{
+		"img":true,
+		"description":"On dit qu'une partie est ciliée lorsqu'elle porte sur le bord des poils disposés en rang\nExemples : 52, calice ouvert à dent ciliées ; 53, feuilles ciliées ; 54, écailles ciliées sur le dos ; 55, stipules engainante ciliée au sommet"
+	},
+	"Cils":{
+		"img":false,
+		"description":"Poils disposés en rang sur le bord d'une partie quelconque de la plante.\nExemple : Voyez cilié"
+	},
+	"Composée (Feuille)":{
+		"img":true,
+		"description":"Feuille complètement divisée en parties tout à fait séparées qui semblent former de petites feuilles (folioles).\nExemples : 56, feuille à 3 folioles ; 57, feuilles à folioles disposées sur 2 rangs avec une foliole terminale ; 58, feuille composée, 2 fois divisée ; 59, feuille à folioles toutes attachées au même point."
+	},
+	"Corolle":{
+		"img":true,
+		"description":"Lorsque la fleur a 2 enveloppes différentes, l'une extérieure et l'autre intérieure, l'enveloppe intérieure est appelée corolle, tandis que l'extérieure se nomme calice. La corolle est formée par un ensemble de feuilles particulières qui se nomment pétales. Les pétales peuvent être complètement séparés jusqu'à la base ou plus ou moins soudés entre eux. La corolle peut être soudée avec les différentes autres parties de la fleur sur une longueur plus ou moins grande. La corolle est ordinairement d'une autre couleur et d'un autre consistance que le calice ; cependant les pétales peuvent être semblables aux sépales dont ils ne diffèrent alors que par leur position intérieure.\nExemples : 60, 61, corolles à pétales séparés ; 62, 63, corolles à pétales soudés à la base ; 64, 65, corolles à pétales longuement soudés en tube ; 66, corolle à pétales colorés comme les sépales du calice, mais reconnaissables à leurs position intérieure"
+	},
+	"Crénelé":{
+		"img":true,
+		"description":"Bordé de dents arrondies.\nExemples : 67, feuille à larges crénelures ; 68, feuille à petites crénelures."
+	},
+	"Ecailles":{
+		"img":true,
+		"description":"Petites feuilles ou petites lames situées sur différents points de la plante. On dit par exemple que les tiges souterraines portent de feuilles réduites à des écailles. On désigne aussi sous ce nom les bractées membraneuses qu'on observe dans beaucoup d'inflorescences : entre les fleurs, au milieu du capitule, à la base des fleurs dans les épis des Cypéracées, etc.\nExemples : 69, plante ayant de feuilles réduites à des écailles ; 70, écailles sur le pétiole d'une feuille ; 71, écailles entre les fleurs d'un capitule ; 72, écailles sur un épis ; 73, une écaille isolée."
+	},
+	"Engainante":{
+		"img":false,
+		"description":"(Voyez Gaine)"
+	},
+	"Entier":{
+		"img":true,
+		"description":"Sans divisions ni dents.\nExemple : 74, feuille entière."
+	},
+	"Enveloppe florale":{
+		"img":false,
+		"description":"On désigne d'une manière générale sous ce nom le calice ou la corolle."
+	},
+	"Eperon":{
+		"img":true,
+		"description":"On appelle ainsi une sorte de cornet ou de tube fermé à son extrémité que l'on observe à la base de certains sépales ou pétales.\nExemples : 75, 76, 77, pétales prolongés en éperon (e, Fig 77)."
+	},
+	"Epi":{
+		"img":true,
+		"description":"Un épis simple est une inflorescence dans laquelle toutes les fleurs sont sans pédoncule et insérées le long d'une tige les unes au dessus des autres. Un épi composé est une inflorescence où les groupes de fleurs sont disposés en épi.\nExemples : 78, épi simple ; 79, épi d'épis ou épi composé"
+	},
+	"Epillet":{
+		"img":false,
+		"description":"(Voyez Graminées)"
+	},
+	"Epine":{
+		"img":true,
+		"description":"Branche, feuille, stipule ou partie de feuille transformée en un organe allongé et piquant.\nExemple : 80, branche transformée en épine"
+	},
+	"Etalé":{
+		"img":false,
+		"description":"Ecarté du point d'attache et rejeté en dehors."
+	},
+	"Etamines":{
+		"img":true,
+		"description":"Organes qui produisent le pollen, poussière colorée qui doit arriver sur le stigmate du pistil pour que les ovules se transforment en graines. Une étamine se compose, en général, d'une partie allongée appelée filet (f, Fig E) qui se termine par une partie renflée appelée anthère (a, Fig E) ; c'est l'anthère qui contient le pollen. Lorsque l'étamine est mûre, l'anthère s'ouvre et laisse échapper au dehors la poussière du pollen. Les étamines sont souvent libres jusqu'à la base et insérées sur l'extrémité de la tige, comme les sépales, les pétales et les carpelles. Souvent aussi les étamines sont soudées aux autres parties de la fleur, au calice ou à la corolle. Les fleurs qui n'ont que des étamines, sans pistil, sont appelées fleurs staminées.\nExemple : 81, fleur à 4 étamines situées autour du style."
+	},
+	"Etendard":{
+		"img":true,
+		"description":"Nom donné au pétale supérieur de la fleur des Papilionacées. L'étendard (e, Fig 82) enveloppe les pétales situés à droite et à gauche (ailes) (a, a, Fig 82), qui entourent eux-mêmes les 2 pétales inférieurs réunis entre eux et formant la carène (c, Gig 82).\nExemples : 82, pétales séparés d'une fleur de Papilionacée ; 83, corolle de Papilionacée, montrant l'étendard situé à gauche sur la figure ; 84, un étendard isolé."
+	},
+	"Feuille":{
+		"img":true,
+		"description":"La feuille est l'un des trois membres de la plante. Une feuille est toujours attachée sur la tige et porte, en général, un rameau ou un bourgeon juste au dessus d'elle. La feuille diffère de la tige et de la racine en ce qu'on y reconnaît une droite et une gauche, une face supérieure et une face inférieure.\nExemple : 85, feuille ayant un limbe et un pétiole, portant à son aisselle un petit bourgeon"
+	},
+	"Filet de l'étamine":{
+		"img":true,
+		"description":"Partie de l'étamine qui porte l'anthère.\nExemple : 86, étamine à filet allongé portant l'anthère"
+	},
+	"Fleur":{
+		"img":false,
+		"description":"Ensemble de feuilles particulières terminant un rameau. Les parties essentielles de la fleur sont les étamines et le pistil. Les fleurs ont pour but de préparer la formation des graines (Voyez fruit). Les étamines et le pistil sont souvent protégés dans leur développement par une ou plusieurs enveloppes (Voyez Calice et Corolle)."
+	},
+	"Floraison":{
+		"img":false,
+		"description":"Moment ou les fleurs d'une plante sont épanouies."
+	},
+	"Foliole":{
+		"img":false,
+		"description":"Lorsque le limbe d'une feuille est très divisé, chaque partie de la feuille semble être une petite feuille secondaire. Ce sont ces divisions qui sont appelées folioles. (Voyez Composée [feuille])"
+	},
+	"Fruit":{
+		"img":false,
+		"description":"Lorsque la fleur est flétrie, si le pollen des étamines est venu sur les stigmates du pistil, la fleur se transforme en un fruit contenant les graines. Le fruit s'ouvre lorsqu'il est mûr pour laisser les graines s'échapper ; parfois, il se détache tout entier avec la ou les graines qu'il renferme. Quand le fruit est sec et ne contient qu'une seule graine, on le confond souvent avec la graine elle-même ; mais on peut, en général, le reconnaître aux traces du style ou des styles qui le surmontent."
+	},
+	"Gaine":{
+		"img":false,
+		"description":"Quand la base d'une feuille entoure plus ou moins la tige par une partie élargie, on dit que la feuille est engainante. La gaine est une partie spéciale située à la base de la feuille et qui entoure la tige sur une longueur plus ou moins grande"
+	},
+	"Glauque":{
+		"img":false,
+		"description":"D'un vert bleuâtre ou blanchâtre"
+	},
+	"Glanduleux (poils)":{
+		"img":true,
+		"description":"Poils ayant au sommet ou à la base une masse arrondie, souvent visqueuse ou odorante. Pour abréger, on dit qu'un organe est glanduleux s'il porte des poils glanduleux ou même si sa surface est couverte de petites masses arrondies.\nExemples : 87, sépale bordé de poils glanduleux ; 88, pétale glanduleux sur toute la surface."
+	},
+	"Glume":{
+		"img":false,
+		"description":"(Voyez Graminées)"
+	},
+	"Glumelle":{
+		"img":false,
+		"description":"(Voyez Graminées)"
+	},
+	"Graminées":{
+		"img":true,
+		"description":"Les fleurs des graminées sont toujours groupées en petits épis que l'on nomme épillets. Les épillets sont à leur tour groupés en épis, ou en grappes plus ou moins rameuses.\nUn épillet qui contient plusieurs fleurs est, en général, constitué de la manière suivante (Fig N°1). Sur la tige principale ou sur un rameau (A), se trouve attaché le pédoncule de l'épillet (P), qui porte à la base les 2 bractées inférieures de l'épillet (G) qui s'appellent les glumes ; elles ne portent pas de fleurs à leur aisselle. Au dessus, insérées aussi sur l'axe (P) de l'épillet, se trouvent d'autres bractées (I), qui n'ont pas généralement la même forme que les glumes ; elles portent à leur aisselle des fleurs reconnaissables à leurs étamines ou à leurs stigmates plumeux ; ce sont les glumelles inférieures ; chaque fleur (F) est ainsi comprise entre une gumelle inférieure (I) et une autre bractée (S) partant de l'axe même de la lfeur et nommée glumelle supérieure.\nUn épillet peut ne contenir qu'une fleur (Fig N°2) avec ou sans la trace d'une seconde fleur avortée (a). Les lettres de la figure N°2 correspondant à celles de la figure N°1 indiquent comment est constitué un tel épillet.\nLa feuille des graminées présente ordinairement une petite languette membraneuse à la jonction du limbe et de la gaine (Fig CA). Cette languette est souvent importante à considérer pour la détermination"
+	},
+	"Grappe":{
+		"img":true,
+		"description":"Une grappe simple est une inflorescence dans laquelle toutes les fleurs ont un pédoncule très net et sont attachées le long d'une tige les unes au dessus des autres. Une grappe composée et une inflorescence ou les grappes de fleurs sont disposées en grappe.\nExemples : 89, grappe simple ; 90, grappe composée"
+	},
+	"Hybride":{
+		"img":false,
+		"description":"Plante issue d'une graine qui provient du pistil d'une espèce dont le stigmate a reçu le pollen d'une autre espèce. Les hybrides présentent ordinairement des caractères intermédiaires entre ceux des 2 espèces dont ils sont issus ; leurs fruits sont souvent mal formés."
+	},
+	"Inflorescence":{
+		"img":true,
+		"description":"Ensemble des fleurs voisines les unes des autres ou séparées seulement entre elles par des bractées.\nLes principales inflorescences simples sont les suivantes : \n\n 1- La grappe est une inflorescence ou la longueur des pédoncules (d, Fig G) est à peu près partout la même et à peu près égale à la distance  (l) séparant 2 pédoncules successifs ; le corymbe (Fic C) est une grappe dont les pédoncules sont de plus en plus courts, de telle sorte que les fleurs viennent s'étaler presque sur un même plan. \n2- L'ombelle (Fig O), inflorescence dans laquelle la distance entre les pédoncules est nulle ; tous les pédoncules sont attachés au même point et entourés ordinairement à leur base par des bractées qui forment un involucre (i, Fig O). \n3- L'épi, dans lequel, au contraire, les fleurs (f, Fig E) sont sans pédoncule, mais non attachées toutes au même endroit. 4° Le capitule, dans lequel toutes les fleurs sont insérées les unes à coté des autres et sans pédoncule (Fig R).\nUne inflorescence peut être composée, c'est-à-dire présenter la combinaison de plusieurs inflorescences simples. C'est ainsi que les fleurs peuvent être groupées en ombelle d'ombelles ou ombelle composée (Fig M), en grappe de grappes ou grappe composée, en corymbe de capitules, en grappes d'épis."
+	},
+	"Involucelle":{
+		"img":true,
+		"description":"Ensemble de bractées qui sont à la base d'une ombellule dans une inflorescence en ombelle composée (i, Fig M)"
+	},
+	"Involucre":{
+		"img":true,
+		"description":"Ensemble des bractées qui entourent un capitule ou qui sont à la base d'une ombelle. On désigne aussi sous ce nom un ensemble de bractées spéciales qui se trouvent à la base d'une ou de plusieurs fleurs (Voyez Ombelle ou Capitule)\nExemples : 91, 92, capitules entourés d'un involucre de bractées ; 93, ombelle avec involucre à la base ; 94, ombelle dont on a coupé les rayons sauf un, avec involucre à la base des rayons et ombelle munie d'un involucelle à la base, sur le rayon qui n'a pas été coupé ; 95,  ombelle composée involucre et involucelles ; 96, 97, involucres formés de 3 feuilles au dessous d'une fleur."
+	},
+	"Irrégulière (Fleur)":{
+		"img":false,
+		"description":"Fleur dont on peut distinguer une moitié droite et une moitié gauche, ou fleur ne présentant aucune symétrie"
+	},
+	"Labelle":{
+		"img":true,
+		"description":"On désigne sous ce nom le pétale d'une fleur d'Orchidées qui diffère beaucoup des autres par sa forme\nExemples : 98, fleur d'orchidée montrant le labelle (d) ; 99, fleur d'Orchidée montrant le labelle (l)"
+	},
+	"Limbe":{
+		"img":false,
+		"description":"Partie la plus élargie de la feuille, le plus souvent aplatie."
+	},
+	"Lobes":{
+		"img":false,
+		"description":"Parties du limbe de la feuille plus ou moins séparées les unes des autres."
+	},
+	"Languette (Fleur en)":{
+		"img":true,
+		"description":"On désigne sous ce nom les fleurs du capitule des Composées qui ont une corolle rejetée d'un coté et plate au moins dans sa partie supérieure (Fig 100). Lorsque les fleurs en languette ne sont pas encore développées, on peut les confondre, au premier abord, avec des fleurs en tube"
+	},
+	"Loges":{
+		"img":false,
+		"description":"Parties principales de l'anthère (voyez Anthère). Quand le pistil a plusieurs ovaires soudés, on dit souvent qu'il a un ovaire à plusieurs loges"
+	},
+	"Membraneux":{
+		"img":false,
+		"description":"Mince et ayant un peu la consistance du parchemin."
+	},
+	"Moyennes (Feuilles)":{
+		"img":false,
+		"description":"Feuilles situées vers le milieu de la tige."
+	},
+	"Naturalisé":{
+		"img":false,
+		"description":"Une plante naturalisée dans une contrée est une plante qui y a été introduite par l'homme et qui continue a s'y multiplier."
+	},
+	"Nectaire":{
+		"img":true,
+		"description":"Partie renfermant des sucres et qui peut souvent produire à sa surface des gouttelettes de liquide sucré.\nExemples : 101, nectaire recouvert par une écaille (e) à la base d'un pétale ; 102, nectaire (g) à la base du limbe d'une feuille ; 103, nectaire à la base d'un pistil."
+	},
+	"Nœud":{
+		"img":false,
+		"description":"Partie de la tige ou s'attache la base d'une feuille. Si la feuille a une longue gaine entourant la tige, le nœud est à la base de cette gaine."
+	},
+	"Nervures de la feuille":{
+		"img":false,
+		"description":"Le limbe d'une feuille est ordinairement parcouru par de petits filets qui vont en diminuant d'épaisseur depuis la base de la feuille jusqu'à ses bords et qui font souvent saillie sur la face inférieure, ce sont les nervures. On les observe facilement, dans la plupart des cas, en regardant la feuille par transparence."
+	},
+	"Obtus":{
+		"img":true,
+		"description":"On dit qu'un organe est obtus lorsqu'au sommet son contour n'est pas aigu.\nExemples : 104, 105, feuilles obtuses au sommet ; 106, écaille obtuse au sommet."
+	},
+	"Ombelle":{
+		"img":true,
+		"description":"Une ombelle simple (Fig S) est une inflorescence dans laquelle toutes les fleurs ont des pédoncules qui viennent s'attacher sur la tige au même point. Une ombelle composée (Fig C) est une ombelle d'ombelles, c'est-à-dire qu'elle est formée de petites ombelles (ombellules) (o, Fig C) groupées elles-même en ombelles (O, Fig C). Les bractées forment le plus souvent une collerette générale à la base de l'ombelle (involucre) (I, Fig C) et de petites collerettes à la base des ombellules (involucelles) (i, Fig C).\nExemples : 107, ombelle simple ; 108, ombelle composée ; 109, ombelle composée dont on a coupé tous les rayons sauf un."
+	},
+	"Ombellule":{
+		"img":false,
+		"description":"(Voyez Ombelle)"
+	},
+	"Opposé":{
+		"img":false,
+		"description":"Désigne un organe placé en face d'un autre."
+	},
+	"Opposées (Feuilles)":{
+		"img":true,
+		"description":"Feuilles placées par paire et attachées l'une en face de l'autre, à la même hauteur sur la tige.\nExemple : 110, feuilles opposées"
+	},
+	"Ovaire":{
+		"img":true,
+		"description":"Partie du pistil ou d'un carpelle du pistil qui est close et renferme l'ovule ou les ovules. L'ovaire peut être indépendante des autres parties de la fleur (Fig L, B) on dit en ce cas que la fleur est à ovaire libre. L'ovaire peut être soudé aux autres parties de la fleur (Fig A, G, C, E), on dit en ce cas que l'ovaire est adhérent ou que la fleur est à ovaire soudé au calice ; l'ovaire est alors placé en apparence sous la fleur.\nExemples : L, coupe théorique en long d'une fleur à ovaire libre ; H, coupe d'une fleur à ovaire libre ; A, coupe théorique en long d'une fleur à ovaire soudé au calice ; G, C, E, coupes de fleurs à ovaire soudé au calice."
+	},
+	"Ovules":{
+		"img":false,
+		"description":"Petites masses arrondies, ordinairement blanches, attachées sur les bords des carpelles et situées dans l'ovaire. Ce sont les ovules qui se transforment en graines après la floraison."
+	},
+	"Parasite":{
+		"img":false,
+		"description":"Plante qui se développe au dépens d'une autre plante vivante."
+	},
+	"Pédoncule/pédonculé":{
+		"img":true,
+		"description":"Pédoncule : rameau se terminant par une fleur ; c'est ce qu'on nomme vulgairement queue de la fleur. Par exemple, la fleur f (Fig P) et portée par un pédoncule p qui vient s'attacher sur la tige t au dessus d'une bractée b. On désigne sous le nom de pédoncule commun, dans un inflorescence, la tige qui porte les pédoncules des fleurs\nPédonculé : Ayant un pédoncule net."
+	},
+	"Persistant":{
+		"img":false,
+		"description":"Prolongeant sa durée au-delà de celle des organes analogues chez la plupart des plantes. Ainsi, les feuilles persistantes sont celles qui ne tombent pas à l'automne."
+	},
+	"Pétale":{
+		"img":false,
+		"description":"(Voyez Corolle)"
+	},
+	"Pétiole - Pétiolé":{
+		"img":false,
+		"description":"Pétiole : partie relativement étroite, située au dessous du limbe de la feuille ; c'est ce qu'on nomme vulgairement queue de la feuille\nPétiolé : Ayant un pétiole"
+	},
+	"Pistil":{
+		"img":false,
+		"description":"Partie de la fleur formée par l'ensemble ds carpelles, libres entre eux ou soudés. Le pistil est situé au milieu de la fleur. A sa base, se trouvent les ovaires ou l'ovaire formé par le réunion des ovaires de chaque carpelle. Au dessus sont souvent des parties plus allongées formant le style ou les styles ; au sommet, l'on trouve toujours (exepté chez les plantes Gymnospermes (Abiétinées, Cupressinées et Taxinées), un ou plusieurs stigmates plus ou moins visqueux. Les stigmates ont pour but de retenir la poussière du pollen venant des étamines, et c'est seulement  lorque cette partie du pistil a reçu le pollen que les ovules peuvent se transformer en graines. Les fleurs qui n'ont pas d'étamines et qui ne renferment seulement que le pistil sont nommées fleurs pistillées.\nExemple :  (Voyez Carpelle)"
+	},
+	"Pistillées":{
+		"img":false,
+		"description":"Fleurs n'ayant pas d'étamines et renfermant seulement le pistil."
+	},
+	"Pollen":{
+		"img":false,
+		"description":"Poussière renfermée dans les anthères des étamines et rejetée au dehors quand l'anthère est mûre. Il est nécessaire que le pollen arrive sur les stigmates du pistil pour que celui-ci se transforme en fruit et pour que les ovules se transforment en graines."
+	},
+	"Racine":{
+		"img":false,
+		"description":"La racine est l'un des trois membres de la plante. On la distingue de la tige en ce qu'elle ne porte pas de feuilles, même réduites à des écailles, ni de traces de feuilles tombées. On la distingue de la feuille en ce qu'on ne peut reconnaître dans la racine ni droite ni gauche, ni faces supérieure et inférieure."
+	},
+	"Radicelle":{
+		"img":false,
+		"description":"Ramification de la racine."
+	},
+	"Rameau":{
+		"img":false,
+		"description":"Ramifications de la tige."
+	},
+	"Réceptacle":{
+		"img":true,
+		"description":"Partie terminale du pédoncule d'une fleur. Les diverses parties de la fleur sont insérées sur le réceptacle\nExemples : 111, 112, fleurs coupées en long pour montrer le réceptacle plat (111) ou bombé (112) sur lequel sont attachées les diverses parties de la fleur ; 113, capitule de leur coupé en long, pour montrer le réceptacle commun sur lequel sont insérées diverses fleurs ; 114, capitule dont on a enlevé toutes les fleurs et coupé les bractées de l'involucre pour faire voir le réceptacle commun, de face"
+	},
+	"Rosette (Feuilles en)":{
+		"img":true,
+		"description":"Feuilles attachées sur la tige en assez grand nombre, très rapprochées les unes des autres et étalées.\nExemple : 115, rosette de feuilles"
+	},
+	"Sépale":{
+		"img":false,
+		"description":"(Voyez Calice)"
+	},
+	"Sillonné":{
+		"img":true,
+		"description":"Marqué de sillons, dans le sens de la longueur.\nExemple : 116, fragment de tige sillonnée"
+	},
+	"Simple (Feuille)":{
+		"img":false,
+		"description":"Feuille n'étant pas découpée en parties complètement séparées."
+	},
+	"Sous arbrisseau":{
+		"img":false,
+		"description":"Arbrisseau très petit."
+	},
+	"Spontanée (Plante)":{
+		"img":false,
+		"description":"Plante croissant naturellement dans notre région."
+	},
+	"Sporanges":{
+		"img":false,
+		"description":"Petits organes renfermant les spores chez les plantes cryptogames."
+	},
+	"Spores":{
+		"img":false,
+		"description":"Grains microscopiques qu'on trouve chez les plantes cryptogames, formant une poussière analogue à celle du pollen, mais pouvant germer directement, pour donner une nouvelle plante."
+	},
+	"Staminées (Fleurs)":{
+		"img":false,
+		"description":"Fleurs n'ayant pas de pistil et ne renfermant qu'une ou plusieurs étamines."
+	},
+	"Stamino-pistillées":{
+		"img":false,
+		"description":"Fleurs ayant étamines et pistil."
+	},
+	"Stigmate":{
+		"img":true,
+		"description":"Partie plus ou moins visqueuse qui se trouve au sommet des carpelles, ou de tout le pistil quand les carpelles sont soudés, souvent porté par une partie allongée (style). Le stigmate retient à sa surface le pollen provenant des étamines (Voyez Pistil)\nExemples : 117, pistil à deux styles terminés chacun par un stigmate renflé ; 118, deux stigmates réunis à la base ; 119, pistil a stigmates disposés en rayons sur une sorte de plateau"
+	},
+	"Stipule":{
+		"img":true,
+		"description":"Parties de certaines feuilles placées à droite et à gauche de la base de la feuille, à l'endroit ou elle se rattache à la tige.\nExemples : 120, feuille composée, avec deux stipules à la base ; 121, l'une de ces deux stipules ; 122, 123, feuille avec deux stipules soudées au pétiole ; 124, base de la feuille avec stipules dentées ; 125, base d'une feuille avec stipule engainante ; 126, feuille dont les stipules sont très développées et dont le limbe est réduit à un filet."
+	},
+	"Strié":{
+		"img":true,
+		"description":"Marqué de très petits sillons, en longueur.\nExemple : 127, fruit strié"
+	},
+	"Style":{
+		"img":true,
+		"description":"Partie plus ou moins allongée qui porte le stigmate ; il y a des fleurs qui n'ont pas de style développé.\nExemples : 128, fleur coupée en long, montrant le style qui est placé chez cette fleur, au milieu du tube de la corolle ; 129, fleur montrant le style au milieu de quatre étamines ; 130, fleur coupée en long, montrant l'ovaire surmontée de deux styles ; 131,  fruit surmonté de deux styles persistants ; 132, fleur ayant un pistil à cinq styles courts."
+	},
+	"Subspontanée (Plante)":{
+		"img":false,
+		"description":"Plante issue d'une graine venant d'une plante cultivée."
+	},
+	"Tige":{
+		"img":false,
+		"description":"La tige est l'un des trois membres de la plante. On la distingue de la racine à ce qu'elle porte des feuilles ou a porté des feuilles dont on voit souvent des traces sur la tige. On la distingue d'une feuille en ce que l'on ne reconnaît ordinairement dans la  tige ni droite ni gauche, et ni faces inférieure et supérieure. Suivant le milieu dans lequel elle croit, une tige peut être aérienne, aquatique ou souterraine."
+	},
+	"Tube du calice":{
+		"img":true,
+		"description":"Partie inférieure d'un calice dont les sépales sont soudés, dans laquelle les sépales sont complètement réunis entre eux.\nExemples : 133, calice à sépales réunis en tube à la base ; 134, calice fendu et ouvert montrant le tube du calice déroulé."
+	},
+	"Tube de la corolle":{
+		"img":true,
+		"description":"Partie d'une corolle à pétales soudés, dans laquelle les pétales sont tout à fait réunis entre eux\nExemples : 135, corolle à pétales soudés en tube à la base ; 136, corolle à pétales complètement soudés en tube."
+	},
+	"Tube (Fleur en)":{
+		"img":true,
+		"description":"Fleurs du capitule des Composées dont la corolle est complètement en forme de tube et non rejetée en languette d'un seul coté.\nExemple : Fig 137"
+	},
+	"Tubercules":{
+		"img":true,
+		"description":"Partie renflée d'une tige ou d'une racine\nExemples : 138, tige souterraine renflée en tubercules ; 139, racine renflée en tubercules"
+	},
+	"Tubuleuses (Fleurs)":{
+		"img":false,
+		"description":"Voyez Tube (Fleur en)"
+	},
+	"Valve":{
+		"img":true,
+		"description":"L'une des parties qui s'écartent lorsqu'un fruit s'ouvre.\nExemples : 140, calice entourant un fruit qui s'ouvre par trois valves ; 141, fruit s'ouvrant par quatre valves"
+	},
+	"Verticillées (Feuilles)":{
+		"img":true,
+		"description":"Feuilles attachées toutes à la même hauteur sur la tige, au nombre de trois ou plus.\nExemples : 142, feuilles verticillées par quatre ; 143, feuilles verticillées par six"
+	},
+	"Vivace (Plante)":{
+		"img":false,
+		"description":"Plante qui peut vivre plus de deux ans. Les arbres et les arbustes, les herbes à tiges souterraines développées, sont des plantes vivaces."
+	},
+	"Vrilles":{
+		"img":true,
+		"description":"Parties d'une tige ou d'une feuille allongées et sensibles, pouvant s'enrouler autour de supports pour soutenir la plante et lui permettre de grimper.\nExemple : 144, feuille à folioles supérieures transformées en vrille."
+	}
+}

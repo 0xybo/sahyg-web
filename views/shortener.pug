@@ -1,0 +1,45 @@
+extends main.pug 
+include components/navigation.pug
+
+append HEAD
+	+meta("Shortenee", "URL shortener.")
+
+	script(src="/js/shortener.js") 
+	link(rel="stylesheet" href="/css/shortener.css")
+
+	title !{i18n("SHORTENER")} | !{Web.config.get("text.title")}
+
+block BODY 
+	+c_pageTitle("i18n:SHORTENER")
+	div.commands
+		btn.new.btn-full !{i18n("NEW_SHORTCUT")}
+		div.search 
+			div.ta.ta-search
+				input#search(type="text" name="search" placeholder=i18n("SEARCH"))
+			div.count 
+				span.current !{shortcuts.length}
+				| /
+				span.total !{shortcuts.length}
+	div.table
+		div.container
+			div.header
+				div.cell.enable !{i18n("ENABLED")}
+				div.cell.url !{i18n("URL")}
+				div.cell.target !{i18n("TARGET")}
+				div.cell.clicked !{i18n("CLICKED_COUNT")}
+				div.cell.commands !{i18n("COMMANDS")}
+			div.body(data-replace-text=i18n("SHORTENER_NOTHING"))
+				if shortcuts 
+					each shortcut in shortcuts
+						div.row
+							div.cell.enable 
+								btn(data-tooltip=i18n("ENABLE/DISABLE") class=shortcut.enabled? "enabled": "disabled") !{shortcut.enabled? "&#xf14a;" : "&#xf0c8;"}
+							div.cell.url 
+								a(href=(Web.config.get("domain") + "/sc/" + shortcut.name) target="_blank") !{Web.config.get("domain") + "/sc/" + shortcut.name}
+							div.cell.target
+								a(href=shortcut.target target="_blank") !{shortcut.target}
+							div.cell.clicked !{shortcut.clicked}
+							div.cell.commands
+								btn.copy(data-tooltip=i18n("COPY_URL")) &#xf0c5;
+								btn.edit(data-tooltip=i18n("EDIT")) &#xf304;
+								btn.remove(data-tooltip=i18n("REMOVE")) &#xf2ed;

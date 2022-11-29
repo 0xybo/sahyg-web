@@ -1,0 +1,105 @@
+container {
+	max-width: 70rem;
+}
+container .loading .svg-loader {
+	width: 5rem;
+	height: 5rem;
+}
+container .loading {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 1rem;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	height: calc(100vh - 4rem - 64px);
+	justify-content: center;
+}
+app:not(.visible) {
+	display: none;
+}
+app {
+	display: flex;
+	row-gap: 2rem;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+app-menu {
+	display: flex;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	height: 3rem;
+	border-bottom: 1px solid var(--divider-color);
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+app-menu-item {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: background-color ease-in-out 50ms;
+}
+app-menu-item.open {
+	background-color: var(--background-secondary-color);
+}
+app-menu-item:not(.open):hover {
+	background-color: var(--background-tertiary-color);
+}
+c-horizontal-tabs-container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+app-content[data-horizontal-tabs-id="random"] {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 2rem;
+	font-size: 1.5rem;
+	text-align: center;
+}
+app-content[data-horizontal-tabs-id="random"] .joke {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 2rem;
+}
+app-content[data-horizontal-tabs-id="about"] {
+	width: 100%;
+	max-width: 44rem;
+}
+app-content[data-horizontal-tabs-id="about"] .stats {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	border: solid 2px var(--divider-color);
+}
+app-content[data-horizontal-tabs-id="about"] .stats .row {
+	display: flex;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	border-top: 2px solid var(--divider-color);
+}
+app-content[data-horizontal-tabs-id="about"] .stats .row:first-child {
+	border: none;
+}
+app-content[data-horizontal-tabs-id="about"] .stats .row > * {
+	padding: 0.5rem 1rem;
+	-ms-flex: 1;
+	flex: 1;
+}
+app-content[data-horizontal-tabs-id="about"] .stats .row > *:first-child {
+	border-right: 2px solid var(--divider-color);
+}

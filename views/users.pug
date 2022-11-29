@@ -1,0 +1,24 @@
+extends main.pug 
+include components/navigation.pug
+include components/inputs.pug
+
+append HEAD 
+	+meta("Users", "Page to manage website users.")
+
+	link(rel="stylesheet" href="/css/users.css")
+	script(src="/js/users.js") 
+
+	title !{i18n('USERS')} | !{Web.config.get("text.title")}
+
+block BODY
+	+c_horizontalTabs("tab", [{id: "users", title: i18n("USERS")}, {id: "groups", title: i18n("GROUPS")}], "users")
+		div(data-horizontal-tabs-id="users")
+			+c_pageTitle(i18n("USERS"))
+			div.table
+				+c_list([
+					{type: "string", name: "username", displayName: i18n("USERNAME"), disabled: true},
+					{type: "string", name: "firstname", displayName: i18n("FIRSTNAME"), disabled: true},
+					{type: "string", name: "lastname", displayName: i18n("LASTNAME"), disabled: true},
+					{type: "string", name: "email", displayName: i18n("EMAIL"), disabled: true},
+					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
+				], [])

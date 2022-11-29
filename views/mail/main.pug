@@ -1,0 +1,44 @@
+div#mail(style={
+	"background": "#f1f5fb"
+})
+	div#mail-resources(style={
+		"display": "none"
+	})
+		style 
+			| @font-face {
+			|     font-family: "Audiowide";
+			|     src: url("https://!{hostname}/fonts/audiowide.woff2") format("woff2");
+			| }
+
+	div#mail-container(style={
+		"background": "#fff",
+		"max-width": "40rem",
+		"padding": "2rem 0",
+		"margin": "0 auto"
+	})
+		div#mail-header(style={
+			"margin-bottom": "2rem",
+			"border-bottom": "1px solid #e0e9f4",
+			"padding": "16px",
+			"height": "calc(6rem - 32px)" 
+		})
+			img(src="https://"+hostname+"/img/favicon.png" alt="logo" style={
+				"height": "100%"
+			})
+			span(style={
+				"font-family": "Audiowide",
+				"font-size": "2rem",
+				"color": "#3f4d62",
+				"margin-left": "1rem"
+			}) SAHYG
+
+		div#mail-body(style={
+			"margin-bottom": "2rem",
+		})
+			block MAIL_BODY
+
+		div#mail-footer(style={
+			"border-top":"1px solid #e0e9f4",
+			"padding": "16px"
+		})
+			span Message id : !{mail._id}

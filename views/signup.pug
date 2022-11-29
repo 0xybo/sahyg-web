@@ -1,0 +1,51 @@
+extends main.pug 
+
+append HEAD 
+	+meta("Signup", "Signup page")
+
+	script(src="/js/signup.js") 
+	link(rel="stylesheet" href="/css/signup.css")
+
+	title !{i18n('SIGNUP')} | !{Web.config.get("text.title")}
+
+block BODY 
+	div.title !{i18n('SIGNUP')}
+	form(action="/signup" method="post") 
+
+		label.required(for="username") !{i18n("USERNAME")}
+		div.ta.ta-user
+			input#username(type="text" name="username" placeholder=i18n("USERNAME") autocomplete="username")
+		label(for="firstname") !{i18n("FIRSTNAME")}
+		div.ta.ta-user
+			input#firstname(type="text" name="firsname" placeholder=i18n("FIRSTNAME") autocomplete="firstname")
+		label(for="lastname") !{i18n("LASTNAME")}
+		div.ta.ta-user
+			input#lastname(type="text" name="lastname" placeholder=i18n("LASTNAME") autocomplete="lastname")
+		label.required(for="email") !{i18n("EMAIL")}
+		div.ta.ta-email
+			input#email(type="email" name="email" placeholder=i18n("EMAIL") autocomplete="email")
+		label.required(for="password") !{i18n("PASSWORD")}
+		div.ta.ta-password
+			input#password(type="password" name="password" placeholder=i18n("PASSWORD") spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="current-password")
+
+		div.password-requirements
+			ul
+				li.min-max !{i18n("PASSWORD_REQUIREMENTS_1")}
+				li.upper !{i18n("PASSWORD_REQUIREMENTS_2")}
+				li.lower !{i18n("PASSWORD_REQUIREMENTS_3")}
+				li.special !{i18n("PASSWORD_REQUIREMENTS_4")}
+				li.digit !{i18n("PASSWORD_REQUIREMENTS_5")}
+
+		label.required(for="password-confirm" data-title="required") !{i18n("PASSWORD_CONFIRM")}
+		div.ta.ta-password
+			input#password-confirm(type="password" name="password-confirm" placeholder=i18n("PASSWORD_CONFIRM") autocomplete="password")
+
+		span.required
+			span *
+			| !{i18n("REQUIRED")}
+
+		input.btn.btn-full(type="submit" value=i18n("SUBMIT"))
+	div.links
+		span 
+			| !{i18n("ALREADY_ACCOUNT")}
+			a(href="/login") !{i18n("LOGIN")}

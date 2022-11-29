@@ -1,0 +1,25 @@
+extends ../main.pug
+
+append HEAD
+	+meta("Error", "An error occurred")
+
+	script(src="/js/error.js") 
+	link(rel="stylesheet" href="/css/error.css") 
+
+	title !{i18n("ERROR")} | !{Web.config.get("text.title")}
+
+
+block BODY
+	div.content
+		span.title !{i18n("ERROR")}
+		span.url
+		span.description !{i18n("ERROR_DESCRIPTION")}
+		div.buttons
+			a.refresh(href="#")
+				btn.btn-rounded !{i18n("REFRESH_PAGE")}
+			a.back(href="#")
+				btn.btn-rounded !{i18n("RETURN_PREVIOUS")}
+			a.return(href="/")
+				btn.btn-rounded !{i18n("RETURN_HOME")}
+			a.home(href="/contact")
+				btn.btn-rounded !{i18n("CONTACT_US")}

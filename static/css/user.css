@@ -1,0 +1,128 @@
+container {
+	padding: 0 0 2rem 0;
+	max-width: unset;
+}
+
+container .header {
+	height: 20rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	background-color: var(--background-secondary-color);
+}
+container .header div.avatar {
+	width: 8rem;
+	height: 8rem;
+	border-radius: 100%;
+	overflow: hidden;
+}
+container .header img.avatar {
+	height: 8rem;
+	width: 8rem;
+	background: var(--background-secondary-color);
+}
+container .header img.avatar:after {
+	content: "\f007";
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: var(--background-color);
+	color: var(--accent-color);
+	display: flex;
+	width: 100%;
+	height: 100%;
+	font-family: "Line Awesome Free Solid";
+	align-items: center;
+	justify-content: center;
+	border-radius: 100%;
+	font-size: 5rem;
+	overflow: hidden;
+}
+container .header img.avatar:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: var(--background-secondary-color);
+	display: flex;
+	width: 100%;
+	height: 100%;
+}
+container .header div.avatar .lafs {
+	font-size: 8rem;
+	color: var(--accent-color);
+}
+container .header .username {
+	font-size: 2rem;
+	margin-top: 1rem;
+}
+container .header .icons {
+	display: flex;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	align-items: center;
+	justify-content: center;
+	font-size: 2rem;
+	margin-top: 0.5rem;
+}
+container c-horizontal-tabs-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+container c-horizontal-tabs-container .body {
+	padding: 0 1rem 1rem 1rem;
+	max-width: 50rem;
+	width: 100%;
+}
+
+[data-horizontal-tabs-id="bio"] .title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 0.5rem;
+	margin-top: 1rem;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+[data-horizontal-tabs-id="bio"] .values {
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
+}
+[data-horizontal-tabs-id="bio"] .values:empty:before {
+	content: "/";
+}
+[data-horizontal-tabs-id="bio"] .values > div {
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	row-gap: 0.5rem;
+}
+[data-horizontal-tabs-id="bio"] .values .label {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+[data-horizontal-tabs-id="bio"] .values .value {
+	margin-left: 1rem;
+}
+[data-horizontal-tabs-id="bio"] .values .label > * {
+	height: 1rem;
+	width: 1rem;
+	margin-right: 0.5rem;
+}

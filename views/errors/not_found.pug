@@ -1,0 +1,23 @@
+extends ../main.pug
+
+append HEAD
+	+meta("404", "Page not found")
+
+	script(src="/js/error.js")
+	link(rel="stylesheet" href="/css/error.css") 
+
+	title 404 | !{Web.config.get("text.title")}
+
+
+block BODY
+	div.content
+		span.title 404
+		span.url
+		span.description !{i18n("404_DESCRIPTION")}
+		div.buttons
+			a.back(href="#")
+				btn.btn-rounded !{i18n("RETURN_PREVIOUS")}
+			a.home(href="/")
+				btn.btn-rounded !{i18n("RETURN_HOME")}
+			a.home(href="/contact")
+				btn.btn-rounded !{i18n("CONTACT_US")}

@@ -1,0 +1,81 @@
+extends main.pug 
+include components/navigation.pug
+
+append HEAD
+	+meta("User "+target.username, "Profil page for user "+target.username)
+
+	link(rel="stylesheet" href="/css/user.css")
+	srcipt(src="/js/user.js") 
+
+	title !{target.username} | !{i18n("USER")} | !{Web.config.get("text.title")}
+
+append BODY 
+	div.header
+		div.avatar
+			if target.avatar
+				img.avatar(data-viewer src=`/resources/avatar/${target.username}`, alt="")
+			else 
+				span.lafs &#xf007;
+		div.username 
+			span !{target.username}
+		div.icons
+			if target.certified
+				span.lafs(data-tooltip=i18n("CERTIFIED") style="color: var(--green-700)") &#xf0a3;
+			if targetGroup.name == "owner"
+				span.lafs(data-tooltip=i18n("OWNER") style="color: var(--yellow-600)") &#xf521;
+			else if targetGroup.name == "administrator"
+				span.lafs(data-tooltip=i18n("ADMINISTRATOR") style="color: var(--red-600)") &#xf7d9;
+			else if targetGroup.name == "vip"
+				span.lafr(data-tooltip="VIP" style="color: var(--blue-600)") &#xf005;
+	+c_horizontalTabs("tab", [{id: "bio", title: i18n("BIOGRAPHY")}], "bio")
+		div.body(data-horizontal-tabs-id="bio")
+			div.about
+				div.title !{i18n("ABOUT")}
+				div.values !{md.parse(target.about)}
+			div.informations
+				div.title !{i18n("INFORMATIONS")}
+				div.values
+					if target.shared.includes("firstname")
+						div.firstname
+							span.label
+								span.lafs &#xf007;
+								| !{i18n("FIRSTNAME")}
+							span.value !{target.firstname}
+					if target.shared.includes("lastname")
+						div.lastname
+							span.label
+								span.lafs &#xf007;
+								| !{i18n("LASTNAME")}
+							span.value !{target.lastname}
+					if target.shared.includes("language")
+						div.language
+							span.label
+								span.lafs &#xf1ab;
+								| !{i18n("LANGUAGE")}
+							span.value !{target.locale}
+					if target.shared.includes("email")
+						div.email
+							span.label
+								span.lafs &#xf1fa;
+								| !{i18n("EMAIL")}
+							a.value(href="mailto:"+target.email) !{target.email}
+			if Object.entries(target.custom).length
+				div.custom
+					div.title !{i18n("MORE_INFORMATIONS")}
+					div.values
+						each custom in Object.entries(target.custom)
+							if target.shared.includes("custom." + custom[0])
+								div(class="custom "+custom[0])
+									span.label
+										case custom[0].toLowerCase()
+											when "discord": img(src="/img/icons/discord.svg")
+											when "twitter": img(src="/img/icons/twitter.svg")
+											when "instagram": img(src="/img/icons/instagram.svg")
+											when "reddit": img(src="/img/icons/reddit.svg")
+											when "github": img(src="/img/icons/github.svg")
+											when "steam": img(src="/img/icons/steam.svg")
+										| !{custom[0]}
+									if custom[1].toLowerCase().startsWith("http")
+										a.value(href=custom[1] target="_blank") !{custom[1]}
+									else 
+										span.value !{custom[1]}

@@ -1,0 +1,66 @@
+append HEAD
+	<!-- Components links: navigation -->
+	link(rel="stylesheet" href="/css/components/inputs.css")
+	script(src="/js/components/inputs.js") 
+
+mixin c_select(options, id, current, disabled = false)
+	- let currentTitle = options.find(e => e.value == current)?.title
+	c-select(data-value=current id=id, class=disabled? "disabled": "")
+		c-select-current !{currentTitle? conditionalI18n(currentTitle) : ""}
+		c-select-options
+			each option in options
+				if option.title == "@>divider"
+					c-select-divider
+				else 
+					c-select-option(class=option.disabled? "disabled" : "", data-value=option.value)
+						c-select-option-icon 
+							//- TODO
+						c-select-option-informations 
+							c-select-option-title !{conditionalI18n(option.title)}
+							if option.description 
+								c-select-option-description !{option.description.startsWith("i18n:")? i18(option.description.substring(5)): option.description}
+
+mixin c_text(name, type, placeholder, value, disabled=false)
+	div(class="ta ta-"+(type || "text"))
+		input(type="text" placeholder=placeholder value=value id=name) 
+
+mixin c_boolean(name, disabled=false)
+	c-boolean(value=disabled.toString())
+		c-boolean-circle
+
+mixin _c_list(fields, data)
+	- if (!data) data = {}
+	c-input-list-row
+		each val in fields
+			c-input-list-field(name=val.name)
+				if (val.type == "text")
+					+c_text(val.name, val.contentType, val.placeholder, data[val.name], (val.disabled == true))
+				else if (val.type == "select")
+					+c_select(val.options, val.name, data[val.name], (val.disabled == true))
+				else if (val.type == "boolean")
+					+c_boolean(val.name, data[val.name], (val.disabled == true))
+				else if (val.type == "string")
+					span !{data[val.name]}
+				else if (val.type == "html")
+					div 
+						| !{val.defaultContent}
+						| !{data[val.name]}
+		c-input-list-field
+			btn(data-tooltip=i18n("REMOVE")).lafs &#xf00d;
+
+mixin c_list(fields, currentData)
+	c-input-list()
+		c-input-list-template.none
+			+_c_list(fields)
+		c-input-list-current
+			c-input-list-header 
+				each val, key in fields
+					c-input-list-column !{val.displayName}
+				c-input-list-column 
+			c-input-list-body(data-empty=i18n("NOTHING_HERE"))
+				each data, i in currentData
+					+_c_list(fields, data)
+			c-input-list-add 
+				btn
+					span.lafs &#xf067;
+					| !{i18n("ADD")}

@@ -1,0 +1,73 @@
+container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 25px;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+container .title {
+	font-size: 3rem;
+	font-weight: bold;
+}
+
+container form {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	
+width: 70%;
+    max-width: 30rem;}
+
+container form .ta {
+	margin-bottom: 1rem;
+	margin-top: 0.25rem;
+}
+
+container form [type="submit"] {
+	margin-top: 1rem;
+}
+
+container .links {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 5px;
+}
+
+container .links span:last-child {
+	display: flex;
+	column-gap: 5px;
+}
+
+container .password-requirements {
+	margin-bottom: 1rem;
+	margin-left: 3rem;
+	opacity: 0.7;
+}
+container .ta-password.valid ~ .password-requirements li,
+container .password-requirements li.valid {
+	color: var(--success-color);
+}
+container .password-requirements li.invalid {
+	color: var(--danger-color);
+}
+
+container span.required {
+	margin-bottom: 1rem;
+    display: flex;
+	column-gap: 0.4rem;
+    opacity: 0.7;
+}
+container span.required span {
+	color: var(--danger-color);
+	font-weight: bold;
+	font-size: 1.6rem;
+	line-height: 1.6rem;
+	display: flex;
+	width: min-content;
+}

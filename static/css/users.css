@@ -1,0 +1,11 @@
+.table {
+    overflow-x: scroll;
+}
+c-input-list {
+    min-width: 50rem;
+    max-width: 70rem;
+    margin: 0 auto;
+}
+c-input-list-field btn.edit {
+    font-size: 1.5rem;
+}

@@ -1,0 +1,60 @@
+extends main.pug
+include components/navigation.pug
+
+mixin renderLine(line)
+	- let str = typeof line == "string"
+	- let arr = line instanceof Array
+	if str
+		| !{parse(conditionalI18n(line))}
+	else if arr 
+		each item in line
+			+renderLine(item)
+	else if line.type == "join"
+		| !{parse(line.content.map(conditionalI18n).join(""))}
+	else if line.type == "section"
+		+renderSection(line)
+	else if line.type == "link"
+		a(href=line.href) !{conditionalI18n(line.text)}
+	else if line.type == "list"
+		if line.items.length
+			ul
+				each item in line.items
+					<li class="list-item">
+						+renderLine(item) 
+					</li>
+	else if line.type == "listItem"
+		- let subList = Boolean(line.subList?.length)
+		div
+			each item in line.content
+				+renderLine(item)
+		if  subList 
+			if line.subList.length
+				ul
+					each item in line.subList 
+						<li class="list-item">
+							+renderLine(item) 
+						</li>
+
+
+mixin renderSection(element) 
+	- name = conditionalI18n(element.name)
+	div.section
+		span.title(id=element.id) !{name}
+			span(class="lafs return-top" data-tooltip=i18n("RETURN_TOP")) &#xf0aa;
+		div.content
+			each line in element.content 
+				+renderLine(line)
+
+append HEAD
+	+meta("About", "About page")
+
+	link(rel="stylesheet" href="/css/about.css")
+
+	title !{i18n("ABOUT")} | !{Web.config.get("text.title")}
+
+
+block BODY
+	+c_pageTitle(i18n("ABOUT"))
+	each element in content 
+		if element.type == "section"
+			+renderSection(element)

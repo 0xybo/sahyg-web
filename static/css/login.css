@@ -1,0 +1,60 @@
+container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 4rem;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+container .title {
+	font-size: 3rem;
+	font-weight: bold;
+	margin-top: 3rem;
+}
+
+container form {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	width: 70%;
+	max-width: 30rem;
+	transition: width var(--transition);
+}
+
+container form .ta {
+	margin-bottom: 1rem;
+	margin-top: 0.25rem;
+}
+
+container form btn {
+	margin-top: 1rem;
+	padding: 1.2rem;
+	height: 2rem;
+}
+
+container form [type="submit"] {
+	display: none;
+}
+
+container .links {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	align-items: center;
+	row-gap: 5px;
+}
+
+container .links span:last-child {
+	display: flex;
+	column-gap: 5px;
+}
+
+@media screen and (max-width:500px) {
+	container form {
+		max-width: 100%;
+		width: 100%;
+	}
+}

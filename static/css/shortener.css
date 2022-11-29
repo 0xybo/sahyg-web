@@ -1,0 +1,117 @@
+container {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	max-width: 70rem;
+}
+container > .commands {
+	margin-bottom: 1rem;
+	display: flex;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+container > .commands > .search {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+container > .commands .ta-search {
+	min-width: 12rem;
+}
+container > .commands .ta:before {
+	font-size: 1.2rem;
+}
+#search {
+	height: calc(2.375rem - 4px);
+}
+container .table {
+	width: 100%;
+	border: 1px solid var(--divider-color);
+	border-radius: 0.5rem;
+	overflow-x: scroll;
+	padding-bottom: 0.5rem;
+}
+container .table .container {
+	min-width: 50rem;
+}
+container .table .body {
+	width: 100%;
+}
+container .table .header {
+	background-color: var(--background-secondary-color);
+}
+container .table .header .cell {
+	overflow-x: hidden;
+}
+container .table .row:hover {
+	background-color: var(--background-secondary-color) !important;
+}
+container .table .row:nth-child(2n + 2) {
+	background-color: var(--background-tertiary-color);
+}
+container .table .cell {
+	-ms-flex: 1;
+	flex: 1;
+	padding: 0.5rem;
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-y: hidden;
+	text-overflow: ellipsis;
+}
+container .table .row .cell.enable btn {
+	font-family: "Line Awesome Free Regular";
+	font-size: 1.5rem;
+}
+container .table .row .cell.enable btn:hover {
+	color: var(--base-white);
+	background-color: var(--accent-color);
+}
+container .table .row .cell.commands btn {
+	font-family: "Line Awesome Free Solid";
+	font-size: 1.5rem;
+}
+container .table .row .cell.commands btn:hover {
+	background-color: var(--accent-color);
+	color: var(--base-white);
+}
+container .table .row .cell.commands btn:last-child:hover {
+	background-color: var(--red-700);
+}
+container .table .body:empty {
+	padding: 0.5rem;
+	display: flex;
+	justify-content: center;
+}
+container .table .body:empty:after {
+	content: attr(data-replace-text);
+}
+.shortcut-popup {
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	row-gap: 1rem;
+	width: 100%;
+}
+container .table .row,
+container .table .header {
+	display: -ms-grid;
+	display: grid;
+	-ms-grid-columns: repeat(5, auto);
+	grid-template-columns: 5rem 1fr 1fr 8rem 10rem;
+	width: 100%;
+}
+container .table .cell {
+	align-items: center;
+}
+container .table .row .cell:first-child {
+	justify-content: center;
+}
+container .table .row .cell:not(:last-child) {
+	border-right: 1px solid var(--divider-color);
+}
+container .table .cell {
+	white-space: nowrap;
+}

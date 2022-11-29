@@ -1,0 +1,26 @@
+{
+	"description": "SAHYG Website",
+	"dir": "ltr",
+	"display": "minimal-ui",
+	"icons": [
+		{
+			"src": "/img/favicon96x96.png",
+			"sizes": "96x96",
+			"type": "image/png"
+		},
+		{
+			"src": "/img/favicon144x144.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		}
+	],
+	"lang": "fr",
+	"name": "SAHYG Website",
+	"prefer_related_applications": false,
+	"related_applications": [],
+	"scope": "/",
+	"short_name": "SAHYG",
+	"start_url": "/",
+    "theme_color": "#0368de",
+    "background_color": "#fff"
+}

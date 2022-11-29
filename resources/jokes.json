@@ -1,0 +1,792 @@
+[
+	{
+		"id": 0,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Qu'est-ce qui court et qui se jette ?",
+		"answer": "Une courgette"
+	},
+	{
+		"id": 1,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Avec quoi ramasse-t-on la papaye ?",
+		"answer": "Une foufourche"
+	},
+	{
+		"id": 2,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Comment s'appelle le journal publié chaque semaine dans le Sahara ?",
+		"answer": "L'Heb-dromadaire"
+	},
+	{
+		"id": 3,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel est le point commun entre un pêcheur et un mannequin ?",
+		"answer": "Ils surveillent leur ligne."
+	},
+	{
+		"id": 4,
+        "language": "fr-FR",
+		"type": "phrases",
+		"phrases": ["C'est l'histoire d'une fleur qui court", "qui court", "et qui se plante"]
+	},
+	{
+		"id": 5,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Qu'est ce qui est petit, carré et jaune ?",
+		"answer": "Un petit carré jaune !"
+	},
+	{
+		"id": 6,
+        "language": "fr-FR",
+		"type": "phrases",
+		"phrases": ["C'est l'histoire d'un tétard", "qui pensait qu'il était tôt", "mais en fait il était tard"]
+	},
+	{
+		"id": 7,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Qu'est ce qu'un cochon avec des ailes ?",
+		"answer": "Un aéroport"
+	},
+	{
+		"id": 8,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quelle mamie fait peur aux voleurs ?",
+		"answer": "Mamie Traillette"
+	},
+	{
+		"id": 9,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce c'est difficile de conduire dans le Nord ?",
+		"answer": "Parce que les voitures arrêtent PAS DE CALER."
+	},
+	{
+		"id": 10,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce qu'on dit que les bretons sont tous frères et sœurs ?",
+		"answer": "Parce qu’ils n’ont Quimper."
+	},
+	{
+		"id": 11,
+        "language": "fr-FR",
+		"type": "phrases",
+		"phrases": ["J'ai une blague sur les magasins", "Mais elle a pas supermarché"]
+	},
+	{
+		"id": 12,
+        "language": "fr-FR",
+		"type": "phrases",
+		"phrases": ["Deux lions discutent", "« T’as une belle crinière »", "« Arrête, tu vas me faire rugir »"]
+	},
+	{
+		"id": 13,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce qu'on met tous les crocos en prison ?",
+		"answer": "Parce que les crocos dealent."
+	},
+	{
+		"id": 14,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Comment fait-on pour allumer un barbecue breton ?",
+		"answer": "On utilise des breizh."
+	},
+	{
+		"id": 15,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi dit-on que les poissons travaillent illégalement ?",
+		"answer": "Parce qu’ils n’ont pas de FISH de paie."
+	},
+	{
+		"id": 16,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel est le bar préféré des espagnols ?",
+		"answer": "Le Bar-celone"
+	},
+	{
+		"id": 17,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce que les mexicains mangent-ils aux toilettes ?",
+		"answer": "Parce qu’ils aiment manger épicé"
+	},
+	{
+		"id": 18,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Que faisaient les dinosaures quand ils n'arrivaient pas à se décider ?",
+		"answer": "Des tirageosaures"
+	},
+	{
+		"id": 19,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Qu'est-ce qu'un tennisman adore faire ?",
+		"answer": "Rendre des services"
+	},
+	{
+		"id": 20,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce que les vêtements sont toujours fatigués quand ils sortent de la machine ?",
+		"answer": "Parce qu’ils sont léssivés"
+	},
+	{
+		"id": 21,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Pourquoi est-ce que les livres ont toujours chaud ?",
+		"answer": "Parce qu’ils ont une couverture"
+	},
+	{
+		"id": 22,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Où est-ce que les super héros vont-ils faire leurs courses ?",
+		"answer": "Au supermarché"
+	},
+	{
+		"id": 23,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Que se passe-t-il quand 2 poissons s'énervent ?",
+		"answer": "Le thon monte"
+	},
+	{
+		"id": 24,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel fruit est assez fort pour couper des arbres ?",
+		"answer": "Le ci-tron"
+	},
+	{
+		"id": 25,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel est le jambon que tout le monde déteste ?",
+		"answer": "Le sale ami"
+	},
+	{
+		"id": 26,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Que fait un cendrier devant un ascenseur ?",
+		"answer": "Il veut des cendres"
+	},
+	{
+		"id": 27,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Que dit une imprimante dans l'eau ?",
+		"answer": "J’ai papier"
+	},
+	{
+		"id": 28,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel est l'aliment le plus hilarant ?",
+		"answer": "Le riz"
+	},
+	{
+        "id": 29,
+		"language": "fr-FR",
+		"type": "phrases",
+		"phrases": ["Un chameau dit à un dromadaire :", "« Comment ça va ? »", "« Bien, je bosse, et toi ? »", "« Je bosse, je bosse. »"]
+	},
+	{
+		"id": 30,
+        "language": "fr-FR",
+		"type": "phrases",
+		"phrases": [
+			"C’est une jolie petite antenne de T.V. qui est tombée amoureuse d’un paratonnerre..",
+			"Elle lui dit : Dis, tu y crois toi, au coup de foudre ?"
+		]
+	},
+	{
+		"id": 31,
+        "language": "fr-FR",
+		"type": "question/answer",
+		"question": "Quel est le sport préféré des insectes ?",
+		"answer": "Le criquet"
+	},
+    {
+        "id": 32,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Deux souris voient passer une chauve-souris",
+            "« Regarde, un ange ! »"   
+        ]
+    },
+    {
+        "id": 33,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Les girafes n'existent pas...",
+            "C'est un cou monté"
+        ]
+    },
+    {
+        "id": 34,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est ce que Hulk a un beau jardin ?",
+        "answer": "Parce qu'il a la main verte"
+    },
+    {
+        "id": 35,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "C'est deux fous qui marchent dans la rue",
+            "Le premier demande au second : « je peux me mettre au milieu ? »"
+        ]
+    },
+    {
+        "id": 36,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est-ce qu'un mort qui coupe du fromage ?",
+        "answer": "Un fend-tome"
+    },
+    {
+        "id": 37,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Comment est-ce que les abeilles communiquent entre elles ?",
+        "answer": "Par e-miel"
+    },
+    {
+        "id": 38,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est l'arbre préféré des chômeurs ?",
+        "answer": "Le bouleau"
+    },
+    {
+        "id": 39,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que dit-on d'une fleur qui a eu zéro à son contrôle ?",
+        "answer": "Qu’elle s’est plantée"
+    },
+    {
+        "id": 40,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Comment appelle-t-on un jeudi vraiment nul ?",
+        "answer": "Une trajeudi"
+    },
+    {
+        "id": 41,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait un employé de chez Sephora à sa pause clope ?",
+        "answer": "Il parfumer"
+    },
+    {
+        "id": 42,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est-ce qu'une frite enceinte ?",
+        "answer": "Une patate sautée"
+    },
+    {
+        "id": 43,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est ce qu'une lampe moche ?",
+        "answer": "Un LEDron"
+    },
+    {
+        "id": 44,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Deux canards discutent :",
+            "« Coin coin »",
+            "« C’est dingue, j’allais dire la même chose ! »"
+        ]
+    },
+    {
+        "id": 45,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Est-ce qu'une poule peut parler anglais ?",
+        "answer": "Yes chicken"
+    },
+    {
+        "id": 46,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qui vit dans les tavernes ?",
+        "answer": "Les hommes de bières"
+    },
+    {
+        "id": 47,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est la danse préférée des chats ?",
+        "answer": "Le cha cha cha"
+    },
+    {
+        "id": 48,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est ce qu'une carotte dans une flaque d'eau ?",
+        "answer": "Un bonhomme de neige en été"
+    },
+    {
+        "id": 49,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que les bières sont toujours stressées ?",
+        "answer": "Parce qu’elles ont la pression"
+    },
+    {
+        "id": 50,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle princesse a les lèvres gercées ?",
+        "answer": "Labello bois dormant"
+    },
+    {
+        "id": 51,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est ce que les poissons n'ont plus de maison ?",
+        "answer": "Parce qu’on les a des truites"
+    },
+    {
+        "id": 52,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est ce que le lapin est bleu ?",
+        "answer": "Parce qu’on lapin"
+    },
+    {
+        "id": 53,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est ce que Potter est triste ?",
+        "answer": "Parce que personne Harry à sa blague"
+    },
+    {
+        "id": 54,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Comment appelle-t-on un combat entre un petit pois et une carotte ?",
+        "answer": "Un bon duel"
+    },
+    {
+        "id": 55,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que les éoliennes n'ont pas de copain ?",
+        "answer": "Parce qu’elles se prennent toujours des vents"
+    },
+    {
+        "id": 56,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Où irait Voldemort s'il décidait de jouer de la trompette ?",
+        "answer": "À Jazzkaban"
+    },
+    {
+        "id": 57,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "D'où viennent les gens les plus dangereux ?",
+        "answer": "D’Angers"
+    },
+    {
+        "id": 58,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est ce qu'un cadeau qui s'en va ?",
+        "answer": "Une surprise party"
+    },
+    {
+        "id": 59,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est la fée que les enfants détestent ?",
+        "answer": "La fée C"
+    },
+    {
+        "id": 60,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est-ce qui est blanc puni dans un coin ?",
+        "answer": "Un vilain frigo"
+    },
+    {
+        "id": 61,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel poisson n'a pas de certificat de naissance ?",
+        "answer": "Le poisson pané"
+    },
+    {
+        "id": 62,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le médecin qui nous fait tous craquer ?",
+        "answer": "L’ostéo"
+    },
+    {
+        "id": 63,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le super héros qui a tout le temps peur ?",
+        "answer": "Le super-sticieux"
+    },
+    {
+        "id": 64,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Deux puces sortent du cinéma :",
+            "L’une dit à l’autre : « on rentre à pieds ou on prend un chien ? »"
+        ]
+    },
+    {
+        "id": 65,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Deux chiens se promènent",
+            "« T’as vu ? Un réverbère tout neuf ! Ça s’arrose ! »"
+        ]
+    },
+    {
+        "id": 66,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que les chercheurs ont-ils des trous de mémoire ?",
+        "answer": "Parce qu’ils se creusent la tête"
+    },
+    {
+        "id": 67,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Comment les musiciens choisissent-ils leur parquet ?",
+        "answer": "Ils choisissent un parquet Fa Si La Si Ré"
+    },
+    {
+        "id": 68,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le musicien préféré des maladies ?",
+        "answer": "Bach-terie"
+    },
+    {
+        "id": 69,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le réseau préféré des pêcheurs ?",
+        "answer": "Truiteur"
+    },
+    {
+        "id": 70,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "C'est l'histoire d'un poil",
+            "Avant il était bien, et maintenant il est pubien."
+        ]
+    },
+    {
+        "id": 71,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait un geek quand il a peur ?",
+        "answer": "Il URL"
+    },
+    {
+        "id": 72,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le carburant le plus détendu ?",
+        "answer": "Le kérozen"
+    },
+    {
+        "id": 73,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le fast food préféré de Flash ?",
+        "answer": "Quick"
+    },
+    {
+        "id": 74,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est-ce qui est vert et qui se déplace sous l'eau ?",
+        "answer": "Un chou marin"
+    },
+    {
+        "id": 75,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "C’est 2 grains de sable qui arrivent à la plage :",
+            "« Putain c’est blindé aujourd’hui… »"
+        ]
+    },
+    {
+        "id": 76,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le pays le plus cool du monde ?",
+        "answer": "Le Yééémen"
+    },
+    {
+        "id": 77,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait une vache quand elle ferme les yeux ?",
+        "answer": "Du lait concentré"
+    },
+    {
+        "id": 78,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le super héros qui donne le plus vite l'heure ?",
+        "answer": "Speed heure man"
+    },
+    {
+        "id": 79,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que les anges sont sourds ?",
+        "answer": "Parce que Jésus Christ"
+    },
+    {
+        "id": 80,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le fruit préféré des profs d'histoire ?",
+        "answer": "Les dates"
+    },
+    {
+        "id": 81,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est la déesse du wifi ?",
+        "answer": "La déesse L"
+    },
+    {
+        "id": 82,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Qu'est-ce qui est pire que le vent ?",
+        "answer": "Un vampire"
+    },
+    {
+        "id": 83,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est l'arme préféré des vegans ?",
+        "answer": "Le lance roquette"
+    },
+    {
+        "id": 84,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Un homme entre dans un restaurant :",
+            "« Bonjour, est-ce que vous servez des nouilles ? »",
+            "« Bien sûr, ici on sert tout le monde monsieur »"
+        ]
+    },
+    {
+        "id": 85,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est la femme du hamster ?",
+        "answer": "L’amsterdam"
+    },
+    {
+        "id": 86,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Dans quel pays ne bronze-t-on pas du nez ?",
+        "answer": "Au Népal"
+    },
+    {
+        "id": 87,
+        "language": "fr-FR",
+        "type": "phrases",
+        "phrases": [
+            "Deux femmes discutent :",
+            "« Tu fumes après l’amour ? »",
+            "« Je sais pas, j’ai jamais regardé. »"
+        ]
+    },
+    {
+        "id": 88,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait un théière devant un ascenseur ?",
+        "answer": "Elle veut mon thé"
+    },
+    {
+        "id": 89,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que Winnie l'Ourson veut absolument se marier ?",
+        "answer": "Pour partir en lune de miel"
+    },
+    {
+        "id": 90,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que dit une mère à son fils geek quand le dîner est servi ?",
+        "answer": "Alt Tab !"
+    },
+    {
+        "id": 91,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quelle est la meilleure heure pour écouter de la musique ?",
+        "answer": "Deezer !"
+    },
+    {
+        "id": 92,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait un geek quand il descend du métro ?",
+        "answer": "Il libère la RAM"
+    },
+    {
+        "id": 93,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est l'animal le plus connecté ?",
+        "answer": "Le porc USB"
+    },
+    {
+        "id": 94,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Où vont les biscottes pour danser ?",
+        "answer": "En biscothèque"
+    },
+    {
+        "id": 95,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le style musical préféré des médecins ?",
+        "answer": "Le blouse"
+    },
+    {
+        "id": 96,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Comment appelle-t-on un chat qui va dans l'espace ?",
+        "answer": "Un chatellite"
+    },
+    {
+        "id": 97,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que fait un jardinier quand il ment ?",
+        "answer": "Il raconte des salades"
+    },
+    {
+        "id": 98,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Où est-ce que l'homme invisible part en vacances ?",
+        "answer": "Chez ses transparents"
+    },
+    {
+        "id": 99,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que Napoléon n'a pas voulu acheter de maison ?",
+        "answer": "Parce qu’il avait déjà un Bonaparte"
+    },
+    {
+        "id": 100,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que dit Frodon devant sa maison ?",
+        "answer": "C’est là que j’hobbit"
+    },
+    {
+        "id": 101,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quels sont les fruits qu'on trouve dans toutes les maisons ?",
+        "answer": "Des coings et des mûres"
+    },
+    {
+        "id": 102,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi un chasseur emmène-t-il son fusil aux toilettes ?",
+        "answer": "Pour tirer la chasse"
+    },
+    {
+        "id": 103,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Quel est le crustacé le plus léger de la mer ?",
+        "answer": "La palourde"
+    },
+    {
+        "id": 104,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Pourquoi est-ce que la Saint Valentin est davantage fêtée dans le Nord ?",
+        "answer": "Parce que ça se fête en famille"
+    },
+    {
+        "id": 105,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que dit un informaticien quand il s'ennuie ?",
+        "answer": "Je me fichier"
+    },
+    {
+        "id": 106,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Avec quelle monnaie les marins payent-ils ?",
+        "answer": "Avec des sous marins"
+    },
+    {
+        "id": 107,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que dit un italien pour dire au revoir ?",
+        "answer": "Pasta la vista"
+    },
+    {
+        "id": 108,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Où va Messi quand il se blesse ?",
+        "answer": "À la pharmessi"
+    },
+    {
+        "id": 109,
+        "language": "fr-FR",
+        "type": "question/answer",
+        "question": "Que demande un footballeur à son coiffeur ?",
+        "answer": "La coupe du monde s’il vous plaît"
+    }
+]

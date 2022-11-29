@@ -1,0 +1,27 @@
+extends ./main.pug
+
+block MAIL_BODY
+	span(style={
+		"margin": "0 auto 2rem auto",
+		"text-align": "center", 
+		"display": "block",
+		"width": "min(80%, 30rem)" 
+	}) !{i18n("MAIL_ACCOUNT_CREATED")}
+	a(href="https://"+hostname+"/confirm_user?id="+mail.content.confirm style={
+		"padding": "0.7rem 1.4rem",
+		"background-color": "#1a81fa",
+		"border-radius": "0.5rem",
+		"color": "white",
+		"margin": "0 auto 2rem auto",
+		"width": "fit-content",
+		"display": "block"
+	}) !{i18n("CONFIRM")}
+	a(href="https://"+hostname+"/contact?type=not_my_account&mail="+mail._id style={
+		"padding": "0.7rem 1.4rem",
+		"background-color": "#1a81fa",
+		"border-radius": "0.5rem",
+		"color": "white",
+		"margin": "0 auto 2rem auto",
+		"width": "fit-content",
+		"display": "block"
+	}) !{i18n("CONTACT_US")}

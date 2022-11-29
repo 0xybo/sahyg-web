@@ -1,0 +1,19 @@
+mixin svg(id)
+	svg
+		use(href="#svg-"+id)
+
+mixin c_loader(visible) 
+	c-loader(class=(visible? " visible" : ""))
+		svg(viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" class="svg-loader" + (visible? " visible" : ""))
+			circle(cx="170" cy="170" r="160" stroke="currentcolor")
+			circle(cx="170" cy="170" r="135" stroke="var(--color-text)")
+			circle(cx="170" cy="170" r="110" stroke="currentcolor")
+			circle(cx="170" cy="170" r="85" stroke="var(--color-text)")
+		span.status !{i18n("LOADING")}
+
+append COMPONENTS
+	svg
+		symbol#svg-menu(fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg")
+			path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+
+	+c_loader()

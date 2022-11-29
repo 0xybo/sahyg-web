@@ -1,0 +1,174 @@
+mixin meta(title, description, img)
+	//- META twitter, facebook, ...
+	<!-- Primary Meta Tags -->
+	meta(name="title" content=((title? title + " | " : "") + Web.config.get("meta.title")))
+	meta(name="description" content=((description? description + " -- " : "") + Web.config.get("meta.description")))
+	<!-- Open Graph / Facebook -->
+	meta(property="og:type" content="website")
+	meta(property="og:url" content=Web.config.get("origin"))
+	meta(property="og:title" content=((title? title + " | " : "") + Web.config.get("meta.title")))
+	meta(property="og:description" content=((description? description + " -- " : "") + Web.config.get("meta.description")))
+	meta(property="og:image" content=Web.config.get("meta.img"))
+	<!-- Twitter -->
+	meta(property="twitter:card" content="summary_large_image")
+	meta(property="twitter:url" content=Web.config.get("origin"))
+	meta(property="twitter:title" content=((title? title + " | " : "") + Web.config.get("meta.title")))
+	meta(property="twitter:description" content=((description? description + " -- " : "") + Web.config.get("meta.description")))
+	meta(property="twitter:image" content=img || Web.config.get("meta.img"))
+	//- 
+	
+doctype html
+html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.userExists))
+	head
+		meta(charset="UTF-8")
+		//- link(rel="manifest" href="/manifest.webmanifest")
+
+		<!-- Global meta data -->
+		//- meta(http-equiv="X-UA-Compatible" content="IE=edge")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		meta(name="color-scheme" content="dark light")
+		meta(name="application-name" content=Web.config.get("text.name"))
+		meta(name="application-url" content=Web.config.get("origin"))
+		meta(name="keywords" content="SAHYG, Godier")
+		meta(name="author" content=Web.config.get("author.shortName"))
+		meta(name="revised" content="")
+
+		<!-- SAHYG Meta -->
+		//- meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
+		meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
+
+		<!-- Global Icon -->
+		link(rel="icon" href="/img/favicon.svg" type="image/png")
+
+		<!-- Global Stylesheet -->
+		link(rel="stylesheet" href="/css/main.css")
+		link(rel="stylesheet" href="/css/theme.css")
+		link(rel="stylesheet" href="/css/components.css")
+
+		<!-- Global Script -->
+		script(src="/js/lib/jquery.js")
+		//- script(src="/js/lib/jquery.mobile.js")
+		script(src="/js/main.js") 
+
+		script(src="/js/lib/popper.min.js")
+		script(src="/js/lib/tippy-bundle.umd.min.js")
+
+		<!-- Page-specific script, stylesheet, title, meta, ... -->
+		block HEAD
+
+		title !{Web.config.get("text.title")}
+	body
+		noscript
+			popups
+				popup(class="visible")
+					div(class="backdrop")
+					div(class="container")
+						div(class="header")
+							h3(class="title") ⚠️ Alerte
+						div(class="content") This site need javascript
+						div(class="buttons")
+							span Enable Javascript and reload
+		div#components
+			block COMPONENTS
+			include components/svg.pug
+		header 
+			menu-icon(status="closed")
+				icon(data-tooltip=i18n("MENU"))
+			header-title
+				a(href="/") 
+					img(src="/img/favicon.png" alt="icon")
+					span SAHYG
+			header-menu
+				div.container
+					div.commands
+						div.theme(data-tooltip=i18n("THEME"))
+						div.locale
+							img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"])  data-tooltip=i18n("LANGUAGE"))
+							dropdown
+								each props, locale in Web.config.get("locales")
+									img(id=locale class=(locale == lang? "current" : "") src=props.flag)
+						a.settings(href="/settings" data-tooltip=i18n("SETTINGS"))
+					div.menus 
+						each item in headerLinks
+							if item.type == "simple"
+								div 
+									a(href=item.link) !{item.text.startsWith("i18n:")? i18n(item.text.substring(5)) : item.text}
+							else if item.type == "dropdown"
+								div.expandable
+									a !{item.text.startsWith("i18n:")? i18n(item.text.substring(5)) : item.text}
+									div.menu
+										each sub in item.dropdown
+											a.item(href=sub.link)
+												div.icon
+													if sub.icon 	
+														if sub.icon.startsWith("icon:")
+															span !{sub.icon.substring(5)}
+														else 
+															img(src=sub.icon alt="icon")
+
+												div.body
+													div.title 
+														| !{sub.text.startsWith("i18n:")? i18n(sub.text.substring(5)) : sub.text}
+													div.description
+														| !{sub.description.startsWith("i18n:")? i18n(sub.description.substring(5)) : sub.description}
+			div.right-content
+				if (!WebRequest.userExists) 
+					div.login
+						a(href="/login") 
+							btn.btn-rounded.btn-link
+								| !{i18n("LOGIN")}
+				else 
+					div.account
+						div.avatar
+							if WebRequest.user.avatar
+								img(src=`/resources/avatar/${WebRequest.user.username}`, alt="")
+							else
+								span.lafs &#xf007;
+						span.username !{WebRequest.user.username}
+						div.menu(status="closed")
+							div.header
+								div.avatar
+									if WebRequest.user.avatar
+										img(data-viewer src=`/resources/avatar/${WebRequest.user.username}` alt="")
+									else 
+										span.lafs &#xf007;
+								div.informations
+									span.username !{WebRequest.user.username}
+									span.email !{WebRequest.user.email}
+							div.links
+								a(href="/profile" data-svg-icon="user") !{i18n("PROFILE")}
+								a(href="/settings" data-svg-icon="settings") !{i18n("SETTINGS")}
+								if accountMenu.length
+									div.divider
+									each link in accountMenu
+										a(href=link.link data-svg-icon=link.icon.replace("svg-name:", "")) !{conditionalI18n(link.text)}
+								div.divider
+								a.logout(href="#" data-svg-icon="logout") !{i18n("LOGOUT")}
+
+		scroll-container
+			container 
+				block BODY
+			footer
+				div.grid
+					div.column
+						span !{i18n("MADE_WITH")}
+							heart(data-tooltip="❤️" data-tooltip-delay="[1000, 0]") ❤️
+						span !{i18n("BY")} 
+							a.ul(href="/user/alban") !{Web.config.get("author.shortName")}
+						span !{i18n("VERSION")} : !{Web.config.package.version}
+						a.ul(href="/about") !{i18n("MORE_INFORMATIONS")} 
+					//- each column in Web.config.get("mainPage.footer.columns") //- TODO footer
+						div.column
+							span.title !{column.title.startsWith("i18n:")? i18n(column.title.substring(5)): column.title}
+							div.content
+								each content in column.content
+									if content.type == "link"
+										a.ul(href=content.content.href) !{content.content.text.startsWith("i18n:")? i18n(content.content.text.substring(5)): content.content.text}
+					div.column
+						span.lafs.return-top(data-tooltip=i18n("RETURN_TOP")) &#xf0aa;
+		popup-container
+			popups
+			toasts
+			tooltips
+		hidden-content
+

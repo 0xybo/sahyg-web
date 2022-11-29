@@ -1,0 +1,11 @@
+extends main.pug 
+
+append HEAD
+	+meta("Mail", "Mail display page")
+
+	link(rel="stylesheet" href="/css/mail.css")
+
+	title mail | !{Web.config.get("text.title")}
+
+block BODY 
+	| !{rendered}

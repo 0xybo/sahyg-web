@@ -86,7 +86,7 @@ container c-horizontal-tabs-container .body {
 [data-horizontal-tabs-id="bio"] .title {
 	font-size: 1.5rem;
 	font-weight: bold;
-	margin-bottom: 0.5rem;
+	margin-bottom: 1rem;
 	margin-top: 1rem;
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -97,6 +97,7 @@ container c-horizontal-tabs-container .body {
 	display: flex;
 	flex-direction: column;
 	row-gap: 1rem;
+	margin-bottom: 3rem;
 }
 [data-horizontal-tabs-id="bio"] .values:empty:before {
 	content: "/";

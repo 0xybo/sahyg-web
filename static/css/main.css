@@ -146,8 +146,8 @@ header-menu .container .menus .expandable > a {
 	color: var(--color-primary-text);
 	transition: var(--transition);
 }
-header-menu .container .menus .expandable:hover > a,
-header-menu .container .menus .expandable:hover > a:after {
+header-menu .container .menus .expandable:not(.expanded):hover > a,
+header-menu .container .menus .expandable:not(.expanded):hover > a:after {
 	color: var(--color-text-hover);
 }
 header-menu .container .menus {
@@ -533,6 +533,7 @@ header .account .menu .links {
 		-ms-flex-direction: column;
 		flex-direction: column;
 		align-items: flex-start;
+		margin-top: 1rem;
 	}
 	header-menu .container .menus .expandable > a:after {
 		content: "\f107";
@@ -545,9 +546,6 @@ header .account .menu .links {
 		margin-left: 10px;
 		display: inline-block;
 		transition: var(--transition);
-	}
-	header-menu .container .menus .expandable.expanded > a {
-		color: var(--accent-color);
 	}
 	header-menu .container .menus .expandable.expanded > a:after {
 		-webkit-transform: rotate(0deg);

@@ -47,11 +47,11 @@ append BODY
 								span.lafs &#xf007;
 								| !{i18n("LASTNAME")}
 							span.value !{target.lastname}
-					if target.shared.includes("language")
-						div.language
+					if target.shared.includes("locale")
+						div.locale
 							span.label
 								span.lafs &#xf1ab;
-								| !{i18n("LANGUAGE")}
+								| !{i18n("LOCALE")}
 							span.value !{target.locale}
 					if target.shared.includes("email")
 						div.email

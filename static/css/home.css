@@ -52,7 +52,7 @@ container .applications .application {
 	transition: background-color var(--transition);
 }
 container .applications .application:hover {
-	/* transform: scale(1.05); */
+	transform: scale(1.01);
 	background-color: var(--background-tertiary-color);
 }
 container .applications .application .name {

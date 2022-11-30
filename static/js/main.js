@@ -7,6 +7,7 @@ SAHYG = (function () {
 			translations: null,
 		},
 		Events: {}, // Centralize event binding for keep the update event bound to the selector
+		Classes: {},
 		Instances: {}, // Store class instance associate with specific page
 		currentEventID: 0, // Store the current event ID
 		Constants: Object.fromEntries(
@@ -444,12 +445,12 @@ SAHYG = (function () {
 					octets / 10 ** 12 > 0.5
 						? [10 ** 12, "To"]
 						: octets / 10 ** 9 > 0.5
-						? [10 ** 9, "Go"]
-						: octets / 10 ** 6 > 0.5
-						? [10 ** 6, "Mo"]
-						: octets / 10 ** 3 > 0.5
-						? [10 ** 3, "Ko"]
-						: [1, "o"];
+							? [10 ** 9, "Go"]
+							: octets / 10 ** 6 > 0.5
+								? [10 ** 6, "Mo"]
+								: octets / 10 ** 3 > 0.5
+									? [10 ** 3, "Ko"]
+									: [1, "o"];
 				return `${(octets / int).toFixed(decimals)} ${str}`;
 			},
 		},
@@ -522,7 +523,7 @@ SAHYG = (function () {
 	};
 	SAHYG.Components.popup.Popup = class {
 		events = {
-			closed: () => {},
+			closed: () => { },
 		};
 		buttons = {};
 		popup = $();
@@ -756,7 +757,7 @@ SAHYG = (function () {
 		}
 	};
 	SAHYG.Components.popup.Viewer = class {
-		events = { closed: async () => {} };
+		events = { closed: async () => { } };
 		constructor({ img, title, widthHeight, size, zoom = false, type, openOriginal }) {
 			this.options = {
 				img,
@@ -832,8 +833,8 @@ SAHYG = (function () {
 	SAHYG.Components.toast.Toast = class {
 		timeout;
 		events = {
-			closed: (event) => {},
-			clicked: (event) => {},
+			closed: (event) => { },
+			clicked: (event) => { },
 		};
 
 		constructor({ message = "", type = "info", timeout = 5000, ...options }) {

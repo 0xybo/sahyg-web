@@ -348,5 +348,5 @@ $(() => {
 			this.firstPlayer = value;
 		}
 	}
-	SAHYG.Instances.TicTacToe = new TicTacToe($("app"))
+	SAHYG.Instances.TicTacToe = new SAHYG.Classes.TicTacToe($("app"))
 })

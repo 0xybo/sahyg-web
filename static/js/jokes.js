@@ -72,7 +72,7 @@ $(async function () {
 				$(".loading").append($(`<span>${"⚠️ " + (await SAHYG.translate("NO_JOKES"))}</span>`));
 			} else {
 				$(".loading").remove();
-				SAHYG.Instances.Jokes = new Jokes(jokes);
+				SAHYG.Instances.Jokes = new SAHYG.Classes.Jokes(jokes);
 			}
 		})
 		.catch(async () => {

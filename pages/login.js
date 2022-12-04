@@ -13,7 +13,7 @@ class Login extends Page {
 		/** @type {import('express').Response}*/ res,
 		/** @type {import('express').NextFunction}*/ next
 	) {
-		if (req.WebRequest.userExists) return res.redirect(req.query?.redirect || "/")
+		if (req.WebRequest.userExists) return res.redirect(req.query?.redirect || "/");
 		res.WebResponse.render("login");
 	}
 	async login(
@@ -22,16 +22,16 @@ class Login extends Page {
 		/** @type {import('express').NextFunction}*/ next
 	) {
 		if (typeof req.body.login != "string" || typeof req.body.password != "string")
-			return res.WebResponse.setStatus("NO_LOGIN_INFORMATION").send();
-		if (req.WebRequest.userExists) return res.WebResponse.setStatus("ALREADY_LOGGED_IN").send();
+			return res.WebResponse.setStatus("NO_LOGIN_INFORMATION", 400).send();
+		if (req.WebRequest.userExists) return res.WebResponse.setStatus("ALREADY_LOGGED_IN", 400).send();
 
 		let user;
 		if (req.body.login.includes("@")) user = await this.Web.db.User({ email: req.body.login });
 		else user = await this.Web.db.User({ username: req.body.login });
 
-		if (!user) return res.WebResponse.setStatus("USER_NOT_FOUND").send();
-		if (!user.enabled) return res.WebResponse.setStatus("DISABLED_ACCOUNT").send();
-		if (!(await user.checkPassword(req.body.password))) return res.WebResponse.setStatus("INVALID_PASSWORD").send();
+		if (!user) return res.WebResponse.setStatus("USER_NOT_FOUND", 404).send();
+		if (!user.enabled) return res.WebResponse.setStatus("DISABLED_ACCOUNT", 301).send();
+		if (!(await user.checkPassword(req.body.password))) return res.WebResponse.setStatus("INVALID_PASSWORD", 400).send();
 
 		// TODO 2 authentication
 		req.session.user = user._id;
@@ -42,7 +42,7 @@ class Login extends Page {
 		});
 		user.save();
 
-		return res.WebResponse.setStatus("LOGGED_IN").setContent({ token: req.sessionID }).send();
+		return res.WebResponse.setStatus("LOGGED_IN", 200).setContent({ token: req.sessionID }).send();
 	}
 	async logout(
 		/** @type {import('express').Request}*/ req,

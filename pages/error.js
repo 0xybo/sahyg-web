@@ -11,7 +11,7 @@ class Error extends Page {
 		/** @type {import('express').Response}*/ res,
 		/** @type {import('express').NextFunction}*/ next
 	) {
-		this.logger.debug(`Request rejected : 404_NOT_FOUND (IP: ${req.ip})`);
+		req.WebRequest.log({ message: "NOT_FOUND", success: false });
 		res.WebResponse.renderError("NOT_FOUND");
 	}
 }

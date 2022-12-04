@@ -39,7 +39,7 @@ $(function () {
 				SAHYG.Components.toast.Toast.danger({ message: "An error occurred" }).show();
 				return;
 			}
-			// location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
+			location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
 		}
 	});
 	SAHYG.on("click", "container form btn", $("container form").trigger.bind($("container form"), "submit"));

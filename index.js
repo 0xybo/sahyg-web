@@ -1,5 +1,5 @@
 const dotenv = require("dotenv");
-const { readdir, unlink } = require("fs");
+const { readdir, unlink} = require("fs");
 const path = require("path");
 const { I18n } = require("i18n");
 dotenv.config();

@@ -10,7 +10,7 @@ class TicTacToe extends Page {
 	}
 
 	async get(req, res, next) {
-		return res.WebResponse.render("games/tic_tac_toe", req, res, next, {
+		return res.WebResponse.render("games/tic_tac_toe", {
 			history: req.WebRequest.userExists ? await this.Web.db.TicTacToe({ user: req.WebRequest.user._id }, true, true) : null,
 		});
 	}

@@ -10,7 +10,6 @@ const LoggerStore = require("./lib/logger");
 const API = require("./lib/api");
 const Server = require("./lib/server");
 const DB = require("./lib/db");
-const Errors = require("./lib/errors");
 
 class Web {
 	constructor() {

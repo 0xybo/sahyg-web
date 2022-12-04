@@ -501,7 +501,7 @@ SAHYG = (function () {
 					data: content,
 					"Content-Type": "application/x-www-form-urlencoded",
 					success: resolve,
-					reject: resolve.bind(null, { success: false, error: null, content: null }),
+					reject: resolve,
 				});
 			});
 		},
@@ -513,7 +513,7 @@ SAHYG = (function () {
 					data: { login, password },
 					"Content-Type": "application/x-www-form-urlencoded",
 					success: resolve,
-					reject: resolve.bind(null, { success: false, error: null, content: null }),
+					reject: resolve,
 				});
 			});
 		},

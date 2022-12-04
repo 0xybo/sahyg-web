@@ -282,7 +282,7 @@ $(async function () {
 			});
 		}
 	}
-	SAHYG.Instances.Flora = new Flora();
+	SAHYG.Instances.Flora = new SAHYG.Classes.Flora();
 });
 
 

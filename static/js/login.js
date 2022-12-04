@@ -36,10 +36,10 @@ $(function () {
 			if (!res.success) {
 				loader.done();
 				submit = false;
-				SAHYG.Components.toast.Toast.danger({ message: "An error occurred" }).show();
+				SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("INVALID_INFORMATION") }).show();
 				return;
 			}
-			location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
+			else location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
 		}
 	});
 	SAHYG.on("click", "container form btn", $("container form").trigger.bind($("container form"), "submit"));

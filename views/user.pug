@@ -5,6 +5,7 @@ append HEAD
 	+meta("User "+target.username, "Profil page for user "+target.username)
 
 	link(rel="stylesheet" href="/css/user.css")
+	link(rel="stylesheet", href="/css/components/github-markdown.min.css")
 	srcipt(src="/js/user.js") 
 
 	title !{target.username} | !{i18n("USER")} | !{Web.config.get("text.title")}
@@ -31,7 +32,7 @@ append BODY
 		div.body(data-horizontal-tabs-id="bio")
 			div.about
 				div.title !{i18n("ABOUT")}
-				div.values !{md.parse(target.about)}
+				div.values.markdown-body !{md.parse(target.about)}
 			div.informations
 				div.title !{i18n("INFORMATIONS")}
 				div.values

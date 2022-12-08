@@ -491,7 +491,7 @@ header .account .menu .links {
 	menu-icon icon:hover {
 		color: var(--accent-color);
 	}
-	menu-icon[status="open"] icon:after {
+	menu-icon[status="opened"] icon:after {
 		content: "\f00d";
 	}
 	header-menu {

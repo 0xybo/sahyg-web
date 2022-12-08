@@ -68,6 +68,17 @@ $(() => {
 		}
 
 		async init() {
+			if (!SAHYG.Utils.user.isConnected()) {
+				if (localStorage.tic_tac_toe_history) {
+					try {
+						let history = JSON.parse(localStorage.tic_tac_toe_history);
+						if (history instanceof Array) history.forEach(this.addHistoryEntry.bind(this));
+					} catch (e) {
+						SAHYG.Components.toast.Toast.warning({ message: await SAHYG.translate("HISTORY_IMPORTATION_ERROR") }).show();
+					}
+				}
+			}
+
 			this.grid = Array(9).fill();
 			this.gridElement.children().each((index, cell) => {
 				this.grid[~~(index / 3) * 3 + (index % 3)] = { element: $(cell), content: null, row: ~~(index / 3), column: index % 3 };
@@ -105,7 +116,6 @@ $(() => {
 			else this.currentPlayer = +(Math.random() > 0.5);
 			if (this.opponent == "computer" && this.currentPlayer == 1) this.compute();
 		}
-
 		clickCell(cell, event) {
 			if (!this.onPlay) return;
 			let elem = $(event.target);
@@ -116,17 +126,14 @@ $(() => {
 				this.editOpponentButton.addClass("disabled").off("click");
 			}
 		}
-
 		async reset() {
 			this.onPlay = false;
 			this.initGame();
 			SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("NEW_GAME_STARTED") }).show();
 		}
-
 		updateInformations() {
 			this.currentPlayerElement.text(this.currentPlayer == 0 ? this.player0 : this.player1);
 		}
-
 		async checkWin() {
 			let player;
 			if (this.checkGrid(0)) player = this.player0;
@@ -188,14 +195,41 @@ $(() => {
 					.show();
 			}
 			if ($("html").attr("connected") == "") this.saveParty();
+			else {
+				let history;
+				try {
+					history = JSON.parse(localStorage.tic_tac_toe_history);
+				} catch (e) {
+					history = [];
+				}
+				history.push({
+					moves: this.moves,
+					player0: this.player0,
+					player1: this.player1,
+					winner: this.winner,
+					opponent: this.opponent,
+				});
+				localStorage.tic_tac_toe_history = JSON.stringify(history.slice(-20));
+			}
+
+			await this.addHistoryEntry();
+
+			return true;
+		}
+		async addHistoryEntry({ moves, player0, player1, winner, opponent } = {}) {
+			if (!moves) moves = this.moves;
+			if (!player0) player0 = this.player0;
+			if (!player1) player1 = this.player1;
+			if (!winner) winner = this.winner;
+			if (!opponent) opponent = this.opponent;
 
 			let row = SAHYG.createElement(
 				"div",
 				{ class: "row" },
 				SAHYG.createElement("div", {
-					class: "cell win " + (this.winner == null ? "draw" : this.winner == this.player0 ? "victory" : "defeat"),
+					class: "cell win " + (winner == null ? "draw" : winner == player0 ? "victory" : "defeat"),
 				}),
-				SAHYG.createElement("div", { class: "cell opponent" }, this.opponent == "computer" ? await SAHYG.translate("COMPUTER") : this.player1),
+				SAHYG.createElement("div", { class: "cell opponent" }, opponent == "computer" ? await SAHYG.translate("COMPUTER") : player1),
 				SAHYG.createElement(
 					"div",
 					{ class: "cell moves" },
@@ -213,9 +247,9 @@ $(() => {
 							[2, 1],
 							[2, 2],
 						].map(([row, column]) => {
-							let index = this.moves.findIndex((cell) => cell.row == row && cell.column == column);
+							let index = moves.findIndex((cell) => cell.row == row && cell.column == column);
 							let dataIndex = index == -1 ? null : index;
-							let player = this.moves[index]?.player ? (this.player0 == this.moves[index]?.player ? 0 : 1) : null;
+							let player = moves[index]?.player ? (player0 == moves[index]?.player ? 0 : 1) : null;
 							return SAHYG.createElement("div", {
 								class: "cell",
 								"data-index": dataIndex,
@@ -228,19 +262,36 @@ $(() => {
 					SAHYG.createElement(
 						"div",
 						{ class: "commands" },
-						SAHYG.createElement("btn", { class: "start disabled" }, SAHYG.createElement("span", { class: "lafs" }, "&#xf04a;"), await SAHYG.translate("START")),
-						SAHYG.createElement("btn", { class: "previous disabled" }, SAHYG.createElement("span", { class: "lafs" }, "&#xf0d9;"), await SAHYG.translate("PREVIOUS")),
-						SAHYG.createElement("btn", { class: "next" }, await SAHYG.translate("NEXT"), SAHYG.createElement("span", { class: "lafs" }, "&#xf0da;")),
-						SAHYG.createElement("btn", { class: "end" }, await SAHYG.translate("END"), SAHYG.createElement("span", { class: "lafs" }, "&#xf04e;"))
+						SAHYG.createElement(
+							"btn",
+							{ class: "start disabled" },
+							SAHYG.createElement("span", { class: "lafs" }, "&#xf04a;"),
+							await SAHYG.translate("START")
+						),
+						SAHYG.createElement(
+							"btn",
+							{ class: "previous disabled" },
+							SAHYG.createElement("span", { class: "lafs" }, "&#xf0d9;"),
+							await SAHYG.translate("PREVIOUS")
+						),
+						SAHYG.createElement(
+							"btn",
+							{ class: "next" },
+							await SAHYG.translate("NEXT"),
+							SAHYG.createElement("span", { class: "lafs" }, "&#xf0da;")
+						),
+						SAHYG.createElement(
+							"btn",
+							{ class: "end" },
+							await SAHYG.translate("END"),
+							SAHYG.createElement("span", { class: "lafs" }, "&#xf04e;")
+						)
 					)
 				)
 			);
 			if (this.historyBodyElement.children().length == 0) this.historyBodyElement.append(row);
 			else row.insertBefore(this.historyBodyElement.children().first());
-
-			return true;
 		}
-
 		checkGrid(player) {
 			return (
 				this.grid.filter((cell) => cell.row == 0).every((cell) => cell.content == player) ||
@@ -253,7 +304,6 @@ $(() => {
 				this.grid.filter((cell) => cell.row + cell.column == 2).every((cell) => cell.content == player)
 			);
 		}
-
 		async editOpponent() {
 			SAHYG.Components.popup.Popup.input(await SAHYG.translate("EDIT_OPPONENT"), [
 				{
@@ -267,7 +317,6 @@ $(() => {
 				if (data) this.player1 = data.name?.substring(0, 15);
 			});
 		}
-
 		async saveParty() {
 			$.post("/tic_tac_toe", {
 				moves: this.moves,
@@ -275,7 +324,6 @@ $(() => {
 				win: this.winner == null ? "null" : this.winner == this.player0,
 			});
 		}
-
 		compute() {
 			let wonMoves, opponentWonMoves;
 			if ((wonMoves = this.wonMoves(this.currentPlayer)).length) {
@@ -287,7 +335,6 @@ $(() => {
 				this.place(possibleMoves[Math.abs(Math.round(Math.random() * possibleMoves.length - 1))]);
 			}
 		}
-
 		async place(cell) {
 			if (!cell) return;
 			cell.element.attr("data-player", this.currentPlayer);
@@ -301,7 +348,6 @@ $(() => {
 			this.updateInformations();
 			if (!(await this.checkWin()) && this.opponent == "computer" && this.currentPlayer == 1) this.compute();
 		}
-
 		wonMoves(player) {
 			let moves = [];
 			this.grid
@@ -329,7 +375,8 @@ $(() => {
 						if (!moves.find((e) => e[0] == c.row && e[1] == c.column)) moves.push([c.row, c.column]);
 					}
 					if (
-						this.grid.filter((_cell) => _cell.row + _cell.column == 2 && cell.row + cell.column == 2 && _cell.content == player).length == 2 &&
+						this.grid.filter((_cell) => _cell.row + _cell.column == 2 && cell.row + cell.column == 2 && _cell.content == player).length ==
+							2 &&
 						this.grid.filter((_cell) => _cell.row + _cell.column == 2 && cell.row + cell.column == 2 && _cell.content == null).length == 1
 					) {
 						let c = this.grid.find((_cell) => _cell.row + _cell.column == 2 && cell.row + cell.column == 2 && _cell.content == null);
@@ -338,15 +385,13 @@ $(() => {
 				});
 			return moves;
 		}
-
 		changeOpponent(event, value) {
 			this.opponent = value;
 			this.reset();
 		}
-
 		changeFirstPlayer(event, value) {
 			this.firstPlayer = value;
 		}
-	}
-	SAHYG.Instances.TicTacToe = new SAHYG.Classes.TicTacToe($("app"))
-})
+	};
+	SAHYG.Instances.TicTacToe = new SAHYG.Classes.TicTacToe($("app"));
+});

@@ -65,6 +65,11 @@ c-horizontal-tabs {
 [data-horizontal-tabs-id="identification"] .possibility:hover {
 	background-color: var(--background-secondary-color);
 }
+[data-horizontal-tabs-id="identification"] .sketch {
+	max-width: 40rem;
+	margin: 2rem auto;
+	width: 100%;
+}
 [data-horizontal-tabs-id="identification"] .specimen {
 	display: flex;
 	gap: 1rem;

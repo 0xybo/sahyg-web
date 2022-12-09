@@ -50,7 +50,7 @@ container {
 	display: block;
 	width: 100%;
 	min-height: calc(100vh - var(--header-height));
-	padding: 1rem 1rem 2rem 1rem;
+	padding: 1rem 1rem 2rem calc(var(--scrollbar-width) + 1rem);
 	margin: auto;
 }
 scroll-container {
@@ -67,8 +67,7 @@ scroll-container {
 /* ANCHOR Scrollbar */
 
 ::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
+	width: var(--scrollbar-width);
 }
 ::-webkit-scrollbar {
 	height: 8px;
@@ -647,7 +646,7 @@ header .account .menu .links {
 }
 
 footer {
-	padding: 32px;
+	padding: 32px 32px 32px calc(var(--scrollbar-width) + 32px);
 	/* height: calc(12rem - 64px); */
 	width: 100%;
 	-webkit-user-select: none;
@@ -816,8 +815,9 @@ tooltips .user-tooltip {
 	padding: 0.5rem;
 }
 tooltips .user-tooltip .avatar {
-	height: 3rem;
-	width: 3rem;
+	height: 4rem;
+	width: 4rem;
+	border-radius: 50%;
 }
 tooltips .user-tooltip .avatar:after {
 	content: "\f007";
@@ -837,11 +837,12 @@ tooltips .user-tooltip .avatar:after {
 	justify-content: center;
 }
 tooltips .user-tooltip .username {
-	font-size: 1rem;
+	font-size: 1.5rem;
 }
 tooltips .user-tooltip .icons {
 	display: flex;
 	align-items: center;
+	font-size: 1rem;
 }
 
 popup-container {

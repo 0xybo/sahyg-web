@@ -18,7 +18,7 @@ class Hangman extends Page {
 	}
 	async newWord(req, res) {
 		let locale = req.getLocale();
-		this.load(locale);
+		locale = this.load(locale);
 
 		let difficulty = req.params.difficulty || "random";
 		let difficultyProperties =
@@ -42,10 +42,12 @@ class Hangman extends Page {
 	load(locale) {
 		try {
 			if (this.words[locale]) return this.words[locale];
-			return (this.words[locale] = require(`../../resources/hangman/words.${locale}.json`));
+			this.words[locale] = require(`../../resources/hangman/words.${locale}.json`);
+			return locale;
 		} catch {
 			if (this.words[this.default_locale]) return this.words[this.default_locale];
-			return (this.words[this.default_locale] = require(`../../resources/hangman/words.${this.default_locale}.json`));
+			this.words[this.default_locale] = require(`../../resources/hangman/words.${this.default_locale}.json`);
+			return this.default_locale;
 		}
 	}
 	async letter(req, res) {

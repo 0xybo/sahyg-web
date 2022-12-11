@@ -16,7 +16,7 @@ mixin meta(title, description, img)
 	meta(property="twitter:description" content=((description? description + " -- " : "") + Web.config.get("meta.description")))
 	meta(property="twitter:image" content=img || Web.config.get("meta.img"))
 	//- 
-	
+
 doctype html
 html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.userExists))
 	head
@@ -35,7 +35,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 
 		<!-- SAHYG Meta -->
 		//- meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
-		meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
+		meta(name="sahyg-api-domain", content=Web.config.get("domain"))
 
 		<!-- Global Icon -->
 		link(rel="icon" href="/img/favicon.svg" type="image/png")

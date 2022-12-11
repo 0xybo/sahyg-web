@@ -21,5 +21,5 @@ block BODY
 						if app.img.startsWith("icon:")
 							span.lafs !{app.img.substring(5)}
 						else 
-							img(src=app.img alt=app.name+"icon")
+							img(src=app.img alt=app.name+" icon")
 					div.name !{conditionalI18n(app.text)}

@@ -152,60 +152,38 @@ html,
 :after,
 :before {
 	/* ANCHOR background */
-	--background-color:
-	var(--color-white);
-	--background-secondary-color:
-	var(--gray-150);
-	--background-tertiary-color:
-	var(--gray-100);
-	--accent-color:
-	var(--blue-600);
-	--divider-color:
-	var(--gray-200);
-	--disabled-button-color:
-	var(--gray-350);
+	--background-color: var(--color-white);
+	--background-secondary-color: var(--gray-150);
+	--background-tertiary-color: var(--gray-100);
+	--accent-color: var(--blue-600);
+	--divider-color: var(--gray-200);
+	--disabled-button-color: var(--gray-350);
+	--revert-color: var(--base-dark);
 
 	/* ANCHOR text */
-	--link-color:
-	var(--blue-600);
-	--color-text:
-	var(--base-black);
-	--color-primary-text:
-	var(--gray-600);
-	--color-secondary-text:
-	var(--gray-500);
-	--color-tertiary-text:
-	var(--gray-400);
-	--color-disabled-text:
-	var(--gray-350);
-	--color-base-header:
-	var(--gray-900);
-	--color-disabled-header:
-	var(--gray-350);
-	--color-text-code:
-	var(--gray-900);
-	--color-background-code:
-	var(--gray-100);
-	--color-text-hover:
-	var(--accent-color);
+	--link-color: var(--blue-600);
+	--color-text: var(--base-black);
+	--color-primary-text: var(--gray-600);
+	--color-secondary-text: var(--gray-500);
+	--color-tertiary-text: var(--gray-400);
+	--color-disabled-text: var(--gray-350);
+	--color-base-header: var(--gray-900);
+	--color-disabled-header: var(--gray-350);
+	--color-text-code: var(--gray-900);
+	--color-background-code: var(--gray-100);
+	--color-text-hover: var(--accent-color);
 
 	/* ANCHOR selection */
-	--text-selection-background:
-	var(--blue-200);
-	--text-selection-text:
-	var(--gray-700);
+	--text-selection-background: var(--blue-200);
+	--text-selection-text: var(--gray-700);
 
 	/* ANCHOR tooltip */
-	--tooltip-background-color:
-	var(--gray-650);
-	--tooltip-text-color:
-	var(--gray-100);
+	--tooltip-background-color: var(--gray-650);
+	--tooltip-text-color: var(--gray-100);
 
 	/* ANCHOR account popup */
-	--account-popup-header-color:
-	var(--color-text);
-	--account-popup-header-background:
-	var(--blue-200);
+	--account-popup-header-color: var(--color-text);
+	--account-popup-header-background: var(--blue-200);
 }
 
 html[theme~="dark"],
@@ -289,6 +267,7 @@ html[theme~="dark"],
 	--accent-color: var(--blue-500);
 	--divider-color: var(--gray-500);
 	--disabled-button-color: var(--gray-600);
+	--revert-color: var(--base-white);
 
 	/* ANCHOR text */
 	--link-color: var(--blue-300);

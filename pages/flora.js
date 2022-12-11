@@ -40,7 +40,7 @@ class Flora extends Page {
 		}
 		res.WebResponse.render("flora", {
 			languageAvailable: true,
-			identification: this.identification[locale]["1"],
+			identification: this.identification[locale][1],
 			glossary: this.glossary[locale],
 			glossaryMenu: Object.entries(this.glossary[locale]).map(([k, v], i) => {
 				return { id: String(i), title: k };

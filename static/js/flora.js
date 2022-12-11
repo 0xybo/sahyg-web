@@ -71,7 +71,7 @@ $(async function () {
 				data.possibilities.forEach((possiblity) => {
 					element.append($(`<div class="possibility" target="${possiblity.target}">${possiblity.text}</div>`));
 				});
-				if (data.sketch) element.append(SAHYG.createElement("img", { class: "sketch", src: "/img/flora/sketch/" + id + ".jpg" }))
+				if (data.sketch) element.append(SAHYG.createElement("img", { class: "sketch", src: "/img/flora/sketch/" + data.sketch + ".jpg" }))
 			} else if (data.type == "specimen") {
 				let cards = $(`<div class="cards"></div>`);
 				cards.append(

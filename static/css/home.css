@@ -76,6 +76,7 @@ container .applications .application .img {
 container .applications .application .img img {
 	width: 100%;
 	height: unset;
+	color: white;
 }
 container .applications .application .img .lafs {
 	font-size: 7rem;

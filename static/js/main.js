@@ -445,12 +445,12 @@ SAHYG = (function () {
 					octets / 10 ** 12 > 0.5
 						? [10 ** 12, "To"]
 						: octets / 10 ** 9 > 0.5
-							? [10 ** 9, "Go"]
-							: octets / 10 ** 6 > 0.5
-								? [10 ** 6, "Mo"]
-								: octets / 10 ** 3 > 0.5
-									? [10 ** 3, "Ko"]
-									: [1, "o"];
+						? [10 ** 9, "Go"]
+						: octets / 10 ** 6 > 0.5
+						? [10 ** 6, "Mo"]
+						: octets / 10 ** 3 > 0.5
+						? [10 ** 3, "Ko"]
+						: [1, "o"];
 				return `${(octets / int).toFixed(decimals)} ${str}`;
 			},
 		},
@@ -520,10 +520,18 @@ SAHYG = (function () {
 		async status() {
 			let { content } = await this._request("GET", "/status");
 		},
+		async post(url, content, full) {
+			let res = await this._request("POST", url, content);
+			return full ? res : res.content;
+		},
+		async get(url, content, full) {
+			let res = await this._request("GET", url, content);
+			return full ? res : res.content;
+		},
 	};
 	SAHYG.Components.popup.Popup = class {
 		events = {
-			closed: () => { },
+			closed: () => {},
 		};
 		buttons = {};
 		popup = $();
@@ -757,7 +765,7 @@ SAHYG = (function () {
 		}
 	};
 	SAHYG.Components.popup.Viewer = class {
-		events = { closed: async () => { } };
+		events = { closed: async () => {} };
 		constructor({ img, title, widthHeight, size, zoom = false, type, openOriginal }) {
 			this.options = {
 				img,
@@ -833,8 +841,8 @@ SAHYG = (function () {
 	SAHYG.Components.toast.Toast = class {
 		timeout;
 		events = {
-			closed: (event) => { },
-			clicked: (event) => { },
+			closed: (event) => {},
+			clicked: (event) => {},
 		};
 
 		constructor({ message = "", type = "info", timeout = 5000, ...options }) {

@@ -1,0 +1,106 @@
+flex-container {
+	display: flex;
+	gap: 2rem;
+	flex-wrap: wrap;
+	align-items: center;
+	flex-direction: row;
+	justify-content: center;
+	max-width: 40rem;
+	margin: 0 auto;
+}
+
+#hangman {
+	user-select: none;
+	max-height: 20rem;
+	aspect-ratio: 102.8282 / 169.4348;
+	transform: scaleX(-1);
+	flex-grow: 1;
+}
+#hangman {
+	fill: none;
+}
+#hangman svg {
+	max-height: 100%;
+	width: 100%;
+}
+#hangman[stage*="1"] .pole,
+#hangman[stage*="2"] .mount,
+#hangman[stage*="3"] .strut,
+#hangman[stage*="4"]:not([stage*="10"]) .head1,
+#hangman[stage*="5"] .trunk,
+#hangman[stage*="6"] .left-arm,
+#hangman[stage*="7"] .right-arm,
+#hangman[stage*="8"] .left-leg,
+#hangman[stage*="9"] .right-leg,
+#hangman[stage*="10"] .node,
+#hangman[stage*="10"] .rope,
+#hangman[stage*="10"] .head2 {
+	fill: var(--color-text);
+}
+
+#word {
+	flex-grow: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	gap: 2rem;
+}
+#word .hidden-word {
+	user-select: none;
+	display: flex;
+	flex-direction: row;
+	column-gap: 0.5rem;
+}
+#word .hidden-letter {
+	width: 2rem;
+	border-bottom: var(--background-secondary-color) 4px solid;
+	height: calc(2rem + 0.3rem);
+	padding-bottom: 0.3rem;
+	font-weight: bold;
+	font-size: 1.3rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+#word .hidden-letter:hover {
+	background-color: var(--background-tertiary-color);
+}
+#word .commands {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+#keyboard {
+	user-select: none;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	max-width: 40rem;
+	flex-grow: 1;
+}
+#keyboard .letter {
+	height: 2.5rem;
+	width: 2.5rem;
+	background-color: var(--background-tertiary-color);
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 0.3rem;
+	font-weight: bold;
+	font-size: 1.3rem;
+}
+#keyboard .letter:not(.disabled):hover {
+	background-color: var(--background-secondary-color);
+}
+#keyboard .letter.disabled {
+	opacity: 0.2;
+	cursor: not-allowed;
+}

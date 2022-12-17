@@ -29,7 +29,7 @@ container form .ta {
 	margin-top: 0.25rem;
 }
 
-container form btn {
+container form > btn {
 	margin-top: 1rem;
 	padding: 1.2rem;
 	height: 2rem;
@@ -57,4 +57,18 @@ container .links span:last-child {
 		max-width: 100%;
 		width: 100%;
 	}
+}
+
+
+
+btn.show {
+	font-family: "Line Awesome Free Solid";
+	font-size: 1.5rem;
+	padding: unset;
+}
+btn.show[status="off"]:before {
+	content: "\f06e";
+}
+btn.show[status="on"]:before {
+	content: "\f070";
 }

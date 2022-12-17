@@ -24,7 +24,7 @@ class Hangman extends Page {
 		let difficultyProperties =
 			this.Web.config.get(["pages", "hangman", "difficulties", difficulty]) ||
 			((difficulty = "random"), this.Web.config.get("pages.hangman.dificulties.random"));
-		let words = this.words[locale].filter(
+		let words = (this.words[locale] || this.words[this.default_locale]).filter(
 			(word) => word.length > difficultyProperties.wordLength[0] && word.length < difficultyProperties.wordLength[1]
 		);
 		let word = words[Math.round(Math.random() * (words.length - 1))];

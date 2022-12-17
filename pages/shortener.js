@@ -7,7 +7,7 @@ class Shortener extends Page {
 
 		this.setGet(["/shortener"], this.get.bind(this));
 		this.setPost(["/shortener"], this.post.bind(this));
-		this.setGet(["/sc/:link"], this.redirect.bind(this));
+		this.setGet(["/sc/:link", "/s/:link"], this.redirect.bind(this));
 	}
 
 	async get(req, res, next) {

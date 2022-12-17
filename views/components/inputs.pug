@@ -22,7 +22,7 @@ mixin c_select(options, id, current, disabled = false)
 
 mixin c_text(name, type, placeholder, value, disabled=false)
 	div(class="ta ta-"+(type || "text"))
-		input(type="text" placeholder=placeholder value=value id=name) 
+		input(type="text" placeholder=placeholder value=value id=name)
 
 mixin c_boolean(name, disabled=false)
 	c-boolean(value=disabled.toString())

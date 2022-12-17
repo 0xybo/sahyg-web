@@ -192,7 +192,7 @@ function updateCount() {
 
 // ANCHOR update line
 function updateLine(sc, { name, target }) {
-	sc.line.find(".cell.url a").attr("href", `https://${location.hostname}/sc/${name}`).text(`https://${location.hostname}/sc/${name}`);
+	sc.line.find(".cell.url a").attr("href", `https://${location.hostname}/s/${name}`).text(`https://${location.hostname}/s/${name}`);
 	sc.line.find(".cell.target a").attr("href", target).text(target);
 	sc.name = name;
 	sc.target = target;

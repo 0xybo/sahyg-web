@@ -39,7 +39,7 @@ class Settings extends Page {
 			}
 			let avatar = req.files?.avatar?.[0];
 			if (avatar) {
-				if (avatar.size > 1000000) return res.WebResponse.error("AVATAR_SIZE_EXCEEDED");
+				if (avatar.size > this.Web.config.get("maxAvatarSize")) return res.WebResponse.error("AVATAR_SIZE_EXCEEDED");
 				fs.copyFileSync(avatar.path, `${this.Web.config.get("paths.avatar")}/${req.WebRequest.user._id}`);
 				fs.unlinkSync(avatar.path);
 				req.WebRequest.user.avatar = true;

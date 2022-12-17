@@ -52,11 +52,12 @@ SAHYG = (function () {
 	 */
 	SAHYG.createElement = function (type, attr = {}, ...children) {
 		let e = type.startsWith("<") ? $(type) : $(`<${type}></${type}>`);
-		if (attr.events) {
-			Object.entries(attr.events).forEach(([name, callback]) => {
-				SAHYG.on(name, e, callback);
+		if (attr.events || attr.on) {
+			Object.entries(attr.events || attr.on).forEach(([name, callback]) => {
+				SAHYG.once(name, e, callback);
 			});
 			delete attr.events;
+			delete attr.on;
 		}
 		Object.entries(attr).forEach(([k, v]) => {
 			e.attr(k, v);
@@ -86,7 +87,9 @@ SAHYG = (function () {
 			element,
 			callback: function (id) {
 				SAHYG.off(id);
-				callback.call(this, ...arguments);
+				let args = Array.from(arguments);
+				args.shift();
+				callback.call(this, ...args);
 			}.bind(null, SAHYG.currentEventID + 1),
 			id: ++SAHYG.currentEventID,
 		});
@@ -337,9 +340,22 @@ SAHYG = (function () {
 				return true;
 			},
 			async consentPopup() {
-				new SAHYG.Components.popup.Popup()
+				let popup = new SAHYG.Components.popup.Popup();
+				popup
 					.title("🍪 " + (await SAHYG.translate("COOKIES")))
-					.content(await SAHYG.translate("COOKIES_CONSENT"))
+					.content(
+						SAHYG.createElement(
+							"div",
+							{},
+							await SAHYG.translate("COOKIES_CONSENT"),
+							SAHYG.createElement("br"),
+							SAHYG.createElement(
+								"a",
+								{ href: "/about#cookies", on: { click: popup.close } },
+								await SAHYG.translate("MORE_INFORMATIONS")
+							)
+						)
+					)
 					.button("ok", {
 						text: await SAHYG.translate("OK"),
 						callback: (btn, event) => {
@@ -548,10 +564,10 @@ SAHYG = (function () {
 			this.popup = SAHYG.createElement(
 				"popup",
 				{},
-				SAHYG.createElement("div", {
+				(this.backdrop = SAHYG.createElement("div", {
 					class: "backdrop",
 					events: { click: this.close.bind(this) },
-				}),
+				})),
 				SAHYG.createElement(
 					"div",
 					{ class: "container" },
@@ -577,16 +593,15 @@ SAHYG = (function () {
 						style: `background-color": "var(--accent-color)";color: "var(--background-color)`,
 					};
 					this.events.ok = this.buttons.ok.callback;
-					this.popup.find(".buttons").append(
-						SAHYG.createElement("input", {
-							class: "btn",
-							type: "button",
-							events: { click: this.events.ok },
-							"data-btn-id": "ok",
-							value: this.buttons.ok.text,
-							style: this.buttons.ok.style,
-						})
-					);
+					this.buttons.ok.$ = SAHYG.createElement("input", {
+						class: "btn",
+						type: "button",
+						events: { click: this.events.ok },
+						"data-btn-id": "ok",
+						value: this.buttons.ok.text,
+						style: this.buttons.ok.style,
+					});
+					this.popup.find(".buttons").append(this.buttons.ok.$);
 				}
 
 				this.parent.append(this.popup);
@@ -597,11 +612,20 @@ SAHYG = (function () {
 			});
 		}
 
-		async close(event) {
+		close = async function (event) {
 			this.popup.remove();
+
+			// Remove popup events listener
+			SAHYG.off("click", this.backdrop);
+			for (let i in this.buttons) {
+				SAHYG.off("click", this.buttons[i].$);
+			}
+
+			// Trigger internal popup event `closed`
 			this.events.closed(event || null);
+
 			return true;
-		}
+		}.bind(this);
 
 		_promise(name) {
 			return new Promise((resolve, reject) => (this.events[name] = (...args) => this.close().then(resolve.bind(null, ...args))));
@@ -615,17 +639,16 @@ SAHYG = (function () {
 			};
 
 			this.events[eventName] = callback.bind(null, this);
+			this.buttons[eventName].$ = SAHYG.createElement("input", {
+				class: "btn",
+				type: "button",
+				events: { click: this.events[eventName] },
+				"data-btn-id": eventName,
+				value: this.buttons[eventName].text,
+				style: this.buttons[eventName].style,
+			});
 
-			this.popup.find(".buttons").append(
-				SAHYG.createElement("input", {
-					class: "btn",
-					type: "button",
-					events: { click: this.events[eventName] },
-					"data-btn-id": eventName,
-					value: this.buttons[eventName].text,
-					style: this.buttons[eventName].style,
-				})
-			);
+			this.popup.find(".buttons").append(this.buttons[eventName].$);
 			return this;
 		}
 
@@ -949,6 +972,8 @@ SAHYG = (function () {
 		}),
 			(bind(SAHYG.Utils), bind(SAHYG.Components));
 
+		if (SAHYG.Utils.url.getAnchor()) SAHYG.Utils.scroll.to(SAHYG.Utils.url.getAnchor());
+
 		if (!$("html").attr("theme")) $("html").attr("theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 		SAHYG.Utils.cookie.set("locale", $("html").attr("lang"));
 		SAHYG.Utils.cookie.set("theme", $("html").attr("theme"));
@@ -957,7 +982,7 @@ SAHYG = (function () {
 		//close header  expandable menu
 		$("header-menu .expandable .menu").slideUp(0);
 		// ANCHOR Cookies consent
-		if (!localStorage.getItem("cookie_consent")) SAHYG.Utils.cookie.consentPopup();
+		if (!localStorage.getItem("cookie_consent") && location.pathname != "/about") SAHYG.Utils.cookie.consentPopup();
 
 		SAHYG.eventsList =
 			"input blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error";

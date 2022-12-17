@@ -30,7 +30,7 @@ $(function () {
 		let login = $("#login").val()?.toLowerCase();
 		let password = $("#password").val();
 		if (login && password) {
-			let loader = SAHYG.Components.loader.replaceElementContents($("container form btn"), false);
+			let loader = SAHYG.Components.loader.replaceElementContents($("container form > btn"), false);
 			submit = true;
 			let res = await SAHYG.Api.login(login, password);
 			if (!res.success) {
@@ -38,9 +38,18 @@ $(function () {
 				submit = false;
 				SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("INVALID_INFORMATION") }).show();
 				return;
-			}
-			else location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
+			} else location.href = SAHYG.Utils.url.getParams()?.redirect || "/";
 		}
 	});
-	SAHYG.on("click", "container form btn", $("container form").trigger.bind($("container form"), "submit"));
+	SAHYG.on("click", "container form > btn", $("container form").trigger.bind($("container form"), "submit"));
+	SAHYG.on("click", "container form .show", function ({ target }) {
+		target = $(target);
+		if(target.attr("status") == "on") {
+			$("container form #password").attr("type", "password")
+			target.attr("status", "off")
+		} else {
+			$("container form #password").attr("type", "text")
+			target.attr("status", "on")
+		}
+	});
 });

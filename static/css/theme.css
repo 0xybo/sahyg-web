@@ -189,76 +189,6 @@ html,
 html[theme~="dark"],
 [theme~="dark"] :after,
 [theme~="dark"] :before {
-	/* --black-hsl: 210, 50%, 1%;
-	--heading-text-color: var(--gray-0);
-	--body-text-color: var(--gray-75);
-	--disabled-text-color: var(--gray-300);
-	--surface-color-1: var(--gray-800);
-	--surface-color-2: var(--gray-700);
-	--surface-color-3: var(--gray-600);
-	--divider-color-1: var(--gray-500);
-	--divider-color-2: var(--gray-400);
-	--visited-link-color: var(--blue-500);
-	--header-background-color: var(--surface-color-3);
-	--tab-selected-color: var(--blue-300);
-	--text-selection-background-color: var(--gray-500);
-	--admonitionblock-tip-border-color: var(--green-300);
-	--admonitionblock-caution-border-color: var(--yellow-300);
-	--admonitionblock-warning-border-color: var(--red-500);
-	--admonitionblock-important-border-color: var(--blue-400);
-	--code-operator-color: var(--purple-300);
-	--code-property-color: var(--blue-300);
-	--code-css-property-color: var(--red-200);
-	--code-tag-color: var(--blue-300);
-	--code-string-color: var(--green-300);
-	--code-number-color: var(--green-200);
-	--code-boolean-color: var(--yellow-300);
-	--code-keyword-color: var(--purple-200);
-	--code-function-color: var(--blue-300);
-	--code-selector-color: var(--blue-200);
-	--code-annotation-color: var(--yellow-400);
-	--code-constant-color: var(--blue-100);
-	--code-symbol-color: var(--red-100);
-	--code-deleted-color: var(--red-400);
-	--code-attr-name-color: var(--red-300);
-	--code-attr-value-color: var(--purple-200);
-	--code-char-color: var(--green-200);
-	--code-builtin-color: var(--yellow-100);
-	--code-inserted-color: var(--green-300);
-	--code-entity-color: var(--blue-300);
-	--code-variable-color: var(--blue-300);
-	--code-class-name-color: var(--blue-200);
-	--code-parameter-color: var(--yellow-200);
-	--code-property-access-color: var(--red-300);
-	--code-tagged-line-background-color: var(--gray-600);
-	--code-tagged-line-border-color: var(--blue-600);
-	--version-badge-upcoming-background-color: var(--green-800);
-	--version-badge-upcoming-color: var(--green-100);
-	--version-badge-new-background-color: var(--blue-800);
-	--version-badge-new-color: var(--blue-100);
-	--version-badge-deprecated-background-color: var(--red-900);
-	--version-badge-deprecated-color: var(--red-100);
-
-	--header-background-color: var(--gray-900);
-	--heading-text-color: var(--base-white);
-	--secondary-text-color: var(--gray-350);
-	--surface-color-1: var(--gray-900);
-	--surface-color-2: var(--gray-800);
-	--surface-color-3: var(--gray-700);
-	--divider-color-2: var(--gray-500);
-	--link-color: var(--blue-400);
-	--visited-link-color: var(--blue-300);
-	--admonitionblock-tip-border-color: var(--green-500);
-	--admonitionblock-caution-border-color: var(--yellow-500);
-	--admonitionblock-warning-border-color: var(--red-500);
-	--admonitionblock-important-border-color: var(--violet-500);
-	--tab-selected-color: var(--blue-400);
-	--imageblock-prominent-background-color: var(--indigo-500);
-	--imageblock-prominent-color: var(--base-white);
-	--code-keyword-color: var(--indigo-300);
-	--code-boolean-color: var(--yellow-600);
-	--code-annotation-color: var(--orange-400);
-	--code-tagged-line-background-color: var(--gray-700); */
 
 	/* ANCHOR background */
 	--background-color: var(--gray-900);
@@ -276,10 +206,6 @@ html[theme~="dark"],
 	--color-secondary-text: var(--gray-100);
 	--color-tertiary-text: var(--gray-200);
 	--color-disabled-text: var(--gray-300);
-	/* --color-base-header: var(--gray-900);
-	--color-disabled-header: var(--gray-350);
-	--color-text-code: var(--gray-900);
-	--color-background-code: var(--gray-100); */
 	--color-text-hover: var(--blue-200);
 
 	/* ANCHOR selection */

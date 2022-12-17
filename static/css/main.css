@@ -88,7 +88,8 @@ scroll-container {
 }
 /* ANCHOR Links */
 
-[target="_blank"]:before {
+[target="_blank"]:before,
+[href*="mailto:"]:before {
 	content: "\f35d";
 	font-family: "Line Awesome Free Solid";
 	margin-right: 0.2rem;

@@ -35,7 +35,7 @@ block BODY
 							div.cell.enable 
 								btn(data-tooltip=i18n("ENABLE/DISABLE") class=shortcut.enabled? "enabled": "disabled") !{shortcut.enabled? "&#xf14a;" : "&#xf0c8;"}
 							div.cell.url 
-								a(href=(Web.config.get("domain") + "/sc/" + shortcut.name) target="_blank") !{Web.config.get("domain") + "/sc/" + shortcut.name}
+								a(href=(Web.config.get("domain") + "/s/" + shortcut.name) target="_blank") !{Web.config.get("domain") + "/s/" + shortcut.name}
 							div.cell.target
 								a(href=shortcut.target target="_blank") !{shortcut.target}
 							div.cell.clicked !{shortcut.clicked}

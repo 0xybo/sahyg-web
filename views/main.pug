@@ -155,7 +155,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 							heart(data-tooltip="❤️" data-tooltip-delay="[1000, 0]") ❤️
 						span !{i18n("BY")} 
 							a.ul(href="/user/alban") !{Web.config.get("author.shortName")}
-						span !{i18n("VERSION")} : !{Web.config.package.version}
+						span !{i18n("VERSION")} : !{Web.config.get("releaseNotes.0.version")}
 						a.ul(href="/about") !{i18n("MORE_INFORMATIONS")} 
 					//- each column in Web.config.get("mainPage.footer.columns") //- TODO footer
 						div.column

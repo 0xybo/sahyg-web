@@ -289,7 +289,6 @@ $(function () {
 			else this.renderGrid();
 		}
 		updateWidth() {
-			let cellWidth = this.GameOfLife.cellWidth();
 			this.width = this.height = 0;
 
 			if (!this.GameOfLife.cells) this.GameOfLife.updateMatrix();

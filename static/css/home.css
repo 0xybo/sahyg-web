@@ -44,8 +44,8 @@ container .applications {
 	max-width: 50rem;
 }
 container .applications .application {
-	width: 8rem;
-	height: 12rem;
+	width: 7rem;
+	height: 10rem;
 	background-color: var(--background-secondary-color);
 	border-radius: 1rem;
 	color: var(--color-text);
@@ -61,6 +61,8 @@ container .applications .application .name {
 	width: 100%;
 	text-align: center;
 	padding: 0 0.5rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 container .applications .application .img {
 	position: absolute;
@@ -72,12 +74,16 @@ container .applications .application .img {
 	padding: 0.5rem 0.5rem;
 	display: flex;
 	align-items: center;
+	justify-content: center;
 }
 container .applications .application .img img {
-	width: 100%;
+	width: 80%;
 	height: unset;
 	color: white;
 }
+container .applications .application .img img:not(.colored) {
+	filter: var(--filter-color-text);
+}
 container .applications .application .img .lafs {
-	font-size: 7rem;
+	font-size: 6rem;
 }

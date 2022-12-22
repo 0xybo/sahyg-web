@@ -1,0 +1,38 @@
+extends ../main.pug
+//- include ../components/inputs.pug
+include ../components/navigation.pug
+
+append HEAD
+	+meta(i18n("GAME_OF_LIFE"), i18n("GAME_OF_LIFE_DESCRIPTION"))
+
+	script(src="/js/games/game_of_life.js")
+	link(rel="stylesheet" href="/css/games/game_of_life.css") 
+
+	title !{i18n("GAME_OF_LIFE")} | !{Web.config.get("text.title")}
+
+block BODY
+	+c_pageTitle("i18n:GAME_OF_LIFE")
+	game-container 
+		.canvas-container 
+			.canvas
+		.commands 
+			.buttons
+				btn.btn-full.resume !{i18n("RESUME")}
+				btn.btn-full.pause.disabled !{i18n("PAUSE")}
+				btn.btn-full.next !{i18n("NEXT")}
+				btn.btn-full.clear !{i18n("CLEAR")}
+				btn.btn-full.share !{i18n("SHARE")}
+			.sliders
+				.column-count.slider
+					.label !{i18n("GAME_OF_LIFE_COLUMN_COUNT")}
+					.input
+						input(type="range" min=5 max=100 value=10)
+						.value 10
+				.speed.slider
+					.label !{i18n("GAME_OF_LIFE_SPEED")}
+					.input
+						input(type="range" min=1 max=100 value=50)
+						.value 50%
+		.debug 
+			.position
+

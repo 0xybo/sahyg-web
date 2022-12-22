@@ -91,34 +91,61 @@ html,
 	--red-800: #97000b;
 	--red-900: #680008;
 
-	--color-water-darker: var(--blue-700);
-	--color-water: var(--blue-500);
-	--color-water-lighter: var(--blue-100);
-	--color-lava-darker: var(--red-700);
-	--color-lava: var(--red-500);
-	--color-lava-lighter: var(--red-100);
-	--color-grass-darker: var(--green-700);
-	--color-grass: var(--green-500);
-	--color-grass-lighter: var(--green-100);
-	--color-gold-darker: var(--yellow-700);
-	--color-gold: var(--yellow-500);
-	--color-gold-lighter: var(--yellow-100);
-	--color-charcoal-darker: var(--gray-800);
-	--color-charcoal: var(--gray-700);
-	--color-charcoal-lighter: var(--gray-650);
-	--color-graphite-darker: var(--gray-550);
-	--color-graphite: var(--gray-500);
-	--color-graphite-lighter: var(--gray-450);
-	--color-stainless-darker: var(--gray-400);
-	--color-stainless: var(--gray-350);
-	--color-stainless-lighter: var(--gray-300);
-	--color-alloy-darker: var(--gray-250);
-	--color-alloy: var(--gray-150);
-	--color-alloy-lighter: var(--gray-100);
+	--color-water-darker:
+	var(--blue-700);
+	--color-water:
+	var(--blue-500);
+	--color-water-lighter:
+	var(--blue-100);
+	--color-lava-darker:
+	var(--red-700);
+	--color-lava:
+	var(--red-500);
+	--color-lava-lighter:
+	var(--red-100);
+	--color-grass-darker:
+	var(--green-700);
+	--color-grass:
+	var(--green-500);
+	--color-grass-lighter:
+	var(--green-100);
+	--color-gold-darker:
+	var(--yellow-700);
+	--color-gold:
+	var(--yellow-500);
+	--color-gold-lighter:
+	var(--yellow-100);
+	--color-charcoal-darker:
+	var(--gray-800);
+	--color-charcoal:
+	var(--gray-700);
+	--color-charcoal-lighter:
+	var(--gray-650);
+	--color-graphite-darker:
+	var(--gray-550);
+	--color-graphite:
+	var(--gray-500);
+	--color-graphite-lighter:
+	var(--gray-450);
+	--color-stainless-darker:
+	var(--gray-400);
+	--color-stainless:
+	var(--gray-350);
+	--color-stainless-lighter:
+	var(--gray-300);
+	--color-alloy-darker:
+	var(--gray-250);
+	--color-alloy:
+	var(--gray-150);
+	--color-alloy-lighter:
+	var(--gray-100);
 	--color-white: #fff;
-	--color-border: var(--gray-150);
-	--color-border-dark: var(--gray-650);
-	--color-overlay: var(--color-charcoal-darker);
+	--color-border:
+	var(--gray-150);
+	--color-border-dark:
+	var(--gray-650);
+	--color-overlay:
+	var(--color-charcoal-darker);
 	--color-facebook: #3e5b96;
 	--color-twitter: #2aa3ef;
 	--color-github: #444;
@@ -126,21 +153,28 @@ html,
 
 	/* ANCHOR transition */
 	--transition-duration: 200ms;
-	--transition: var(--transition-duration) ease-in-out;
+	--transition:
+	var(--transition-duration) ease-in-out;
 
 	/* ANCHOR font */
-	--font-main: "Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial",
+	--font-main:
+	"Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial",
 		"Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	--font-header: "Poppins", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial",
+	--font-header:
+	"Poppins", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial",
 		"Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-	--font-code: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace";
+	--font-code:
+	"ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace";
 
 	/* ANCHOR header */
 	--header-height: 4rem;
 
-	--success-color: hsl(145, 72%, 30%);
-	--danger-color: hsl(3, 85%, 48%);
-	--warning-color: rgb(255, 174, 0);
+	--success-color:
+	hsl(145, 72%, 30%);
+	--danger-color:
+	hsl(3, 85%, 48%);
+	--warning-color:
+	rgb(255, 174, 0);
 
 	--popup-z-index: 100;
 	--toast-z-index: 200;
@@ -163,6 +197,7 @@ html,
 	/* ANCHOR text */
 	--link-color: var(--blue-600);
 	--color-text: var(--base-black);
+	--filter-color-text: invert(0%) sepia(100%) saturate(7500%) hue-rotate(194deg) brightness(87%) contrast(113%);
 	--color-primary-text: var(--gray-600);
 	--color-secondary-text: var(--gray-500);
 	--color-tertiary-text: var(--gray-400);
@@ -202,6 +237,7 @@ html[theme~="dark"],
 	/* ANCHOR text */
 	--link-color: var(--blue-300);
 	--color-text: var(--base-white);
+	--filter-color-text: invert(100%) sepia(0%) saturate(0%) hue-rotate(351deg) brightness(117%) contrast(100%);
 	--color-primary-text: var(--gray-150);
 	--color-secondary-text: var(--gray-100);
 	--color-tertiary-text: var(--gray-200);

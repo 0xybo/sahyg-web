@@ -46,6 +46,7 @@ c-horizontal-tabs-container {
 	justify-content: center;
 }
 c-horizontal-tabs-container > [data-horizontal-tabs-id] {
+	-ms-flex: 1;
 	flex: 1;
 }
 [data-horizontal-tabs-id]:not(.active) {

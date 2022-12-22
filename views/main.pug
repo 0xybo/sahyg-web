@@ -86,7 +86,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 							img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"])  data-tooltip=i18n("LANGUAGE"))
 							dropdown
 								each props, locale in Web.config.get("locales")
-									img(id=locale class=(locale == lang? "current" : "") src=props.flag)
+									img(id=locale class=(locale == WebResponse.locale? "current" : "") src=props.flag)
 						a.settings(href="/settings" data-tooltip=i18n("SETTINGS"))
 					div.menus 
 						each item in headerLinks
@@ -100,11 +100,11 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 										each sub in item.dropdown
 											a.item(href=sub.link)
 												div.icon
-													if sub.icon 	
+													if sub.icon
 														if sub.icon.startsWith("icon:")
 															span !{sub.icon.substring(5)}
 														else 
-															img(src=sub.icon alt="icon")
+															img(src=sub.icon alt="icon" class=sub.coloredIcon? "colored" : "")
 
 												div.body
 													div.title 

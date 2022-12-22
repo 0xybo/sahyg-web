@@ -297,7 +297,7 @@ $(function () {
 			this.width = this.height = this.GameOfLife.columnCount * this.GameOfLife.cellWidth();
 		}
 		renderGrid() {
-			let cellWidth = this.GameOfLife.cellWidth();
+			let cellWidth = this.GameOfLife.cellWidth() || 1;
 			this.context.strokeStyle = "#576b85";
 			this.context.lineWidth = this.lineWidth;
 

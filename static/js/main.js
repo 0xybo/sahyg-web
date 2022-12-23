@@ -317,6 +317,26 @@ SAHYG = (function () {
 						.replace(/\s/gm, "%20")}`
 				);
 			},
+			removeParam(name, url = location.href) {
+				return decodeURI(url).replace(
+					/(?:\?|#).+/m,
+					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries(this.getParams())
+						.filter(([paramName]) => name != paramName)
+						.map((e) => e.join("="))
+						.join("&")
+						.replace(/\s/gm, "%20")}`
+				);
+			},
+			removeParams(names, url = location.href) {
+				return decodeURI(url).replace(
+					/(?:\?|#).+/m,
+					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries(this.getParams())
+						.filter(([paramName]) => !names.includes(paramName))
+						.map((e) => e.join("="))
+						.join("&")
+						.replace(/\s/gm, "%20")}`
+				);
+			},
 			setLocationParams(params) {
 				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({ ...this.getParams(), ...params })
 					.map((e) => e.join("="))
@@ -326,6 +346,22 @@ SAHYG = (function () {
 			},
 			setLocationParam(name, value) {
 				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({ ...this.getParams(), [name]: value })
+					.map((e) => e.join("="))
+					.join("&")
+					.replace(/\s/gm, "%20")}`;
+				return history.pushState({}, "", url);
+			},
+			removeLocationParam(name) {
+				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries(this.getParams())
+					.filter(([paramName]) => name != paramName)
+					.map((e) => e.join("="))
+					.join("&")
+					.replace(/\s/gm, "%20")}`;
+				return history.pushState({}, "", url);
+			},
+			removeLocationParams(names) {
+				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries(this.getParams())
+					.filter(([paramName]) => !names.includes(paramName))
 					.map((e) => e.join("="))
 					.join("&")
 					.replace(/\s/gm, "%20")}`;

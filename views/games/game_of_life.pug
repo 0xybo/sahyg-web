@@ -17,11 +17,24 @@ block BODY
 			.canvas
 		.commands 
 			.buttons
-				btn.btn-full.resume !{i18n("RESUME")}
-				btn.btn-full.pause.disabled !{i18n("PAUSE")}
-				btn.btn-full.next !{i18n("NEXT")}
-				btn.btn-full.clear !{i18n("CLEAR")}
-				btn.btn-full.share !{i18n("SHARE")}
+				btn.btn-full.resume 
+					span.lafs &#xf04b;
+					| !{i18n("RESUME")}
+				btn.btn-full.pause.disabled 
+					span.lafs &#xf04c;
+					| !{i18n("PAUSE")}
+				btn.btn-full.next 
+					span.lafs &#xf054;
+					| !{i18n("NEXT")}
+				btn.btn-full.clear 
+					span.lafs &#xf51a;
+					| !{i18n("CLEAR")}
+				btn.btn-full.share
+					span.lafs &#xf0c1;
+					| !{i18n("SHARE")}
+				div.generation 
+					| !{i18n("GENERATION")} :
+					span.value 0
 			.sliders
 				.column-count.slider
 					.label !{i18n("GAME_OF_LIFE_COLUMN_COUNT")}

@@ -11,12 +11,14 @@ $(function () {
 		$pause = $("container .pause");
 		$next = $("container .next");
 		$share = $("container .share");
+		$generation = $("container .generation .value");
 		speed = 50;
 		minInterval = 10;
 		maxInterval = 1000;
 		columnCount = 10;
+		generation = 0;
 		cells = null;
-		debug = false;
+		debug = SAHYG.Constants.environment == "development";
 		interval = null;
 		constructor() {
 			let params = SAHYG.Utils.url.getParams();
@@ -24,7 +26,11 @@ $(function () {
 			if (params.board) {
 				let decodedBoard = this.decodeBoard(params.board);
 				this.cells = decodedBoard;
-				this.columnCount = decodedBoard.length;
+				if (!this.cells) {
+					this.updateMatrix();
+					SAHYG.Utils.url.removeLocationParam("board");
+				}
+				this.columnCount = this.cells.length;
 				this.$columnCountValue.text(this.columnCount);
 				this.$columnCount.attr("value", this.columnCount);
 			} else {
@@ -121,7 +127,7 @@ $(function () {
 		decodeBoard(string) {
 			let columns = string.split("|");
 			if (!columns) throw new Error("Invalid encoded board");
-			return columns.reduce((previousColumns, currentColumn) => {
+			let cells = columns.reduce((previousColumns, currentColumn) => {
 				let [quantityColumn, column] = currentColumn.split("$");
 				return previousColumns.concat(
 					Array.from({ length: Number(quantityColumn) }, () =>
@@ -132,6 +138,11 @@ $(function () {
 					)
 				);
 			}, []);
+			if (!cells.every((column) => column.length === cells.length && column.every((cell) => cell >= 0 && cell <= 1))) {
+				(async () => SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("GAME_OF_LIFE_INVALID_ENCODED_BOARD") }).show())();
+				return this.cells;
+			}
+			return cells;
 		}
 		clear() {
 			this.cells = null;
@@ -181,6 +192,9 @@ $(function () {
 						.fill(null)
 						.map(() => 0)
 				);
+			
+			this.generation = 0;
+			this.updateGeneration()
 		}
 		updatePosition(e) {
 			if (!this.debug) return;
@@ -202,8 +216,7 @@ $(function () {
 			else cell = 0;
 			this.cells[cellX][cellY] = cell;
 
-			this.canvas.updateCell(cellX, cellY, cell);
-
+			this.updateBoard();
 			this.save();
 		}
 		getCell(x, y) {
@@ -230,6 +243,8 @@ $(function () {
 			}
 			this.cells = stepCells;
 			this.updateBoard();
+			this.generation++;
+			this.updateGeneration()
 		}
 		alivedNeighbours(x, y) {
 			let neighbours = 0;
@@ -265,6 +280,9 @@ $(function () {
 			}
 			this.canvas.renderGrid();
 		}
+		updateGeneration() {
+			this.$generation.text(this.generation)
+		}
 		save() {
 			localStorage.setItem("game_of_life_board", JSON.stringify(this.cells));
 		}
@@ -276,7 +294,7 @@ $(function () {
 		constructor() {
 			super();
 			this.context = context(this.getContext("2d"));
-			this.lineWidth = 2;
+			this.lineWidth = 0.75;
 		}
 		init(GameOfLife) {
 			this.GameOfLife = GameOfLife;
@@ -297,7 +315,7 @@ $(function () {
 		}
 		renderGrid() {
 			let cellWidth = this.GameOfLife.cellWidth() || 1;
-			this.context.strokeStyle = "#576b85";
+			this.context.strokeStyle = SAHYG.Utils.settings.theme.current() == "light" ? "#e0e9f4" : "#576b85";
 			this.context.lineWidth = this.lineWidth;
 
 			for (let x = 0; x <= this.width; x += cellWidth) {
@@ -309,13 +327,6 @@ $(function () {
 		}
 		clearAll() {
 			this.context.clearRect(0, 0, this.width, this.height);
-		}
-		updateCell(x, y, age) {
-			let cellWidth = this.GameOfLife.cellWidth();
-			this.context.clearRect(x * cellWidth, y * cellWidth, cellWidth, cellWidth);
-
-			this.drawCell(x, y, age);
-			this.renderGrid();
 		}
 		drawCell(x, y, age) {
 			let cellWidth = this.GameOfLife.cellWidth();

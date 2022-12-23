@@ -36,6 +36,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 		<!-- SAHYG Meta -->
 		//- meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
 		meta(name="sahyg-api-domain", content=Web.config.get("domain"))
+		meta(name="sahyg-environment", content=Web.config.get("env.NODE_ENV"))
 
 		<!-- Global Icon -->
 		link(rel="icon" href="/img/favicon.svg" type="image/png")

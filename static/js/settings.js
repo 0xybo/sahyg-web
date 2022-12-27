@@ -18,7 +18,7 @@ $(() => {
 				email: $("#email").val(),
 				about: $("#about").val(),
 				custom: Object.fromEntries(
-					$(".custom c-input-list")
+					$(".custom c-input-array")
 						.data("rows")
 						?.map((row) => [row.values.customLinkName, row.values.customLinkValue]) || []
 				),
@@ -44,7 +44,7 @@ $(() => {
 			SAHYG.on("input", "#firstname", this.verifyText.bind(this, "firstname"));
 			SAHYG.on("input", "#lastname", this.verifyText.bind(this, "lastname"));
 			SAHYG.on("input", "#about", this.verifyText.bind(this, "about"));
-			SAHYG.on("input", ".custom c-input-list", this.customInput.bind(this));
+			SAHYG.on("input", ".custom c-input-array", this.customInput.bind(this));
 			SAHYG.on("input", "#theme", this.selectInput.bind(this));
 			SAHYG.on("input", "#locale", this.selectInput.bind(this));
 			SAHYG.on("click", "#avatar-add", this.addAvatar.bind(this));
@@ -281,6 +281,6 @@ $(() => {
 			else this.alertBeforeExiting = false;
 		}
 	};
-	
+
 	SAHYG.Instances.settings = new SAHYG.Classes.Settings();
 });

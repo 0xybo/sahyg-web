@@ -44,10 +44,12 @@ c-horizontal-tabs-container {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	width: 100%;
 }
 c-horizontal-tabs-container > [data-horizontal-tabs-id] {
 	-ms-flex: 1;
 	flex: 1;
+	width: 100%;
 }
 [data-horizontal-tabs-id]:not(.active) {
 	display: none;

@@ -2,7 +2,8 @@ extends main.pug
 include components/navigation.pug
 
 append HEAD
-	+meta("Shortenee", "URL shortener.")
+	+meta("Shortener", "URL shortener")
+	meta(name="robots" content="index, follow, noarchive")
 
 	script(src="/js/shortener.js") 
 	link(rel="stylesheet" href="/css/shortener.css")

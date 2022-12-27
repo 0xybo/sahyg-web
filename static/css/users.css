@@ -1,11 +1,16 @@
+c-horizontal-tabs {
+	max-width: 80rem;
+	width: 100%;
+	margin: 0 auto;
+}
 .table {
-    overflow-x: scroll;
+	overflow-x: scroll;
 }
-c-input-list {
-    min-width: 50rem;
-    max-width: 70rem;
-    margin: 0 auto;
+c-input-array {
+	min-width: 50rem;
+	max-width: 100%;
+	margin: 0 auto;
 }
-c-input-list-field btn.edit {
-    font-size: 1.5rem;
+c-input-array-field btn.edit {
+	font-size: 1.5rem;
 }

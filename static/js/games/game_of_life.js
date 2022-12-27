@@ -5,7 +5,7 @@ $(function () {
 		$debug = $("container .debug");
 		$columnCountValue = $("container .column-count .value");
 		$columnCount = $("container .column-count input");
-		$speedValue = $("container .speed .value");
+		$speedValue = $("container .speed .value span");
 		$speed = $("container .speed input");
 		$resume = $("container .resume");
 		$pause = $("container .pause");
@@ -85,8 +85,7 @@ $(function () {
 				this.$speed,
 				function (event) {
 					this.speed = Number($(event.target).val());
-					this.$speedValue.text(this.speed + "%");
-					if (this.interval) this.updateInterval();
+					this.$speedValue.text(this.speed);
 				}.bind(this)
 			);
 			SAHYG.on("change", this.$speed, () => SAHYG.Utils.url.setLocationParam("speed", this.speed));
@@ -149,6 +148,7 @@ $(function () {
 			this.canvas.updateWidth();
 			this.canvas.renderGrid();
 			localStorage.removeItem("game_of_life_board");
+			SAHYG.Utils.url.removeLocationParam("board")
 		}
 		pause() {
 			this.clearInterval();
@@ -163,26 +163,28 @@ $(function () {
 			this.setInterval();
 		}
 		setInterval() {
-			if (this.interval) return;
-			this.interval = setInterval(this.step.bind(this), (this.maxInterval - this.minInterval) * ((100 - this.speed + 1) / 100));
+			if (this.running) return;
+
+			this.running = true;
+			(function loop() {
+				setTimeout(() => {
+					this.step();
+					if (this.running) loop.call(this);
+				}, (this.maxInterval - this.minInterval) * ((100 - this.speed + 1) / 100));
+			}.bind(this)());
+
 			this.$resume.addClass("disabled");
 			this.$pause.removeClass("disabled");
 			this.$next.addClass("disabled");
 			this.$share.addClass("disabled");
 		}
 		clearInterval() {
-			if (!this.interval) return;
-			clearInterval(this.interval);
-			this.interval = null;
+			if (!this.running) return;
+			this.running = false;
 			this.$pause.addClass("disabled");
 			this.$resume.removeClass("disabled");
 			this.$next.removeClass("disabled");
 			this.$share.removeClass("disabled");
-		}
-		updateInterval() {
-			if (!this.interval) return;
-			this.clearInterval();
-			this.setInterval();
 		}
 		updateMatrix() {
 			this.cells = Array(this.columnCount)
@@ -192,9 +194,9 @@ $(function () {
 						.fill(null)
 						.map(() => 0)
 				);
-			
+
 			this.generation = 0;
-			this.updateGeneration()
+			this.updateGeneration();
 		}
 		updatePosition(e) {
 			if (!this.debug) return;
@@ -244,7 +246,7 @@ $(function () {
 			this.cells = stepCells;
 			this.updateBoard();
 			this.generation++;
-			this.updateGeneration()
+			this.updateGeneration();
 		}
 		alivedNeighbours(x, y) {
 			let neighbours = 0;
@@ -281,7 +283,7 @@ $(function () {
 			this.canvas.renderGrid();
 		}
 		updateGeneration() {
-			this.$generation.text(this.generation)
+			this.$generation.text(this.generation);
 		}
 		save() {
 			localStorage.setItem("game_of_life_board", JSON.stringify(this.cells));

@@ -4,6 +4,7 @@ include ../components/navigation.pug
 
 append HEAD
 	+meta(i18n("GAME_OF_LIFE"), i18n("GAME_OF_LIFE_DESCRIPTION"))
+	meta(name="robots" content="index, follow, noarchive")
 
 	script(src="/js/games/game_of_life.js")
 	link(rel="stylesheet" href="/css/games/game_of_life.css") 
@@ -45,7 +46,9 @@ block BODY
 					.label !{i18n("GAME_OF_LIFE_SPEED")}
 					.input
 						input(type="range" min=1 max=100 value=50)
-						.value 50%
+						.value 
+							span 50
+							| %
 		.debug 
 			.position
 

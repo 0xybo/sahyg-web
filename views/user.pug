@@ -3,9 +3,10 @@ include components/navigation.pug
 
 append HEAD
 	+meta("User "+target.username, "Profil page for user "+target.username)
+	meta(name="robots" content="noindex, nofollow, noarchive")
 
 	link(rel="stylesheet" href="/css/user.css")
-	link(rel="stylesheet", href="/css/components/github-markdown.min.css")
+	link(rel="stylesheet" href="/css/components/github-markdown.min.css")
 	srcipt(src="/js/user.js") 
 
 	title !{target.username} | !{i18n("USER")} | !{Web.config.get("text.title")}

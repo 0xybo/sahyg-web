@@ -15,7 +15,7 @@ mixin meta(title, description, img)
 	meta(property="twitter:title" content=((title? title + " | " : "") + Web.config.get("meta.title")))
 	meta(property="twitter:description" content=((description? description + " -- " : "") + Web.config.get("meta.description")))
 	meta(property="twitter:image" content=img || Web.config.get("meta.img"))
-	//- 
+
 
 doctype html
 html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.userExists))

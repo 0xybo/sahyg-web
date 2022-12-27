@@ -4,6 +4,7 @@ include components/inputs.pug
 
 append HEAD 
 	+meta("Users", "Page to manage website users.")
+	meta(name="robots" content="noindex, nofollow, noarchive")
 
 	link(rel="stylesheet" href="/css/users.css")
 	script(src="/js/users.js") 
@@ -20,5 +21,13 @@ block BODY
 					{type: "string", name: "firstname", displayName: i18n("FIRSTNAME"), disabled: true},
 					{type: "string", name: "lastname", displayName: i18n("LASTNAME"), disabled: true},
 					{type: "string", name: "email", displayName: i18n("EMAIL"), disabled: true},
+					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
+				], [])
+		div(data-horizontal-tabs-id="groups")
+			+c_pageTitle(i18n("GROUPS"))
+			div.table
+				+c_list([
+					{type: "string", name: "name", displayName: i18n("NAME"), disabled: true},
+					{type: "string", name: "parent", displayName: i18n("PARENT"), disabled: true},
 					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
 				], [])

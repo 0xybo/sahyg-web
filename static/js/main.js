@@ -35,7 +35,7 @@ SAHYG = (function () {
 					.catch(() => resolve(null));
 			});
 		}
-		let result = SAHYG.Cache.translations[name];
+		let result = SAHYG.Cache.translations[name] || name;
 		if (options) {
 			Object.entries(options).forEach(([k, v]) => {
 				result = result.replace(`{{${k}}}`, String(v));
@@ -233,7 +233,7 @@ SAHYG = (function () {
 			outsideClose(e) {
 				if (!this.$menu.length) return true;
 				if (this.isOpened()) {
-					if (e ? $(e.target).closest("header .account .menu").length : false) return true;
+					if (e ? $(e.target).closest("header .account .menu").length || $(e.target).closest("popups").length : false) return true;
 					e?.stopPropagation();
 					this.$menu.attr("status", "closed");
 					return false;
@@ -242,6 +242,45 @@ SAHYG = (function () {
 			isOpened() {
 				if (!this.$menu.length) return null;
 				return this.$menu.attr("status") == "opened";
+			},
+		},
+		input: {
+			select: async function ({ options, defaultValue, events, placeholder }) {
+				return SAHYG.createElement(
+					"c-select",
+					{
+						events,
+						placeholder: placeholder,
+					},
+					SAHYG.createElement("c-select-current", {}, options.find((option) => option.name == defaultValue)?.text),
+					SAHYG.createElement(
+						"c-select-options",
+						{},
+						...options.map(({ name, text, icon }) =>
+							SAHYG.createElement(
+								"c-select-option",
+								{ "data-value": name },
+								SAHYG.createElement("c-select-option-icon", {}), //TODO
+								SAHYG.createElement("c-select-option-information", {}, SAHYG.createElement("c-select-option-title", {}, text))
+							)
+						)
+					)
+				);
+			},
+			boolean: async function ({ defaultValue, events }) {
+				return SAHYG.createElement("c-boolean", { events, value: String(Boolean(defaultValue)) }, SAHYG.createElement("c-boolean-circle"));
+			},
+			list: async function ({ defaultValue, events }) {
+				let values = SAHYG.createElement("c-input-list-values", {});
+
+				let newEntry = (value) => {
+					let valueElement = SAHYG.createElement("c-input-list-value", {}, SAHYG.createElement("c-input-list-value-text", {}, value));
+					valueElement.append(SAHYG.createElement("c-input-list-value-remove"));
+					values.append(valueElement);
+				};
+				defaultValue.forEach(newEntry);
+
+				return SAHYG.createElement("c-input-list", { events }, values, SAHYG.createElement("c-input-list-add"));
 			},
 		},
 	};
@@ -712,6 +751,11 @@ SAHYG = (function () {
 			return this;
 		}
 
+		addClass(classToAdd) {
+			this.popup.addClass(classToAdd);
+			return this;
+		}
+
 		title(title) {
 			this.popup.find(".title").text(title);
 			return this;
@@ -783,10 +827,11 @@ SAHYG = (function () {
 		}
 
 		static input(title, inputs) {
-			let data = Object.fromEntries(inputs.map((input) => [input.name, input.defaultValue || null]));
+			let data = Object.fromEntries(inputs.map((input) => [input.name, input.defaultValue]));
 			return new Promise(async (resolve) => {
 				let popup = new SAHYG.Components.popup.Popup();
 				popup
+					.addClass("large")
 					.title(title)
 					.content(
 						SAHYG.createElement(
@@ -800,25 +845,65 @@ SAHYG = (function () {
 									},
 								},
 							},
-							...inputs.map((input) =>
-								SAHYG.createElement(
-									"div",
-									{},
-									SAHYG.createElement("label", { for: input.name }, input.label),
-									SAHYG.createElement(
-										"div",
-										{ "data-input-type": input.type },
-										SAHYG.createElement("input", {
+							...(await Promise.all(
+								inputs.map(async (input) => {
+									let inputElement;
+									if (["text", "url"].includes(input.type))
+										inputElement = SAHYG.createElement("input", {
 											events: {
 												change: (event) => (data[input.name] = event.target.value),
 											},
 											placeholder: input.placeholder,
 											type: input.type,
 											value: input.defaultValue,
-										})
-									)
-								)
-							)
+										});
+									else if (input.type == "textarea")
+										inputElement = SAHYG.createElement(
+											"textarea",
+											{
+												events: {
+													change: (event) => (data[input.name] = event.target.value),
+												},
+												placeholder: input.placeholder,
+											},
+											input.defaultValue
+										);
+									else if (input.type == "select")
+										inputElement = await SAHYG.Components.input.select({
+											options: input.options,
+											defaultValue: input.defaultValue,
+											events: {
+												input: ({ target }) => (data[input.name] = $(target).attr("data-value")),
+											},
+											placeholder: input.placeholder,
+										});
+									else if (input.type == "boolean")
+										inputElement = await SAHYG.Components.input.boolean({
+											defaultValue: input.defaultValue,
+											events: {
+												input: ({ target }) => (data[input.name] = $(target).attr("value") == "true"),
+											},
+										});
+									else if (input.type == "list")
+										inputElement = await SAHYG.Components.input.list({
+											defaultValue: input.defaultValue,
+											events: {
+												input: ({ target }) =>
+													(data[input.name] =
+														$(target)
+															.find("c-input-list-value").toArray()
+															.map((elem) => elem.innerText) || []),
+											},
+										});
+
+									return SAHYG.createElement(
+										"div",
+										{},
+										SAHYG.createElement("label", { for: input.name }, input.label),
+										SAHYG.createElement("div", { "data-input-type": input.type }, inputElement)
+									);
+								})
+							))
 						)
 					)
 					.button("discard", {

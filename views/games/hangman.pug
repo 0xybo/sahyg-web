@@ -3,6 +3,7 @@ include ../components/navigation.pug
 
 append HEAD
 	+meta(i18n("HANGMAN"), i18n("HANGMAN_DESCRIPTION"))
+	meta(name="robots" content="index, follow, noarchive")
 
 	script(src="/js/games/hangman.js")
 	link(rel="stylesheet" href="/css/games/hangman.css") 

@@ -117,7 +117,7 @@ container [data-horizontal-tabs-id="profile"] .about .value textarea {
 container [data-horizontal-tabs-id="profile"] .custom .value {
 	overflow-x: scroll;
 }
-container [data-horizontal-tabs-id="profile"] .custom .value c-input-list {
+container [data-horizontal-tabs-id="profile"] .custom .value c-input-array {
 	min-width: 30rem;
 }
 

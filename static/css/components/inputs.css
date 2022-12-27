@@ -23,14 +23,15 @@ c-select-current:after {
 	font-family: "Line Awesome Free Solid";
 	margin-left: 0.5rem;
 }
-c-select-current:hover, c-select.open c-select-current {
+c-select-current:hover,
+c-select.open c-select-current {
 	background-color: var(--background-secondary-color);
 }
 c-select-options {
 	display: flex;
 	position: absolute;
 	top: calc(100% + 0.5rem);
-	right: 0;
+	/* right: 0; */
 	padding: 0.5rem 0;
 	background-color: var(--background-tertiary-color);
 	border-radius: 0.5rem;
@@ -87,33 +88,33 @@ c-boolean-circle {
 
 /* ANCHOR LIST */
 
-c-input-list {
+c-input-array {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 }
-c-input-list-current {
+c-input-array-current {
 	display: flex;
 	flex-direction: column;
 	border: 1px solid var(--divider-color);
 	border-radius: 0.5rem;
-	overflow: hidden;
+	overflow: scroll hidden;
 }
-c-input-list-header {
+c-input-array-header {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	padding: 0.5rem 0.5rem 0.5rem 1rem;
 	background-color: var(--background-secondary-color);
 }
-c-input-list-column {
+c-input-array-column {
 	flex: 1;
 }
-c-input-list-column:last-child {
+c-input-array-column:last-child {
 	flex: 0;
 	min-width: 3rem;
 }
-c-input-list-body {
+c-input-array-body {
 	min-height: 3rem;
 	width: 100%;
 	display: flex;
@@ -122,51 +123,99 @@ c-input-list-body {
 	flex-direction: column;
 	padding-top: 0.5rem;
 }
-c-input-list-body:empty:after {
+c-input-array-body:empty:after {
 	content: attr(data-empty);
 }
-c-input-list-row {
+c-input-array-row {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	width: 100%;
 	padding: 0 0.5rem 0 1rem;
 }
-c-input-list-field {
+c-input-array-field {
 	overflow-x: scroll;
 }
-c-input-list-field:not(:last-child) {
+c-input-array-field:not(:last-child) {
 	flex: 1;
 	padding: 0.5rem 0.5rem 0.5rem 0;
 }
-c-input-list-field:last-child {
+c-input-array-field:last-child {
 	flex: 0;
 	min-width: 3rem;
 }
-c-input-list-field:last-child btn {
+c-input-array-field:last-child btn {
 	font-size: 1.5rem;
 	transition: var(--transition);
 }
-c-input-list-field:last-child btn:hover {
+c-input-array-field:last-child btn:hover {
 	color: var(--danger-color);
 	background-color: var(--background-tertiary-color);
 }
-c-input-list-field .ta {
+c-input-array-field .ta {
 	border: none;
 	border-radius: unset;
 	border-bottom: 1px solid var(--divider-color);
 }
-c-input-list-field .ta input {
+c-input-array-field .ta input {
 	height: 2rem;
 }
-c-input-list-add btn {
+c-input-array-add btn {
 	margin: 0 0 0.5rem 0.5rem;
 }
-c-input-list-add btn:hover {
+c-input-array-add btn:hover {
 	color: var(--success-color);
 	background-color: var(--background-tertiary-color);
 	transition: var(--transition);
 }
-c-input-list-add btn span {
+c-input-array-add btn span {
 	margin-right: 0.5rem;
+}
+
+c-input-list {
+	background-color: var(--background-tertiary-color);
+	padding: 0.5rem 1rem;
+	border-radius: 1rem;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+c-input-list-values {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	flex: 1;
+	gap: 0.5rem;
+}
+c-input-list-value {
+	padding: 0.2rem 0.5rem;
+	background-color: var(--background-secondary-color);
+	border-radius: 0.5rem;
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.2rem;
+}
+c-input-list-value-remove:before {
+	transition: var(--transition);
+	font-family: "Line Awesome Free Solid";
+	content: "\f00d";
+	cursor: pointer;
+}
+c-input-list-value-remove:hover:before {
+	color: var(--danger-color);
+}
+c-input-list-add:before {
+	font-family: "Line Awesome Free Solid";
+	content: "\f067";
+	cursor: pointer;
+	padding: 0.5rem 0.5rem;
+	border-radius: 0.5rem;
+}
+c-input-list-add:hover:before {
+	transition: var(--transition);
+	background-color: var(--background-secondary-color);
+	color: var(--success-color);
 }

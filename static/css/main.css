@@ -963,17 +963,24 @@ popup .buttons .btn[data-btn-id="ok"] {
 popup .content form {
 	display: flex;
 	-ms-flex-direction: column;
-	flex-direction: column;
+	flex-direction: row;
 	gap: 1rem;
 	-ms-user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
+	flex-wrap: wrap;
 }
 popup .content form > div {
 	display: flex;
 	-ms-flex-direction: column;
 	flex-direction: column;
+}
+popup .content form > div:not(.inline) {
+	width: 100%;
+}
+popup .content form > div.inline {
+	flex-grow: 1;
 }
 popup .content form > div label {
 	margin-bottom: 0.5rem;

@@ -63,7 +63,7 @@ class Hangman extends Page {
 		}
 
 		let difficultyProperties = this.Web.config.get(["pages", "hangman", "difficulties", session.difficulty]);
-		let stage = Number(Object.entries(difficultyProperties.stages).find(([stage, stages]) => stages.includes(session.stage))?.[0] || 1);
+		let stage = Number(Object.entries(difficultyProperties.stages).find(([stage, stages]) => stages.includes(session.stage))?.[0] || 0);
 
 		session.usedLetters.push(letter);
 		if (!positions.length) {

@@ -64,7 +64,7 @@ $(function () {
 			if (stage == 0) return this.$hangman.attr("stage", "");
 
 			let stageArray = [];
-			for (let i = 1; i <= (stage >= 10 ? 10 : stage < 1 ? 1 : stage); i++) {
+			for (let i = 0; i <= (stage >= 10 ? 10 : stage < 1 ? 1 : stage); i++) {
 				stageArray.push(i);
 			}
 			this.$hangman.attr("stage", stageArray.join(" "));

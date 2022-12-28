@@ -38,7 +38,7 @@ SAHYG = (function () {
 		let result = SAHYG.Cache.translations[name] || name;
 		if (options) {
 			Object.entries(options).forEach(([k, v]) => {
-				result = result.replace(`{{${k}}}`, String(v));
+				result = result.replace(new RegExp(`{{${k}}}`, "gmi"), String(v));
 			});
 		}
 		return result;
@@ -543,6 +543,9 @@ SAHYG = (function () {
 				else window.location.href = "/logout";
 				return false;
 			},
+			username() {
+				return $("header .account > .username").text();
+			},
 		},
 		element: {
 			getDataAttribute(elem, name) {
@@ -891,14 +894,15 @@ SAHYG = (function () {
 												input: ({ target }) =>
 													(data[input.name] =
 														$(target)
-															.find("c-input-list-value").toArray()
+															.find("c-input-list-value")
+															.toArray()
 															.map((elem) => elem.innerText) || []),
 											},
 										});
 
 									return SAHYG.createElement(
 										"div",
-										{},
+										{ class: input.inline ? "inline" : "" },
 										SAHYG.createElement("label", { for: input.name }, input.label),
 										SAHYG.createElement("div", { "data-input-type": input.type }, inputElement)
 									);
@@ -1211,7 +1215,7 @@ SAHYG = (function () {
 				let target = $(event.target).closest(eventInformations.element);
 				if (target.length) {
 					let result = await eventInformations.callback.call(target[0], event, ...datas);
-					// console.log(`Event: '${event.type}' triggered by '${eventInformations.element}' with result '${result}'`);
+					// console.log({ eventType: event.type, result: result, target: eventInformations.element });
 					if (result != true) return false;
 				}
 			}

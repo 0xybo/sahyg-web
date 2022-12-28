@@ -81,6 +81,7 @@ $(function () {
 						placeholder: await SAHYG.translate("USERNAME"),
 						type: "text",
 						defaultValue: user.username,
+						inline: true
 					},
 					{
 						name: "firstname",
@@ -88,6 +89,7 @@ $(function () {
 						placeholder: await SAHYG.translate("FIRSTNAME"),
 						type: "text",
 						defaultValue: user.firstname,
+						inline: true
 					},
 					{
 						name: "lastname",
@@ -95,6 +97,7 @@ $(function () {
 						placeholder: await SAHYG.translate("LASTNAME"),
 						type: "text",
 						defaultValue: user.lastname,
+						inline: true
 					},
 					{
 						name: "email",
@@ -126,6 +129,7 @@ $(function () {
 							},
 						],
 						defaultValue: user.theme,
+						inline: true
 					},
 					{
 						name: "locale",
@@ -143,13 +147,18 @@ $(function () {
 							},
 						],
 						defaultValue: user.locale,
+						inline: true
 					},
 					{
 						name: "group",
 						label: await SAHYG.translate("GROUP"),
 						placeholder: await SAHYG.translate("GROUP"),
-						type: "text",
-						defaultValue: user.group,
+						type: "select",
+						options: SAHYG.Instances.Groups.groups.map((grp) => {
+							return { name: grp.id, text: grp.name };
+						}),
+						defaultValue: SAHYG.Instances.Groups.groups.find((grp) => grp.id == user.group)?.id,
+						inline: true
 					},
 					{
 						name: "certified",
@@ -157,6 +166,7 @@ $(function () {
 						placeholder: await SAHYG.translate("CERTIFIED"),
 						type: "boolean",
 						defaultValue: user.certified,
+						inline: true
 					},
 					{
 						name: "shared",
@@ -275,13 +285,14 @@ $(function () {
 					{
 						name: "name",
 						label: await SAHYG.translate("NAME"),
-						placeholder: await SAHYG.translate("Name"),
+						placeholder: await SAHYG.translate("NAME"),
 						type: "text",
 						defaultValue: group.name,
 					},
 					{
 						name: "parent",
 						label: await SAHYG.translate("PARENT"),
+						placeholder: await SAHYG.translate("PARENT"),
 						type: "select",
 						options: this.groups
 							.filter((grp) => grp.id != group.id)

@@ -105,7 +105,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 														if sub.icon.startsWith("icon:")
 															span !{sub.icon.substring(5)}
 														else 
-															img(src=sub.icon alt="icon" class=sub.coloredIcon? "colored" : "")
+															img(src=sub.icon alt="icon" class=sub.coloredIcon? "colored" : "" loading="lazy")
 
 												div.body
 													div.title 

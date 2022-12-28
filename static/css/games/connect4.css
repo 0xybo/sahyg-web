@@ -1,0 +1,148 @@
+container {
+	max-width: 80rem;
+	--piece-width: min(7.5vw, 7.5vh);
+	--grid-gap: min(1vw, 1vh);
+	--grid-border: min(2vw, 2vh);
+}
+game-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+container .grid-container {
+	width: calc(7 * var(--piece-width) + 6 * var(--grid-gap) + 2 * var(--grid-border));
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+container .placement-preview {
+	height: var(--piece-width);
+	width: calc(7 * var(--piece-width) + 6 * var(--grid-gap));
+}
+container .piece-preview {
+	height: var(--piece-width);
+	width: var(--piece-width);
+	border-radius: 100%;
+}
+container .piece-preview[column="1"] {
+	margin-left: calc(var(--piece-width) + var(--grid-gap));
+}
+container .piece-preview[column="2"] {
+	margin-left: calc((var(--piece-width) + var(--grid-gap)) * 2);
+}
+container .piece-preview[column="3"] {
+	margin-left: calc((var(--piece-width) + var(--grid-gap)) * 3);
+}
+container .piece-preview[column="4"] {
+	margin-left: calc((var(--piece-width) + var(--grid-gap)) * 4);
+}
+container .piece-preview[column="5"] {
+	margin-left: calc((var(--piece-width) + var(--grid-gap)) * 5);
+}
+container .piece-preview[column="6"] {
+	margin-left: calc((var(--piece-width) + var(--grid-gap)) * 6);
+}
+container .piece-preview.animated {
+	position: absolute;
+	z-index: 1;
+	transition: var(--transition);
+}
+container .grid {
+	display: flex;
+	gap: var(--grid-gap);
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: fit-content;
+	background-color: var(--background-secondary-color);
+	padding: var(--grid-border);
+	border-radius: 1rem;
+}
+container .grid [column] {
+	display: flex;
+	flex-direction: column;
+	gap: var(--grid-gap);
+}
+container .grid [row] {
+	height: var(--piece-width);
+	width: var(--piece-width);
+	border-radius: 100%;
+	background-color: var(--background-color);
+	cursor: pointer;
+}
+container .grid [row].animated {
+	animation: blink 1s ease-in-out 0s infinite both;
+}
+container .grid [row][content="0"],
+container .piece-preview[content="0"] {
+	background-color: var(--red-500);
+}
+container .grid [row][content="1"],
+container .piece-preview[content="1"] {
+	background-color: var(--yellow-500);
+}
+
+container .panel {
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+	width: 100%;
+}
+container .informations {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	align-items: flex-start;
+}
+container .informations > div {
+	display: flex;
+	flex-direction: row;
+	row-gap: 0.5rem;
+	flex-wrap: wrap;
+	align-items: center;
+}
+container .informations .label {
+	font-size: 1rem;
+	font-weight: bold;
+}
+container .informations .value {
+	padding-left: 1rem;
+}
+container .commands {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+container .commands > div {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+container .commands c-select-current {
+	background-color: var(--accent-color);
+	color: var(--background-color);
+	font-weight: 600;
+	font-size: 0.875rem;
+}
+container .commands btn {
+	gap: 0.5rem;
+}
+container .commands .lafs {
+	font-size: 1.3rem;
+}
+
+@keyframes blink {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.25;
+	}
+	100% {
+		opacity: 1;
+	}
+}

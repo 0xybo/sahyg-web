@@ -3,10 +3,10 @@ append HEAD
 	link(rel="stylesheet" href="/css/components/inputs.css")
 	script(src="/js/components/inputs.js") 
 
-mixin c_select(options, id, current, disabled = false)
+mixin c_select(options, id, current, disabled = false, label=false)
 	- let currentTitle = options.find(e => e.value == current)?.title
 	c-select(data-value=current id=id, class=disabled? "disabled": "")
-		c-select-current !{currentTitle? conditionalI18n(currentTitle) : ""}
+		c-select-current(data-label=label) !{currentTitle? conditionalI18n(currentTitle) : ""}
 		c-select-options
 			each option in options
 				if option.title == "@>divider"

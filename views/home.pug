@@ -22,5 +22,5 @@ block BODY
 						if app.img.startsWith("icon:")
 							span.lafs !{app.img.substring(5)}
 						else 
-							img(src=app.img alt=app.name+" icon" class=app.coloredImg ? "colored" : "")
+							img(src=app.img alt=app.name+" icon" class=app.coloredImg ? "colored" : "" loading="lazy")
 					div.name !{conditionalI18n(app.text)}

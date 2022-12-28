@@ -1,0 +1,48 @@
+extends ../main.pug
+include ../components/inputs.pug
+include ../components/navigation.pug
+
+append HEAD
+	+meta(i18n("CONNECT4"), i18n("CONNECT4_DESCRIPTION"))
+	meta(name="robots" content="index, follow, noarchive")
+
+	script(src="/js/games/connect4.js")
+	link(rel="stylesheet" href="/css/games/connect4.css") 
+
+	title !{i18n("CONNECT4")} | !{Web.config.get("text.title")}
+
+block BODY
+	+c_pageTitle("i18n:CONNECT4")
+	game-container 
+		div.grid-container 
+			div.placement-preview 
+				div.piece-preview(column=0)
+			div.grid
+				- for (let x = 0; x < 7; x++) 
+					div(column=x)
+						- for (let y = 0; y < 6; y++)
+							div(row=y)
+			div.panel
+				div.commands
+					btn.new.btn-full 
+						span.lafs &#xf2f9;
+						| !{i18n("NEW_GAME")}
+					btn.rules.btn-full  
+						span.lafs &#xf02d;
+						| !{i18n("RULES")}
+					div.first-player
+						+c_select([
+							{"title": "i18n:ME","value": "0"},
+							{"title": "i18n:OPPONENT","value": "1"},
+							{"title": "i18n:RANDOM","value": "random"}
+						], "first-player", "0", false, i18n("FIRST_PLAYER"))
+					div.opponent
+						+c_select([
+							{"title": "i18n:PLAYER","value": "player"},
+							{"title": "i18n:COMPUTER","value": "computer"}
+						], "opponent", "player", false, i18n("OPPONENT"))
+				div.informations
+					div.current-player
+						div.label !{i18n("PLAYER_TURN")}
+						div.value Player 0
+

@@ -6,71 +6,76 @@ class Shortener extends Page {
 		this.Web = Web;
 
 		this.setGet(["/shortener"], this.get.bind(this));
-		this.setPost(["/shortener"], this.post.bind(this));
+		this.setGet(["/shortener/list"], this.list.bind(this));
+		this.setPost(["/shortener/delete"], this.validRequest.bind(this), this.delete.bind(this));
+		this.setPost(["/shortener/add"], this.validRequest.bind(this), this.add.bind(this));
+		this.setPost(["/shortener/edit"], this.validRequest.bind(this), this.edit.bind(this));
+		this.setPost(["/shortener/enable"], this.validRequest.bind(this), this.enable.bind(this));
+		this.setPost(["/shortener/disable"], this.validRequest.bind(this), this.disable.bind(this));
 		this.setGet(["/sc/:link", "/s/:link"], this.redirect.bind(this));
 	}
-
 	async get(req, res, next) {
-		if (!req.WebRequest.userExists) return res.redirect("/login?redirect=" + req.path);
-
-		let shortcuts = await this.Web.db.Shortcut({ user: req.WebRequest.user._id }, true, true);
-		res.WebResponse.render("shortener", { shortcuts });
+		res.WebResponse.render("shortener");
 	}
-
+	async list(req, res, next) {
+		let shortcuts = await this.Web.db.Shortcut({ user: req.WebRequest.user._id }, true, true);
+		shortcuts = shortcuts.map((shortcut) => {
+			return {
+				clicked: shortcut.clicked,
+				enabled: shortcut.enabled,
+				name: shortcut.name,
+				target: shortcut.target,
+			};
+		});
+		res.WebResponse.setContent(shortcuts).send();
+	}
 	async redirect(req, res, next) {
-        if(!req.params.link) res.WebResponse.renderError("NOT_FOUND")
+		if (!req.params.link) res.WebResponse.renderError("NOT_FOUND");
 		let request = await this.Web.db.Shortcut({ name: req.params.link }, true);
 		if (request ? !request.enabled : false) return this.notFoundPage();
 		request.clicked++;
 		request.save();
 		res.redirect(request.target);
 	}
-
-	async post(req, res, next) {
-		if (!req.WebRequest.userExists) return res.send({ success: false, code: 401 }); // TODO changer la réponse pour la nouvelle version
-		if (!req.body.name || !req.body.action) return res.send({ success: false, code: 400 });
-		if (!/[a-z0-9_-]+/gm.test(req.body.name)) return res.send({ success: false, code: 400 });
-
-		switch (req.body.action) {
-			case "delete": {
-				if ((await this.Web.db.models.Shortcuts.deleteOne({ name: req.body.name, user: req.WebRequest.user._id })) == 0)
-					return res.send({ success: false, code: 404 });
-				else return res.send({ success: true });
-			}
-			case "add": {
-				if (req.body.target ? !this.Web.utils.isUrl(req.body.target) : true) return res.send({ success: false, code: 400 });
-				if (await this.Web.db.Shortcut({ name: req.body.name }, true)) return res.send({ success: false, code: 409 });
-				await (await this.Web.db.Shortcut({ name: req.body.name, target: req.body.target, user: req.WebRequest.user._id })).save();
-				return res.send({ success: true });
-			}
-			case "edit": {
-				if (!req.body.oldName) return res.send({ success: false, code: 400 });
-				if (req.body.target ? !this.Web.utils.isUrl(req.body.target) : true) return res.send({ success: false, code: 400 });
-				let sc = await this.Web.db.Shortcut({ name: req.body.oldName }, true);
-				if (!sc) return res.send({ success: false, code: 404 });
-				sc.name = req.body.name;
-				sc.target = req.body.target;
-				await sc.save();
-				return res.send({ success: true });
-			}
-			case "enable": {
-				let sc = await this.Web.db.Shortcut({ name: req.body.name }, true);
-				if (!sc) return res.send({ success: false, code: 404 });
-				sc.enabled = true;
-				await sc.save();
-				return res.send({ success: true });
-			}
-			case "disable": {
-				let sc = await this.Web.db.Shortcut({ name: req.body.name }, true);
-				if (!sc) return res.send({ success: false, code: 404 });
-				sc.enabled = false;
-				await sc.save();
-				return res.send({ success: true });
-			}
-			default: {
-				return res.send({ success: false, code: 400 });
-			}
-		}
+	async validRequest(req, res, next) {
+		if (!req.body.name) return res.WebResponse.error("MISSING_NAME");
+		if (!/[a-z0-9_-]+/gm.test(req.body.name)) return res.WebResponse.error("INVALID_NAME");
+		return next();
+	}
+	async delete(req, res, next) {
+		if ((await this.Web.db.models.Shortcuts.deleteOne({ name: req.body.name, user: req.WebRequest.user._id })) == 0)
+			return res.WebResponse.error("SHORTCUT_NOT_FOUND");
+		else res.WebResponse.send();
+	}
+	async add(req, res, next) {
+		if (req.body.target ? !this.Web.utils.isUrl(req.body.target) : true) return res.WebResponse.error("INVALID_URL");
+		if (await this.Web.db.Shortcut({ name: req.body.name }, true)) return res.WebResponse.error("SHORTCUT_ALREADY_EXISTS");
+		await (await this.Web.db.Shortcut({ name: req.body.name, target: req.body.target, user: req.WebRequest.user._id })).save();
+		return res.WebResponse.send();
+	}
+	async edit(req, res, next) {
+		if (!req.body.oldName) return res.WebResponse.error("MISSING_OLD_NAME");
+		if (req.body.target ? !this.Web.utils.isUrl(req.body.target) : true) return res.WebResponse.error("INVALID_URL");
+		let sc = await this.Web.db.Shortcut({ name: req.body.oldName }, true);
+		if (!sc) return res.WebResponse.error("SHORTCUT_NOT_FOUND");
+		sc.name = req.body.name;
+		sc.target = req.body.target;
+		await sc.save();
+		return res.WebResponse.send();
+	}
+	async enable(req, res, next) {
+		let sc = await this.Web.db.Shortcut({ name: req.body.name }, true);
+		if (!sc) return res.WebResponse.error("SHORTCUT_NOT_FOUND");
+		sc.enabled = true;
+		await sc.save();
+		return res.WebResponse.send();
+	}
+	async disable(req, res, next) {
+		let sc = await this.Web.db.Shortcut({ name: req.body.name }, true);
+		if (!sc) return res.WebResponse.error("SHORTCUT_NOT_FOUND");
+		sc.enabled = false;
+		await sc.save();
+		return res.WebResponse.send();
 	}
 }
 

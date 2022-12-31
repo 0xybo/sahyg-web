@@ -11,7 +11,7 @@ class Resources extends Page {
 		this.setGet(["/resources/user/:user"], this.user.bind(this));
 	}
 	async i18n(req, res) {
-		res.send(this.Web.i18n.getCatalog(req.body.locale || req.param.locale || req.cookies?.locale || req.getLocale()));
+		res.WebResponse.setContent(this.Web.i18n.getCatalog(req.body.locale || req.param.locale || req.cookies?.locale || req.getLocale())).send();
 		return true;
 	}
 	async avatar(req, res) {

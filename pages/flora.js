@@ -57,7 +57,7 @@ class Flora extends Page {
 		if (req.body.type == "get") {
 			if (!req.body.id) return res.status(400).end();
 			this.load("identification", locale);
-			return res.send(this.identification[locale][req.body.id]);
+			return res.WebResponse.setContent(this.identification[locale][req.body.id]).send();
 		} else if (req.body.type == "search") {
 			if (!req.body.value) return res.status(400).end();
 			this.load("identification", locale);
@@ -93,8 +93,8 @@ class Flora extends Page {
 				searchPosition++;
 			}
 
-			return res.send(result);
-		}
+			return res.WebResponse.setContent(result).send();
+		} else res.WebResponse.error()
 	}
 	searchInSpecimen(properties, searchText) {
 		return (

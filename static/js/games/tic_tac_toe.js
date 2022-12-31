@@ -318,11 +318,11 @@ $(() => {
 			});
 		}
 		async saveParty() {
-			$.post("/tic_tac_toe", {
+			SAHYG.Api.post("/tic_tac_toe", {
 				moves: this.moves,
 				opponent: this.opponent == "computer" ? await SAHYG.translate("COMPUTER") : this.player1,
 				win: this.winner == null ? "null" : this.winner == this.player0,
-			});
+			}).catch(() => {});
 		}
 		compute() {
 			let wonMoves, opponentWonMoves;

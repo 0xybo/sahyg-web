@@ -45,7 +45,7 @@ class Settings extends Page {
 				req.WebRequest.user.avatar = true;
 			}
 			await req.WebRequest.user.save();
-			return res.send({ success: true, status: 200, details: null, error: null });
+			return res.WebResponse.send()
 		} catch (e) {
 			this.logger.error(e);
 		}

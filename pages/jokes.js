@@ -6,10 +6,15 @@ class Jokes extends Page {
 
 		this.jokes = require("../resources/jokes.json");
 
-        this.setGet(["/jokes"], (req, res) => res.WebResponse.render("jokes"))
-        this.setPost(["/jokes"], async function (req, res) {
-            res.json(this.jokes.filter((joke) => joke.language == (req.body.locale || req.cookies.locale || req.getLocale())));
-        }.bind(this))
+		this.setGet(["/jokes"], (req, res) => res.WebResponse.render("jokes"));
+		this.setPost(
+			["/jokes"],
+			async function (req, res) {
+				res.WebResponse.setContent(
+					this.jokes.filter((joke) => joke.language == (req.body.locale || req.cookies.locale || req.getLocale()))
+				).send();
+			}.bind(this)
+		);
 	}
 }
 

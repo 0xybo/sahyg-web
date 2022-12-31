@@ -27,12 +27,8 @@ SAHYG = (function () {
 	 */
 	SAHYG.translate = async function (name, options = null) {
 		if (!SAHYG.Cache.translations) {
-			SAHYG.Cache.translations = await new Promise((resolve) => {
-				$.get("/resources/translate", {
-					locale: $("html").attr("lang"),
-				})
-					.done((data) => resolve(data))
-					.catch(() => resolve(null));
+			SAHYG.Cache.translations = await SAHYG.Api.get("/resources/translate", {
+				locale: $("html").attr("lang"),
 			});
 		}
 		let result = SAHYG.Cache.translations[name] || name;
@@ -496,20 +492,13 @@ SAHYG = (function () {
 						SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("CLICK_TO_SAVE") })
 							.clicked(async function (event, btn) {
 								btn.remove();
-								$.post({
-									url: "/settings",
-									contentType: false,
-									processData: false,
-									data: ((fd = new FormData()), fd.append("theme", $("html").attr("theme") == "light" ? "light" : "dark"), fd),
-								})
-									.done(async function () {
-										SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVED") }).show();
-									})
-									.catch(async function () {
+								SAHYG.Api.post("/settings", { theme: $("html").attr("theme") == "light" ? "light" : "dark" })
+									.then(async () => SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVED") }).show())
+									.cacth(async () =>
 										SAHYG.Components.toast.Toast.error({
 											message: await SAHYG.translate("ERROR_OCCURRED"),
-										}).show();
-									});
+										}).show()
+									);
 							})
 							.show();
 					else return $("html").attr("theme");
@@ -518,15 +507,11 @@ SAHYG = (function () {
 			locale: {
 				async set(locale, reload = true, saveIfPossible = true) {
 					SAHYG.Utils.cookie.set("locale", locale);
-					if (saveIfPossible && SAHYG.Utils.user.isConnected())
-						$.post("/settings", {
-							locale,
-						})
-							.done(() => {
-								if (reload) location.reload();
-							})
-							.catch(async () => SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("ERROR_OCCURRED") }));
-					else if (reload) location.reload();
+					if (saveIfPossible && SAHYG.Utils.user.isConnected()) {
+						SAHYG.Api.post("/settings", { locale })
+							.then(() => (reload ? location.reload() : null))
+							.cacth(() => {});
+					} else if (reload) location.reload();
 					return null;
 				},
 			},
@@ -607,39 +592,35 @@ SAHYG = (function () {
 	SAHYG.Api = {
 		domain: SAHYG.Constants.api_domain,
 		_request(type, link, content = {}) {
-			return new Promise((resolve, reject) => {
-				$.ajax({
-					type,
-					url: this.domain + link,
-					data: content,
+			return axios({
+				method: type,
+				url: this.domain + link,
+				data: content,
+				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
-					success: resolve,
-					reject: resolve,
-				});
+				},
 			});
 		},
 		async login(login, password) {
-			return new Promise((resolve, reject) => {
-				$.ajax({
-					type: "POST",
-					url: "/login",
-					data: { login, password },
+			return axios({
+				method: "POST",
+				url: this.domain + link,
+				data: { login, password },
+				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
-					success: resolve,
-					reject: resolve,
-				});
+				},
 			});
 		},
 		async status() {
-			let { content } = await this._request("GET", "/status");
+			let { content } = await this._request("GET", "/status"); // TODO
 		},
 		async post(url, content, full) {
 			let res = await this._request("POST", url, content);
-			return full ? res : res.content;
+			return full ? res.data : res.data.content;
 		},
 		async get(url, content, full) {
 			let res = await this._request("GET", url, content);
-			return full ? res : res.content;
+			return full ? res.data : res.data.content;
 		},
 	};
 	SAHYG.Components.popup.Popup = class {
@@ -1069,41 +1050,65 @@ SAHYG = (function () {
 			return new SAHYG.Components.toast.Toast({ message, type: "danger", timeout, ...options });
 		}
 	};
-
-	$(document).ajaxError(async function (event, request, options, errorString) {
-		switch (errorString) {
-			case "Unauthorized": {
-				new SAHYG.Components.popup.Popup({
-					title: await SAHYG.translate("ERROR_OCCURRED"),
-					content: await SAHYG.translate("ERROR_UNAUTHORIZED_LOGIN"),
-					buttons: {
-						refresh: {
-							text: await SAHYG.translate("REFRESH"),
-							style: undefined,
-							callback: (event, popup) => {
-								popup.close();
-								location.reload();
-							},
-						},
-						ok: {
-							text: await SAHYG.translate("OK"),
-							style: "fullColor",
-							callback: (event, popup) => {
-								popup.close();
-							},
+	SAHYG.RequestEvents = {
+		async request(response) {
+			// console.log(response);
+			if (!response.data?.success) {
+				let error;
+				switch (response.data?.status) {
+					case "UNAUTHORIZED": {
+						error = new Error("UNAUTHORIZED");
+						await SAHYG.RequestEvents.notAuthorized();
+						break;
+					}
+					default: {
+						if (response.data?.description) {
+							SAHYG.Components.toast.Toast.danger({
+								message: response.data.description,
+							}).show();
+						} else {
+							error = new Error("SERVER_ERROR");
+							await SAHYG.RequestEvents.error();
+						}
+					}
+				}
+				return Promise.reject(error);
+			}
+			return response;
+		},
+		async notAuthorized() {
+			new SAHYG.Components.popup.Popup({
+				title: await SAHYG.translate("ERROR_OCCURRED"),
+				content: await SAHYG.translate("ERROR_UNAUTHORIZED_LOGIN"),
+				buttons: {
+					refresh: {
+						text: await SAHYG.translate("REFRESH"),
+						style: undefined,
+						callback: (popup, event) => {
+							popup.close();
+							location.reload();
 						},
 					},
-				}).show();
-				break;
-			}
-			default: {
-				// console.log({ event, request, options, errorString });
-				SAHYG.Components.toast.Toast.danger({
-					message: await SAHYG.translate("ERROR_OCCURRED"),
-				}).show();
-			}
-		}
-	});
+					ok: {
+						text: await SAHYG.translate("OK"),
+						style: "fullColor",
+						callback: (popup, event) => {
+							popup.close();
+						},
+					},
+				},
+			}).show();
+		},
+		async error(event) {
+			console.log(event)
+			SAHYG.Components.toast.Toast.danger({
+				message: await SAHYG.translate("ERROR_OCCURRED"),
+			}).show();
+			return false;
+		},
+	};
+
+	axios.interceptors.response.use(SAHYG.RequestEvents.request, SAHYG.RequestEvents.error);
 
 	$(async function () {
 		(bind = (obj) => {
@@ -1193,18 +1198,16 @@ SAHYG = (function () {
 							?.match(/(?<=\/user\/)[a-z0-9_]{3,10}/)?.[0];
 						if (SAHYG.Cache.users[username]) {
 							instance.setContent(SAHYG.Components.tooltip.userTooltip(SAHYG.Cache.users[username]));
-						} else
-							$.get("/resources/user/" + username)
-								.done(async (data) => {
-									let element;
-									if (!data.content) element = await SAHYG.translate("UNKNOWN_USER");
-									else {
-										SAHYG.Cache.users[username] = data.content;
-										element = SAHYG.Components.tooltip.userTooltip(data.content);
-									}
-									instance.setContent(element);
-								})
-								.catch(async () => instance.setContent(await SAHYG.translate("ERROR_OCCURRED")));
+						} else {
+							let data = await SAHYG.Api.get("/resources/user/" + username);
+							let element;
+							if (!data.content) element = await SAHYG.translate("UNKNOWN_USER");
+							else {
+								SAHYG.Cache.users[username] = data.content;
+								element = SAHYG.Components.tooltip.userTooltip(data.content);
+							}
+							instance.setContent(element);
+						}
 					}.bind(this),
 				});
 		});

@@ -30,10 +30,8 @@ $(function () {
 			);
 			this.$usersList.trigger("change");
 		}
-		getAllUsers() {
-			return new Promise((resolve, reject) => {
-				$.post("/users/list").done((data) => resolve(data.content.users));
-			});
+		async getAllUsers() {
+			return (await SAHYG.Api.get("/users/list").catch(() => {})).users;
 		}
 		async arrayUpdate(event, action, data) {
 			if (action == "delete") {
@@ -81,7 +79,7 @@ $(function () {
 						placeholder: await SAHYG.translate("USERNAME"),
 						type: "text",
 						defaultValue: user.username,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "firstname",
@@ -89,7 +87,7 @@ $(function () {
 						placeholder: await SAHYG.translate("FIRSTNAME"),
 						type: "text",
 						defaultValue: user.firstname,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "lastname",
@@ -97,7 +95,7 @@ $(function () {
 						placeholder: await SAHYG.translate("LASTNAME"),
 						type: "text",
 						defaultValue: user.lastname,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "email",
@@ -129,7 +127,7 @@ $(function () {
 							},
 						],
 						defaultValue: user.theme,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "locale",
@@ -147,7 +145,7 @@ $(function () {
 							},
 						],
 						defaultValue: user.locale,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "group",
@@ -158,7 +156,7 @@ $(function () {
 							return { name: grp.id, text: grp.name };
 						}),
 						defaultValue: SAHYG.Instances.Groups.groups.find((grp) => grp.id == user.group)?.id,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "certified",
@@ -166,7 +164,7 @@ $(function () {
 						placeholder: await SAHYG.translate("CERTIFIED"),
 						type: "boolean",
 						defaultValue: user.certified,
-						inline: true
+						inline: true,
 					},
 					{
 						name: "shared",
@@ -245,10 +243,8 @@ $(function () {
 			);
 			this.$groupsList.trigger("change");
 		}
-		getAllGroups() {
-			return new Promise((resolve) => {
-				$.post("/groups/list").done((data) => resolve(data.content.groups));
-			});
+		async getAllGroups() {
+			return (await SAHYG.Api.get("/groups/list").catch(() => {})).groups;
 		}
 		async arrayUpdate(event, action, data) {
 			if (action == "delete") {

@@ -23,7 +23,7 @@ c-select-current:after {
 	font-family: "Line Awesome Free Solid";
 	margin-left: 0.5rem;
 }
-c-select-current:before {
+c-select-current[data-label]:before {
 	content: attr(data-label) " :";
 	margin-right: 0.5rem;
 }

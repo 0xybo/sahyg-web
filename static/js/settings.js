@@ -182,54 +182,49 @@ $(() => {
 						fd.append(key, value);
 					else Object.entries(value).forEach(([k, v]) => fd.append(`${key}[${k}]`, v));
 			}
-			$.post({
-				url: "/settings",
-				data: fd,
-				contentType: false,
-				processData: false,
-				success: async function (res) {
-					if (!res.success) return SAHYG.Components.toast.errorOccured();
-					SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVE_SUCCESS") }).show();
-					if (fd.has("locale") || fd.has("avatar")) {
-						if ((await SAHYG.Components.popup.Popup.confirm("⚠️" + (await SAHYG.translate("SETTING_NEED_RELOAD")))).confirm) {
-							location.reload();
-						}
-					}
-					if (fd.has("theme")) {
-						SAHYG.Utils.settings.theme.set(fd.get("theme"), false);
-					}
-					let custom = Array.from(fd.entries()).filter(([k, v]) => k.includes("custom"));
-					if (custom.length) {
-						$('[data-horizontal-tabs-id="share"] [class*="shareable-custom."]').remove();
-						custom.forEach(async ([k, v]) => {
-							k = k.match(/(?<=custom\[).+(?=\])/gm)?.[0];
-							let i = this.data.shared.findIndex((sharedId) => sharedId == "custom." + k);
-							if (i != -1) this.data.shared.splice(i);
-							$("[data-horizontal-tabs-id=share]").append(
-								SAHYG.createElement(
-									"div",
-									{ class: "setting shareable-custom." + k },
-									SAHYG.createElement(
-										"div",
-										{ class: "informations" },
-										SAHYG.createElement("div", { class: "title" }, (await SAHYG.translate("CUSTOM")) + " : " + k),
-										SAHYG.createElement("div", { class: "description" })
-									),
-									SAHYG.createElement(
-										"div",
-										{ class: "value" },
-										SAHYG.createElement("c-boolean", { value: "false" }, SAHYG.createElement("c-boolean-circle"))
-									)
-								)
-							);
-						});
-					}
-					this.updateBorders();
-					this.updateAlert();
-					this.updateOldData();
-					this.updateSaveButton();
-				}.bind(this),
-			});
+
+			let res = await SAHYG.Api.post("/settings", fd);
+			if (!res) return;
+			
+			SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVE_SUCCESS") }).show();
+			if (fd.has("locale") || fd.has("avatar")) {
+				if ((await SAHYG.Components.popup.Popup.confirm("⚠️" + (await SAHYG.translate("SETTING_NEED_RELOAD")))).confirm) {
+					location.reload();
+				}
+			}
+			if (fd.has("theme")) {
+				SAHYG.Utils.settings.theme.set(fd.get("theme"), false);
+			}
+			let custom = Array.from(fd.entries()).filter(([k, v]) => k.includes("custom"));
+			if (custom.length) {
+				$('[data-horizontal-tabs-id="share"] [class*="shareable-custom."]').remove();
+				custom.forEach(async ([k, v]) => {
+					k = k.match(/(?<=custom\[).+(?=\])/gm)?.[0];
+					let i = this.data.shared.findIndex((sharedId) => sharedId == "custom." + k);
+					if (i != -1) this.data.shared.splice(i);
+					$("[data-horizontal-tabs-id=share]").append(
+						SAHYG.createElement(
+							"div",
+							{ class: "setting shareable-custom." + k },
+							SAHYG.createElement(
+								"div",
+								{ class: "informations" },
+								SAHYG.createElement("div", { class: "title" }, (await SAHYG.translate("CUSTOM")) + " : " + k),
+								SAHYG.createElement("div", { class: "description" })
+							),
+							SAHYG.createElement(
+								"div",
+								{ class: "value" },
+								SAHYG.createElement("c-boolean", { value: "false" }, SAHYG.createElement("c-boolean-circle"))
+							)
+						)
+					);
+				});
+			}
+			this.updateBorders();
+			this.updateAlert();
+			this.updateOldData();
+			this.updateSaveButton();
 		}
 		async addAvatar() {
 			if ($(this).hasClass("disabled")) return true;

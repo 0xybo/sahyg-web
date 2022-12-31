@@ -7,12 +7,12 @@ class Users extends Page {
 		this.Web = Web;
 
 		this.setGet(["/users"], this.get.bind(this));
-		this.setPost(["/users/list"], this.getUsersList.bind(this));
+		this.setGet(["/users/list"], this.getUsersList.bind(this));
 		this.setPost(["/users/save"], this.saveUser.bind(this));
 		this.setPost(["/users/add"], this.addUser.bind(this));
 		this.setPost(["/users/remove/:id"], this.removeUser.bind(this));
 
-		this.setPost(["/groups/list"], this.getGroupsList.bind(this));
+		this.setGet(["/groups/list"], this.getGroupsList.bind(this));
 		this.setPost(["/groups/add"], this.addGroup.bind(this));
 		this.setPost(["/groups/save"], this.saveGroup.bind(this));
 		this.setPost(["/groups/remove/:id"], this.removeGroup.bind(this));

@@ -62,22 +62,15 @@ $(async function () {
 				this.random();
 			}
 		}
-	}
+	};
 	SAHYG.Components.loader.replaceElementContents($(".loading"));
 	$(".loading").append(await SAHYG.translate("LOADING_RESOURCES"));
-	$.post("/jokes")
-		.done(async (jokes) => {
-			if (jokes.length == 0) {
-				$(".loading").contents().remove();
-				$(".loading").append($(`<span>${"⚠️ " + (await SAHYG.translate("NO_JOKES"))}</span>`));
-			} else {
-				$(".loading").remove();
-				SAHYG.Instances.Jokes = new SAHYG.Classes.Jokes(jokes);
-			}
-		})
-		.catch(async () => {
-			SAHYG.Components.popup.Popup.alert(await SAHYG.translate("ERROR_OCCURRED"));
-		});
+	let jokes = await SAHYG.Api.post("/jokes").catch(() => {});
+	if (!jokes || jokes.length == 0) {
+		$(".loading").contents().remove();
+		$(".loading").append($(`<span>${"⚠️ " + (await SAHYG.translate("NO_JOKES"))}</span>`));
+	} else {
+		$(".loading").remove();
+		SAHYG.Instances.Jokes = new SAHYG.Classes.Jokes(jokes);
+	}
 });
-
-

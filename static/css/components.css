@@ -54,6 +54,10 @@ input.btn {
 	font-family: inherit;
 	text-transform: none;
 }
+btn .lafs {
+	margin-right: 0.5rem;
+	font-size: 1.3rem;
+}
 
 /* ANCHOR rounded */
 

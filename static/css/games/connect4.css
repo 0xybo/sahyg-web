@@ -128,12 +128,6 @@ container .commands c-select-current {
 	font-weight: 600;
 	font-size: 0.875rem;
 }
-container .commands btn {
-	gap: 0.5rem;
-}
-container .commands .lafs {
-	font-size: 1.3rem;
-}
 
 @keyframes blink {
 	0% {

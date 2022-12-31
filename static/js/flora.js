@@ -71,40 +71,63 @@ $(async function () {
 				data.possibilities.forEach((possiblity) => {
 					element.append($(`<div class="possibility" target="${possiblity.target}">${possiblity.text}</div>`));
 				});
-				if (data.sketch) element.append(SAHYG.createElement("img", { class: "sketch", src: "/img/flora/sketch/" + data.sketch + ".jpg" }))
+				if (data.sketch) element.append(SAHYG.createElement("img", { class: "sketch", src: "/img/flora/sketch/" + data.sketch + ".jpg" }));
 			} else if (data.type == "specimen") {
 				let cards = $(`<div class="cards"></div>`);
 				cards.append(
-					$(`<div class="card family"><span class="name">${await SAHYG.translate("FAMILY")}</span><span class="text">${data.family}</span></div>`)
+					$(
+						`<div class="card family"><span class="name">${await SAHYG.translate("FAMILY")}</span><span class="text">${
+							data.family
+						}</span></div>`
+					)
 				);
 				cards.append(
-					$(`<div class="card gender"><span class="name">${await SAHYG.translate("GENDER")}</span><span class="text">${data.gender}</span></div>`)
+					$(
+						`<div class="card gender"><span class="name">${await SAHYG.translate("GENDER")}</span><span class="text">${
+							data.gender
+						}</span></div>`
+					)
 				);
 				cards.append(
-					$(`<div class="card latin"><span class="name">${await SAHYG.translate("LATIN")}</span><span class="text">${data.latin}</span></div>`)
+					$(
+						`<div class="card latin"><span class="name">${await SAHYG.translate("LATIN")}</span><span class="text">${
+							data.latin
+						}</span></div>`
+					)
 				);
 				cards.append(
-					$(`<div class="card french"><span class="name">${await SAHYG.translate("FLORA_FRENCH")}</span><span class="text">${data.french}</span></div>`)
+					$(
+						`<div class="card french"><span class="name">${await SAHYG.translate("FLORA_FRENCH")}</span><span class="text">${
+							data.french
+						}</span></div>`
+					)
 				);
 				cards.append(
-					$(`<div class="card common"><span class="name">${await SAHYG.translate("FLORA_COMMON")}</span><span class="text">${data.common}</span></div>`)
+					$(
+						`<div class="card common"><span class="name">${await SAHYG.translate("FLORA_COMMON")}</span><span class="text">${
+							data.common
+						}</span></div>`
+					)
 				);
 				element.append(cards);
 				element.append(
 					$(
-						`<div class="card properties"><span class="name">${await SAHYG.translate("FLORA_PROPERTIES")}</span><span class="text">${data.properties
+						`<div class="card properties"><span class="name">${await SAHYG.translate("FLORA_PROPERTIES")}</span><span class="text">${
+							data.properties
 						}</span></div>`
 					)
 				);
 				element.append(
 					$(
-						`<div class="card habitat"><span class="name">${await SAHYG.translate("FLORA_HABITAT")}</span><span class="text">${data.habitat
+						`<div class="card habitat"><span class="name">${await SAHYG.translate("FLORA_HABITAT")}</span><span class="text">${
+							data.habitat
 						}</span></div>`
 					)
 				);
 				element.append(
 					$(
-						`<div class="card location"><span class="name">${await SAHYG.translate("FLORA_LOCATION")}</span><span class="text">${data.location
+						`<div class="card location"><span class="name">${await SAHYG.translate("FLORA_LOCATION")}</span><span class="text">${
+							data.location
 						}</span></div>`
 					)
 				);
@@ -112,7 +135,7 @@ $(async function () {
 			container.append(element);
 		}
 		getData(id) {
-			return new Promise((resolve, reject) => {
+			return new Promise(async (resolve, reject) => {
 				let elem = $(`app .possibilities#${id}`);
 				if (elem.length) {
 					let question = elem.hasClass("question");
@@ -121,31 +144,32 @@ $(async function () {
 						parents: [elem.attr("data-parent") || "1"],
 						possibilities: question
 							? [
-								...elem
-									.children()
-									.toArray()
-									.map((child) => {
-										child = $(child);
-										return {
-											text: child.text(),
-											target: child.attr("target"),
-										};
-									}),
-							]
+									...elem
+										.children()
+										.toArray()
+										.map((child) => {
+											child = $(child);
+											return {
+												text: child.text(),
+												target: child.attr("target"),
+											};
+										}),
+							  ]
 							: null,
 						...(question
 							? {}
 							: Object.fromEntries(
-								["family", "gender", "latin", "french", "common", "properties", "habitat", "location", "id"].map((e) => [
-									e,
-									elem.find(`.${e} .text`).text(),
-								])
-							)),
+									["family", "gender", "latin", "french", "common", "properties", "habitat", "location", "id"].map((e) => [
+										e,
+										elem.find(`.${e} .text`).text(),
+									])
+							  )),
 					});
-				} else
-					$.post("/flora", { type: "get", id })
-						.done((data) => (data ? resolve(data) : reject()))
-						.fail(reject);
+				} else {
+					let data = await SAHYG.Api.post("/flora", { type: "get", id });
+					if (data) resolve(data);
+					else reject();
+				}
 			});
 		}
 		load(id) {
@@ -176,52 +200,76 @@ $(async function () {
 							`<div class="possibilities"><span class="title">${await SAHYG.translate(
 								"POSSIBILITIES"
 							)}</span><div class="list">${properties.possibilities
-								.map((possibility) => `<a class="possibility" data-target="${possibility.target}">${possibility.text} (Id: ${possibility.target})</a>`)
+								.map(
+									(possibility) =>
+										`<a class="possibility" data-target="${possibility.target}">${possibility.text} (Id: ${possibility.target})</a>`
+								)
 								.join("")}</div></div>`
 						)
 					);
 				} else {
 					elem.append(
-						$(`<div class="property"><span class="name">${await SAHYG.translate("FAMILY")}</span><span class="text">${properties.family}</span></div>`)
-					);
-					elem.append(
-						$(`<div class="property"><span class="name">${await SAHYG.translate("GENDER")}</span><span class="text">${properties.gender}</span></div>`)
-					);
-					elem.append(
-						$(`<div class="property"><span class="name">${await SAHYG.translate("LATIN")}</span><span class="text">${properties.latin}</span></div>`)
-					);
-					elem.append(
 						$(
-							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_FRENCH")}</span><span class="text">${properties.french
+							`<div class="property"><span class="name">${await SAHYG.translate("FAMILY")}</span><span class="text">${
+								properties.family
 							}</span></div>`
 						)
 					);
 					elem.append(
 						$(
-							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_COMMON")}</span><span class="text">${properties.common
+							`<div class="property"><span class="name">${await SAHYG.translate("GENDER")}</span><span class="text">${
+								properties.gender
 							}</span></div>`
 						)
 					);
 					elem.append(
 						$(
-							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_PROPERTIES")}</span><span class="text">${properties.properties
+							`<div class="property"><span class="name">${await SAHYG.translate("LATIN")}</span><span class="text">${
+								properties.latin
 							}</span></div>`
 						)
 					);
 					elem.append(
 						$(
-							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_HABITAT")}</span><span class="text">${properties.habitat
+							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_FRENCH")}</span><span class="text">${
+								properties.french
 							}</span></div>`
 						)
 					);
 					elem.append(
 						$(
-							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_LOCATION")}</span><span class="text">${properties.location
+							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_COMMON")}</span><span class="text">${
+								properties.common
 							}</span></div>`
 						)
 					);
 					elem.append(
-						$(`<div class="property"><span class="name">${await SAHYG.translate("ID")}</span><span class="text">${properties.id}</span></div>`)
+						$(
+							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_PROPERTIES")}</span><span class="text">${
+								properties.properties
+							}</span></div>`
+						)
+					);
+					elem.append(
+						$(
+							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_HABITAT")}</span><span class="text">${
+								properties.habitat
+							}</span></div>`
+						)
+					);
+					elem.append(
+						$(
+							`<div class="property"><span class="name">${await SAHYG.translate("FLORA_LOCATION")}</span><span class="text">${
+								properties.location
+							}</span></div>`
+						)
+					);
+					elem.append(
+						$(
+							`<div class="property"><span class="name">${await SAHYG.translate("ID")}</span><span class="text">${
+								properties.id
+							}</span></div>`
+						)
 					);
 				}
 				elem.append(
@@ -229,10 +277,10 @@ $(async function () {
 						$(`<btn class="goto btn-full">${await SAHYG.translate("GO_TO")}</btn>`),
 						properties.parents
 							? $(
-								`<div class="parents"><span class="title">${await SAHYG.translate("PARENTS")} : </span>${properties.parents
-									?.map((parent) => `<btn class="btn-un parent" data-target="${parent}">${parent}</btn>`)
-									.join("")}</div>`
-							)
+									`<div class="parents"><span class="title">${await SAHYG.translate("PARENTS")} : </span>${properties.parents
+										?.map((parent) => `<btn class="btn-un parent" data-target="${parent}">${parent}</btn>`)
+										.join("")}</div>`
+							  )
 							: null,
 						$(`<div class="id">Id : ${id}</div>`)
 					)
@@ -271,19 +319,8 @@ $(async function () {
 			);
 		}
 		searchRequest(value) {
-			return new Promise((resolve) => {
-				$.post("/flora", { type: "search", value })
-					.done(resolve)
-					.fail(async () => {
-						SAHYG.Components.toast.Toast.danger({
-							message: await SAHYG.translate("ERROR_OCCURRED"),
-						}).show();
-						resolve(null);
-					});
-			});
+			return SAHYG.Api.post("/flora", {type: "search", value})
 		}
-	}
+	};
 	SAHYG.Instances.Flora = new SAHYG.Classes.Flora();
 });
-
-

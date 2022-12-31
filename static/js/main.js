@@ -604,12 +604,12 @@ SAHYG = (function () {
 		async login(login, password) {
 			return axios({
 				method: "POST",
-				url: this.domain + link,
+				url: this.domain + "/login",
 				data: { login, password },
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
-			});
+			})
 		},
 		async status() {
 			let { content } = await this._request("GET", "/status"); // TODO
@@ -1100,7 +1100,7 @@ SAHYG = (function () {
 			}).show();
 		},
 		async error(event) {
-			console.log(event)
+			console.log(event);
 			SAHYG.Components.toast.Toast.danger({
 				message: await SAHYG.translate("ERROR_OCCURRED"),
 			}).show();

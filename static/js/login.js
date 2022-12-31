@@ -32,7 +32,7 @@ $(function () {
 		if (login && password) {
 			let loader = SAHYG.Components.loader.replaceElementContents($("container form > btn"), false);
 			submit = true;
-			let res = await SAHYG.Api.login(login, password);
+			let res = (await SAHYG.Api.login(login, password))?.data;
 			if (!res.success) {
 				loader.done();
 				submit = false;
@@ -44,12 +44,12 @@ $(function () {
 	SAHYG.on("click", "container form > btn", $("container form").trigger.bind($("container form"), "submit"));
 	SAHYG.on("click", "container form .show", function ({ target }) {
 		target = $(target);
-		if(target.attr("status") == "on") {
-			$("container form #password").attr("type", "password")
-			target.attr("status", "off")
+		if (target.attr("status") == "on") {
+			$("container form #password").attr("type", "password");
+			target.attr("status", "off");
 		} else {
-			$("container form #password").attr("type", "text")
-			target.attr("status", "on")
+			$("container form #password").attr("type", "text");
+			target.attr("status", "on");
 		}
 	});
 });

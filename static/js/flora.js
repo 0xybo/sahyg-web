@@ -319,7 +319,7 @@ $(async function () {
 			);
 		}
 		searchRequest(value) {
-			return SAHYG.Api.post("/flora", {type: "search", value})
+			return SAHYG.Api.post("/flora", { type: "search", value });
 		}
 	};
 	SAHYG.Instances.Flora = new SAHYG.Classes.Flora();

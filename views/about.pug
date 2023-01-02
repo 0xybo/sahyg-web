@@ -35,7 +35,6 @@ mixin renderLine(line)
 							+renderLine(item) 
 						</li>
 
-
 mixin renderSection(element) 
 	- name = conditionalI18n(element.name)
 	div.section
@@ -52,7 +51,6 @@ append HEAD
 	link(rel="stylesheet" href="/css/about.css")
 
 	title !{i18n("ABOUT")} | !{Web.config.get("text.title")}
-
 
 block BODY
 	+c_pageTitle(i18n("ABOUT"))

@@ -76,9 +76,9 @@ $(function () {
 		row.remove();
 		let rowsData = input.data("rows");
 		let rowIndex = rowsData.findIndex((e) => e.rowElement == row.get(0));
-		let deletedRow = rowsData[rowIndex]
+		let deletedRow = rowsData[rowIndex];
 		if (rowIndex != -1) input.data("rows", (rowsData.splice(rowIndex), rowsData));
-		updateData(input, false)
+		updateData(input, false);
 		input.trigger("input", ["delete", deletedRow]);
 	});
 	SAHYG.on("input", "c-input-array .ta input, c-input-array c-boolean, c-input-array c-select", function () {

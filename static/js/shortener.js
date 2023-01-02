@@ -50,8 +50,8 @@ $(function () {
 			this.loader.done();
 
 			await Promise.all(this.shortcuts.map(async (shortcut) => this.$body.append(await this.row(shortcut))));
-			
-			this.updateCount()
+
+			this.updateCount();
 
 			SAHYG.on("click", "container .row .copy", this.copy.bind(this));
 			SAHYG.on("click", "container .row .enable", this.toggle.bind(this));
@@ -97,8 +97,8 @@ $(function () {
 			this.loader.done();
 
 			await Promise.all(this.shortcuts.map(async (shortcut) => this.$body.append(await this.row(shortcut))));
-			
-			this.updateCount()
+
+			this.updateCount();
 
 			SAHYG.Components.toast.Toast.success({
 				message: await SAHYG.translate("REFRESHED"),

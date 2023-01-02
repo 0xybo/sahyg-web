@@ -54,7 +54,6 @@ container .value {
 		flex-direction: row;
 	}
 }
-
 container .avatar {
 	display: flex;
 	flex-direction: row;
@@ -119,10 +118,7 @@ container [data-horizontal-tabs-id="profile"] .custom .value {
 }
 container [data-horizontal-tabs-id="profile"] .custom .value c-input-array {
 	min-width: 30rem;
-}
-
-/* ANCHOR Save Button */
-
+} /* ANCHOR Save Button */
 .save-button {
 	position: fixed;
 	bottom: 2rem;
@@ -134,9 +130,7 @@ container [data-horizontal-tabs-id="profile"] .custom .value c-input-array {
 }
 .save-button.hidden {
 	display: none;
-}
-
-/* ANCHOR not editable */
+} /* ANCHOR not editable */
 [data-editable="false"] {
 	opacity: 0.8;
 	cursor: not-allowed;

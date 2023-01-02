@@ -7,7 +7,7 @@ div#mail(style={
 		style 
 			| @font-face {
 			|     font-family: "Audiowide";
-			|     src: url("https://!{hostname}/fonts/audiowide.woff2") format("woff2");
+			|     src: url("!{Web.config.get("domain")}/fonts/audiowide.woff2") format("woff2");
 			| }
 
 	div#mail-container(style={
@@ -22,7 +22,7 @@ div#mail(style={
 			"padding": "16px",
 			"height": "calc(6rem - 32px)" 
 		})
-			img(src="https://"+hostname+"/img/favicon.png" alt="logo" style={
+			img(src=Web.config.get("domain")+"/img/favicon.png" alt="logo" style={
 				"height": "100%"
 			})
 			span(style={

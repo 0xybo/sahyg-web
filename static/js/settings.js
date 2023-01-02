@@ -185,7 +185,7 @@ $(() => {
 
 			let res = await SAHYG.Api.post("/settings", fd);
 			if (!res) return;
-			
+
 			SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVE_SUCCESS") }).show();
 			if (fd.has("locale") || fd.has("avatar")) {
 				if ((await SAHYG.Components.popup.Popup.confirm("⚠️" + (await SAHYG.translate("SETTING_NEED_RELOAD")))).confirm) {

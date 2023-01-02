@@ -10,6 +10,7 @@ const LoggerStore = require("./lib/logger");
 const API = require("./lib/api");
 const Server = require("./lib/server");
 const DB = require("./lib/db");
+const Mail = require("./lib/mail");
 
 class Web {
 	constructor() {
@@ -61,6 +62,9 @@ class Web {
 
 		this.api = new API(this);
 		await this.api.init();
+
+		this.mail = new Mail(this);
+		await this.mail.init();
 
 		this.server = new Server(this);
 		await this.server.init();

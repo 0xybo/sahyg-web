@@ -67,12 +67,18 @@ $(function () {
 			SAHYG.on("click", "container .next:not(.disabled)", this.next.bind(this));
 			SAHYG.on("click", "container .clear:not(.disabled)", this.clear.bind(this));
 			SAHYG.on("click", "container .share:not(.disabled)", this.share.bind(this));
-			SAHYG.on("click", $("container .rules"), async function(){
-				new SAHYG.Components.popup.Popup({
-					title: await SAHYG.translate("RULES"),
-					content: await SAHYG.translate("GAME_OF_LIFE_RULES"),
-				}).addClass("large").show();
-			}.bind(this))
+			SAHYG.on(
+				"click",
+				$("container .rules"),
+				async function () {
+					new SAHYG.Components.popup.Popup({
+						title: await SAHYG.translate("RULES"),
+						content: await SAHYG.translate("GAME_OF_LIFE_RULES"),
+					})
+						.addClass("large")
+						.show();
+				}.bind(this)
+			);
 
 			SAHYG.on(
 				"input",
@@ -154,7 +160,7 @@ $(function () {
 			this.canvas.updateWidth();
 			this.canvas.renderGrid();
 			localStorage.removeItem("game_of_life_board");
-			SAHYG.Utils.url.removeLocationParam("board")
+			SAHYG.Utils.url.removeLocationParam("board");
 		}
 		pause() {
 			this.clearInterval();

@@ -3,12 +3,10 @@ container {
 	min-height: calc(100vh - var(--header-height));
 	width: 100vw;
 }
-
 #mail {
 	height: 100vh;
 	width: 100vw;
 }
-
 #mail-container {
 	padding-top: 32px;
 	padding-bottom: 32px;

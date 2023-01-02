@@ -3,12 +3,13 @@ c-horizontal-tabs {
 	width: 100%;
 	margin: 0 auto;
 }
-.table {
-	overflow-x: scroll;
+[data-horizontal-tabs-id="users"] c-input-array-current {
+    min-width: 50rem;
+}
+[data-horizontal-tabs-id="groups"] c-input-array-current {
+    min-width: 30rem;
 }
 c-input-array {
-	min-width: 50rem;
-	max-width: 100%;
 	margin: 0 auto;
 }
 c-input-array-field btn.edit {

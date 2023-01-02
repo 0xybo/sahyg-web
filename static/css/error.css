@@ -4,7 +4,6 @@ container {
 	flex-direction: column;
 	align-items: center;
 }
-
 container .content {
 	width: 60%;
 	display: flex;
@@ -13,7 +12,6 @@ container .content {
 	row-gap: 20px;
 	margin-top: 5%;
 }
-
 container .title {
 	font-size: 4rem;
 	font-family: Audiowide;

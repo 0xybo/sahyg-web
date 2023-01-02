@@ -3,7 +3,6 @@ container {
 	-ms-flex-direction: column;
 	flex-direction: column;
 	max-width: 70rem;
-
 	--moves-width: 17rem;
 	--history-width: 28rem;
 }
@@ -67,7 +66,6 @@ app .grid .cell[data-player="1"]:before {
 	content: "\f111";
 	font-family: "Line Awesome Free Regular";
 }
-
 app .interactive-panel {
 	max-width: 30rem;
 	display: flex;
@@ -308,10 +306,27 @@ app .interactive-panel > div {
 	.row
 	.cell.moves
 	.grid[data-move="1"]
-	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):not([data-index="2"]):before,
-.history .body .row .cell.moves .grid[data-move="2"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):before,
-.history .body .row .cell.moves .grid[data-move="3"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):before,
-.history .body .row .cell.moves .grid[data-move="4"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):before,
+	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):not(
+		[data-index="2"]
+	):before,
+.history
+	.body
+	.row
+	.cell.moves
+	.grid[data-move="2"]
+	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):before,
+.history
+	.body
+	.row
+	.cell.moves
+	.grid[data-move="3"]
+	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):before,
+.history
+	.body
+	.row
+	.cell.moves
+	.grid[data-move="4"]
+	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):before,
 .history .body .row .cell.moves .grid[data-move="5"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):before,
 .history .body .row .cell.moves .grid[data-move="6"] .cell:not([data-index="8"]):not([data-index="7"]):before,
 .history .body .row .cell.moves .grid[data-move="7"] .cell:not([data-index="8"]):before,

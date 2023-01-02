@@ -1,5 +1,4 @@
-_ = null;
-SAHYG = (function () {
+var SAHYG = (function () {
 	const SAHYG = {
 		Cache: {
 			// To store var for access it later
@@ -609,7 +608,7 @@ SAHYG = (function () {
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
-			})
+			});
 		},
 		async status() {
 			let { content } = await this._request("GET", "/status"); // TODO
@@ -1147,7 +1146,7 @@ SAHYG = (function () {
 		SAHYG.on("click", "[data-viewer]", (e) => new SAHYG.Components.popup.Viewer({ img: e.target.src }).show());
 		SAHYG.on("click", 'a[href^="#"]:not([href="#"])', (event) => (SAHYG.Utils.scroll.to($(event.target).attr("href").substring(1)), false));
 		// Show / hide menu
-		SAHYG.on("click", "menu-icon", SAHYG.Components.headerMenu.toggle);
+		SAHYG.on("click", "menu-icon icon", SAHYG.Components.headerMenu.toggle);
 		// change language when locale flag was clicked
 		SAHYG.on("click", "header-menu .commands .locale dropdown > *", function () {
 			SAHYG.Utils.settings.locale.set(this.id);

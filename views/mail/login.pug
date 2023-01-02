@@ -6,8 +6,8 @@ block MAIL_BODY
 		"text-align": "center", 
 		"display": "block",
 		"width": "min(80%, 30rem)" 
-	}) !{i18n("MAIL_ACCOUNT_CREATED")}
-	a(href=Web.config.get("domain")+"/confirm_user?id="+mail.content.confirm style={
+	}) !{i18n("MAIL_LOGIN_DESCRIPTION")}
+	a(href=Web.config.get("domain")+"/login?redirect=/settings" style={
 		"padding": "0.7rem 1.4rem",
 		"background-color": "#1a81fa",
 		"border-radius": "0.5rem",
@@ -15,8 +15,8 @@ block MAIL_BODY
 		"margin": "0 auto 2rem auto",
 		"width": "fit-content",
 		"display": "block"
-	}) !{i18n("CONFIRM")}
-	a(href=Web.config.get("domain")+"/contact?type=not_my_account&mail="+mail._id style={
+	}) !{i18n("CHANGE_PASSWORD")}
+	a(href=Web.config.get("domain")+"/contact?type=intrusive_connection&mail="+mail._id style={
 		"padding": "0.7rem 1.4rem",
 		"background-color": "#1a81fa",
 		"border-radius": "0.5rem",

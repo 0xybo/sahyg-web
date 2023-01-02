@@ -58,10 +58,7 @@ c-select-option {
 }
 c-select-option:hover {
 	background-color: var(--background-secondary-color);
-}
-
-/* ANCHOR c-boolean */
-
+} /* ANCHOR c-boolean */
 c-boolean {
 	width: 2.4rem;
 	height: 1.2rem;
@@ -89,20 +86,18 @@ c-boolean-circle {
 	background-color: var(--accent-color);
 	display: table;
 	opacity: 0.8;
-}
-
-/* ANCHOR LIST */
-
+} /* ANCHOR LIST */
 c-input-array {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	border: 1px solid var(--divider-color);
+	border-radius: 0.5rem;
+	overflow: scroll auto;
 }
 c-input-array-current {
 	display: flex;
 	flex-direction: column;
-	border: 1px solid var(--divider-color);
-	border-radius: 0.5rem;
 	overflow: scroll hidden;
 }
 c-input-array-header {
@@ -176,7 +171,6 @@ c-input-array-add btn:hover {
 c-input-array-add btn span {
 	margin-right: 0.5rem;
 }
-
 c-input-list {
 	background-color: var(--background-tertiary-color);
 	padding: 0.5rem 1rem;

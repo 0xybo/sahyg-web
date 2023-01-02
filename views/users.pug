@@ -18,9 +18,8 @@ block BODY
 			div.table
 				+c_list([
 					{type: "string", name: "username", displayName: i18n("USERNAME"), disabled: true},
-					{type: "string", name: "firstname", displayName: i18n("FIRSTNAME"), disabled: true},
-					{type: "string", name: "lastname", displayName: i18n("LASTNAME"), disabled: true},
 					{type: "string", name: "email", displayName: i18n("EMAIL"), disabled: true},
+					{type: "string", name: "group", displayName: i18n("GROUP"), disabled: true},
 					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
 				], [])
 		div(data-horizontal-tabs-id="groups")

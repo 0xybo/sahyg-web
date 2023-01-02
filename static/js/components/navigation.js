@@ -14,8 +14,7 @@ function openVerticalTab() {
 	let tab = $(this);
 	$("c-vertical-tabs-item[data-vertical-tabs-target]").removeClass("active");
 	tab.addClass("active");
-	tab
-		.closest("c-vertical-tabs")
+	tab.closest("c-vertical-tabs")
 		.find("[data-vertical-tabs-id]")
 		.removeClass("active")
 		.filter(`[data-vertical-tabs-id=${tab.attr("data-vertical-tabs-target")}]`)
@@ -62,7 +61,9 @@ $(function () {
 	);
 
 	// ANCHOR Vertical Tab
-	$(`[data-vertical-tabs-id="${$("c-vertical-tabs-item[data-vertical-tabs-target].active").attr("data-vertical-tabs-target")}"]`).addClass("active");
+	$(`[data-vertical-tabs-id="${$("c-vertical-tabs-item[data-vertical-tabs-target].active").attr("data-vertical-tabs-target")}"]`).addClass(
+		"active"
+	);
 	SAHYG.on("click", "c-vertical-tabs-item[data-vertical-tabs-target]", openVerticalTab);
 	SAHYG.on("input", "c-vertical-tabs-search input", verticalTabSearch);
 	SAHYG.on("click", "c-vertical-tabs-display-button", function () {
@@ -97,13 +98,11 @@ SAHYG.Components.navigation = {
 				elem = $(elem);
 				let target = params[elem.attr("id")];
 				if (elem.find(`c-horizontal-tabs-item[data-horizontal-tabs-target="${target}"]`).length) {
-					elem
-						.find("c-horizontal-tabs-item")
+					elem.find("c-horizontal-tabs-item")
 						.removeClass("active")
 						.filter((i, e) => $(e).attr("data-horizontal-tabs-target") == target)
 						.addClass("active");
-					elem
-						.find(`[data-horizontal-tabs-id]`)
+					elem.find(`[data-horizontal-tabs-id]`)
 						.removeClass("active")
 						.filter((i, e) => $(e).attr("data-horizontal-tabs-id") == target)
 						.addClass("active");
@@ -126,13 +125,11 @@ SAHYG.Components.navigation = {
 				elem = $(elem);
 				let target = params[elem.attr("id")];
 				if (elem.find(`c-vertical-tabs-item[data-vertical-tabs-target="${target}"]`).length) {
-					elem
-						.find("c-vertical-tabs-item")
+					elem.find("c-vertical-tabs-item")
 						.removeClass("active")
 						.filter((i, e) => $(e).attr("data-vertical-tabs-target") == target)
 						.addClass("active");
-					elem
-						.find(`[data-vertical-tabs-id]`)
+					elem.find(`[data-vertical-tabs-id]`)
 						.removeClass("active")
 						.filter((i, e) => $(e).attr("data-vertical-tabs-id") == target)
 						.addClass("active");

@@ -3,13 +3,11 @@ code {
 	padding: 0.1rem 0.4em;
 	border-radius: 0.3rem;
 }
-
 container {
 	--h1-size: 1.5rem;
 	--h2-size: 1.3rem;
 	--h3-size: 1.1rem;
 }
-
 container > .title {
 	display: flex;
 	font-size: 3rem;
@@ -19,14 +17,12 @@ container > .title {
 	margin-bottom: 3rem;
 	text-align: center;
 }
-
 container .section {
 	padding: 0 0 2rem 1rem;
 }
 container .section .section {
-	padding-bottom: 2rem!important;
+	padding-bottom: 2rem !important;
 }
-
 container .section .title {
 	font-size: var(--h1-size);
 	font-weight: bold;
@@ -55,19 +51,17 @@ container .section .title:hover .return-top {
 container .section .title#table_of_contents .return-top {
 	display: none;
 }
-
 container .section .content > *,
 container .section .content {
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
 }
 container .section .content > *:first-child {
-	padding-top: 0!important;
+	padding-top: 0 !important;
 }
 container .section:last-child .content > *:last-child {
-	padding-bottom: 0!important;
+	padding-bottom: 0 !important;
 }
-
 container .section .content .list-item {
 	margin-left: 1.5rem;
 	padding-left: 1rem;

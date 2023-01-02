@@ -28,7 +28,6 @@ container canvas {
 	border: solid 0.75px var(--divider-color);
 	max-width: 100%;
 }
-
 container .commands {
 	display: flex;
 	flex-direction: column;

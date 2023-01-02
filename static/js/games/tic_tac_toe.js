@@ -1,4 +1,4 @@
-$(() => {
+$(function () {
 	SAHYG.Classes.TicTacToe = class TicTacToe {
 		constructor(element) {
 			this.appElement = element;

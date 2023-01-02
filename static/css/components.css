@@ -1,5 +1,4 @@
 /* ANCHOR FONTS */
-
 @font-face {
 	font-family: "Line Awesome Free Solid";
 	font-style: normal;
@@ -28,7 +27,6 @@
 .lafr {
 	font-family: "Line Awesome Free Regular";
 }
-
 btn,
 input.btn {
 	align-items: center;
@@ -57,34 +55,21 @@ input.btn {
 btn .lafs {
 	margin-right: 0.5rem;
 	font-size: 1.3rem;
-}
-
-/* ANCHOR rounded */
-
+} /* ANCHOR rounded */
 btn.btn-rounded,
 input.btn-rounded {
 	border: 1px solid var(--accent-color);
 	border-radius: 0.375rem;
-}
-
-/* ANCHOR link */
-
-/* 
+} /* ANCHOR link */ /* 
 btn.btn-link,
 input.btn.btn-link {
 	color: var(--link-color);
-} */
-
-/* ANCHOR full */
-
+} */ /* ANCHOR full */
 btn.btn-full,
 input.btn-full {
 	background-color: var(--accent-color);
 	color: var(--background-color);
-}
-
-/* ANCHOR underline */
-
+} /* ANCHOR underline */
 btn.btn-underline,
 btn.btn-un,
 input.btn-underline,
@@ -93,7 +78,6 @@ input.btn-un {
 	border-bottom: 1px solid var(--accent-color);
 	border-radius: 0;
 }
-
 btn.btn-underline.disabled,
 btn.btn-un.disabled,
 input.btn-underline.disabled,
@@ -106,10 +90,7 @@ input.btn-full.disabled {
 btn.disabled {
 	cursor: not-allowed;
 	opacity: 0.5;
-}
-
-/* ANCHOR textarea */
-
+} /* ANCHOR textarea */
 .ta {
 	border: 2px solid var(--divider-color);
 	border-radius: 0.375rem;
@@ -180,7 +161,6 @@ btn.disabled {
 	height: 100%;
 	font-size: 1.5rem;
 }
-
 label.required:after {
 	content: "*";
 	font-weight: bold;
@@ -193,18 +173,12 @@ label.required:after {
 label.required {
 	display: flex;
 	column-gap: 0.4rem;
-}
-
-/* ANCHOR divider */
-
+} /* ANCHOR divider */
 .divider {
 	width: 95%;
 	height: 2px;
 	background-color: var(--divider-color);
-}
-
-/* ANCHOR Loader */
-
+} /* ANCHOR Loader */
 @keyframes svg-loader {
 	100% {
 		transform: rotate(360deg);
@@ -275,10 +249,7 @@ c-loader.center .svg-loader {
 	width: 20vw;
 	height: 20vh;
 	color: var(--base-white);
-}
-
-/* ANCHOR Tippy */
-
+} /* ANCHOR Tippy */
 .tippy-box[data-animation="fade"][data-state="hidden"] {
 	opacity: 0;
 }
@@ -352,10 +323,7 @@ c-loader.center .svg-loader {
 	position: relative;
 	padding: 5px 9px;
 	z-index: 1;
-}
-
-/* ANCHOR icon before */
-
+} /* ANCHOR icon before */
 [data-svg-icon="user"]:before {
 	content: "\f007";
 	font-family: "Line Awesome Free Solid";

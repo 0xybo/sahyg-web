@@ -2,7 +2,6 @@ container {
 	padding: 0 0 2rem 0;
 	max-width: unset;
 }
-
 container .header {
 	height: 20rem;
 	display: flex;
@@ -82,7 +81,6 @@ container c-horizontal-tabs-container .body {
 	max-width: 50rem;
 	width: 100%;
 }
-
 [data-horizontal-tabs-id="bio"] .title {
 	font-size: 1.5rem;
 	font-weight: bold;

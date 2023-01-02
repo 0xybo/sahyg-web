@@ -24,7 +24,7 @@ $(function () {
 		$("container .password-requirements li").removeClass("valid");
 		let val = $(this).val();
 		if (val == "") $(this).parent().removeClass("valid").addClass("invalid");
-		else if (pass.test(val)) $(this).parent().removeClass("invalid").addClass("valid");
+		else if (pass.test(val)) $(this).parent().removeClass("invalid").addClass("valid"); 
 		else {
 			$(this).parent().removeClass("valid").addClass("invalid");
 			if (/[A-Z]/.test(val)) $("container .password-requirements .upper").addClass("valid");

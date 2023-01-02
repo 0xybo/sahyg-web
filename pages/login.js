@@ -42,6 +42,16 @@ class Login extends Page {
 		});
 		user.save();
 
+		let mail = await this.Web.db.Mail({
+			content: { type: "html", filename: "login" },
+			target: user.email,
+			subject: req.__("MAIL_LOGIN_TITLE"),
+			locale: user.locale,
+			context: {},
+		});
+		await mail.save();
+		await mail.send();
+
 		return res.WebResponse.setStatus("LOGGED_IN").setContent({ token: req.sessionID }).send();
 	}
 	async logout(

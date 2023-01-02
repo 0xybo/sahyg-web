@@ -8,17 +8,14 @@ c-vertical-tabs-search ~ c-vertical-tabs-menu {
 app {
 	display: block;
 }
-
 .no_language {
 	width: 100%;
 	display: flex;
 	justify-content: center;
 }
-
 c-horizontal-tabs {
 	display: block;
 }
-
 [data-horizontal-tabs-id="identification"] {
 	height: 100%;
 	display: block;
@@ -106,7 +103,6 @@ c-horizontal-tabs {
 	font-weight: bold;
 	padding-bottom: 0.5rem;
 }
-
 [data-horizontal-tabs-id="search"] {
 	display: flex;
 	flex-direction: column;
@@ -186,7 +182,6 @@ c-horizontal-tabs {
 	text-align: end;
 	white-space: nowrap;
 }
-
 [data-horizontal-tabs-id="glossary"] c-vertical-tabs {
 	height: auto;
 }
@@ -219,7 +214,6 @@ c-horizontal-tabs {
 	max-width: min(100%, 30rem);
 	height: auto;
 }
-
 @media screen and (max-width: 500px) {
 	[data-horizontal-tabs-id="identification"] .possibility {
 		padding: 1rem 1rem;

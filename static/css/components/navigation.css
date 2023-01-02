@@ -1,5 +1,4 @@
 /* ANCHOR Top Nav */
-
 c-horizontal-tabs {
 	display: flex;
 	-ms-flex-direction: column;
@@ -17,7 +16,6 @@ c-horizontal-tabs-panel {
 	flex-wrap: wrap;
 	padding-bottom: 2rem;
 }
-
 c-horizontal-tabs-item {
 	padding: 0.5rem 1rem;
 	display: flex;
@@ -28,15 +26,12 @@ c-horizontal-tabs-item {
 	flex: 1;
 	border-bottom: 1px solid var(--divider-color);
 }
-
 c-horizontal-tabs-item:not(.active) {
 	cursor: pointer;
 }
-
 c-horizontal-tabs-item:not(.active):hover {
 	background-color: var(--background-tertiary-color);
 }
-
 c-horizontal-tabs-item.active {
 	background-color: var(--background-secondary-color);
 }
@@ -53,10 +48,7 @@ c-horizontal-tabs-container > [data-horizontal-tabs-id] {
 }
 [data-horizontal-tabs-id]:not(.active) {
 	display: none;
-}
-
-/* ANCHOR Section */
-
+} /* ANCHOR Section */
 c-section {
 	width: 100%;
 	display: flex;
@@ -64,11 +56,9 @@ c-section {
 	-ms-flex-direction: column;
 	flex-direction: column;
 }
-
 c-section:not(.open) {
 	margin-bottom: 1rem;
 }
-
 c-section-title {
 	font-weight: bold;
 	width: 100%;
@@ -83,11 +73,9 @@ c-section-title {
 	user-select: none;
 	align-items: center;
 }
-
 c-section-title:hover {
 	background-color: var(--background-secondary-color);
 }
-
 c-section-title:before {
 	content: "";
 	position: relative;
@@ -99,7 +87,6 @@ c-section-title:before {
 	flex: 1;
 	margin: 0 1rem;
 }
-
 c-section-title:after {
 	-ms-order: 3;
 	order: 3;
@@ -107,21 +94,16 @@ c-section-title:after {
 	font-family: "Line Awesome Free Solid";
 	transition: transform var(--transition);
 }
-
 c-section:not(.open) c-section-title:after {
 	transform: rotate(-90deg);
 }
-
 c-section:not(.open) c-section-content {
 	display: none;
 }
-
 c-section c-section-content:empty,
 c-section c-section-content:empty {
 	display: none;
-}
-
-/* ANCHOR Title */
+} /* ANCHOR Title */
 c-title {
 	font-size: 2rem;
 	font-weight: bold;
@@ -133,9 +115,7 @@ c-title {
 	width: 100%;
 	display: block;
 	margin-bottom: 2rem;
-}
-
-/* ANCHOR verticalTabs */
+} /* ANCHOR verticalTabs */
 c-vertical-tabs {
 	--panel-width: 16rem;
 	--panel-bar-width: 1.5rem;
@@ -183,11 +163,9 @@ c-vertical-tabs-item.active {
 c-vertical-tabs-display-button {
 	display: none;
 }
-
 c-vertical-tabs-container [data-vertical-tabs-id]:not(.active) {
 	display: none;
 }
-
 @media screen and (max-width: 800px) {
 	c-vertical-tabs-container {
 		position: absolute;
@@ -208,9 +186,8 @@ c-vertical-tabs-container [data-vertical-tabs-id]:not(.active) {
 	}
 	c-vertical-tabs-menu {
 		border-right: none;
-		width: calc(var(--panel-width) - 0.5rem)
+		width: calc(var(--panel-width) - 0.5rem);
 	}
-
 	c-vertical-tabs-search ~ c-vertical-tabs-menu {
 		height: calc(100% - 30px - 1rem);
 	}

@@ -1,8 +1,11 @@
 container {
 	max-width: 80rem;
-	--piece-width: min(7.5vw, 7.5vh);
-	--grid-gap: min(1vw, 1vh);
-	--grid-border: min(2vw, 2vh);
+	--piece-width:
+	min(10vw, 7.5vh);
+	--grid-gap:
+	min(1vw, 1vh);
+	--grid-border:
+	min(2vw, 2vh);
 }
 game-container {
 	width: 100%;
@@ -82,7 +85,6 @@ container .grid [row][content="1"],
 container .piece-preview[content="1"] {
 	background-color: var(--yellow-500);
 }
-
 container .panel {
 	display: flex;
 	gap: 1rem;
@@ -128,7 +130,6 @@ container .commands c-select-current {
 	font-weight: 600;
 	font-size: 0.875rem;
 }
-
 @keyframes blink {
 	0% {
 		opacity: 1;

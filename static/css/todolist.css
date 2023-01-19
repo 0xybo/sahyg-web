@@ -1,0 +1,335 @@
+container {
+	display: grid;
+	padding: 0;
+}
+app-container {
+	display: flex;
+	flex-direction: row;
+	transition: var(--transition);
+	height: 100%;
+}
+
+container .menu .body {
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	width: 15rem;
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
+	padding: 1rem 0 0 1rem;
+	height: 100%;
+	background-color: var(--background-tertiary-color);
+}
+container .menu .title {
+	font-weight: bold;
+	font-size: 1.2rem;
+	display: -ms-flex;
+	display: flex;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	align-items: center;
+	padding-right: 1rem;
+}
+container .menu .text {
+	-ms-flex: 1;
+	flex: 1;
+}
+container .menu .menu-icon {
+	cursor: pointer;
+	font-size: 1.75rem;
+	display: none;
+}
+container .menu .categories {
+	height: 100%;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.5rem;
+}
+container .menu .item {
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+	border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	column-gap: 1rem;
+	height: 3rem;
+}
+container .menu .item:hover {
+	background-color: var(--background-secondary-color);
+}
+container .menu .item .text {
+	flex-grow: 1;
+}
+container .menu .item .menu,
+container .tasks .task .menu {
+	display: flex;
+	font-size: 1.2rem;
+	height: 2rem;
+	width: 2rem;
+	transition: var(--transition);
+	border-radius: 0.5rem;
+	align-items: center;
+	cursor: pointer;
+	justify-content: center;
+}
+container .menu .item .menu:hover,
+container .tasks .task .menu:hover,
+container .tasks .task .menu[aria-expanded="true"],
+container .menu .item .menu[aria-expanded="true"] {
+	color: var(--color-text);
+	background-color: var(--accent-color);
+}
+container .menu .divider {
+	width: 100%;
+}
+container .menu .item .icon {
+	font-family: var(--font-icon-solid);
+	font-size: 1.4rem;
+}
+container .menu .add {
+	margin-right: 1rem;
+	margin-bottom: 1rem;
+}
+container .menu .add:hover {
+	background-color: var(--accent-color);
+}
+
+container .tasks {
+	display: flex;
+	padding: 1rem;
+	flex-direction: column;
+	width: 100%;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+container .tasks .header {
+	display: flex;
+	height: 7rem;
+	border-radius: 0.25rem 0.25rem 0 0;
+	padding: 0.25rem 1rem;
+	font-size: 1.2rem;
+	flex-direction: column;
+	width: 100%;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+container .tasks .header .title {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+container .tasks .header .new-task-container {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+}
+container .tasks .header .new-task-container .plus {
+	font-size: 1.2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	cursor: pointer;
+}
+container .tasks .header .new-task-container .new-task {
+	background: unset;
+	border: none;
+	flex: 1;
+	color: var(--primary-text-color);
+	border-bottom: var(--divider-color) 2px solid;
+	padding: 0.5rem 0.25rem;
+	transition: var(--transition);
+}
+container .tasks .header .new-task-container .new-task:focus-visible {
+	outline: none;
+	border-bottom: var(--accent-color) 2px solid;
+}
+container .tasks .menu-icon {
+	font-size: 2rem;
+	margin-right: 1rem;
+	cursor: pointer;
+	display: none;
+}
+container .tasks .category {
+	display: flex;
+	align-items: center;
+}
+container .tasks .header .icon {
+	font-family: var(--font-icon-solid);
+	font-size: 2rem;
+	margin-right: 1rem;
+}
+container .tasks .body {
+	display: flex;
+	flex-direction: column;
+	row-gap: 1rem;
+	overflow-y: scroll;
+	max-height: calc(100vh - var(--header-height) - 1rem - 1rem - 7rem - 1rem);
+	padding-right: 0.5rem;
+}
+container .tasks .body .todo,
+container .tasks .body .completed {
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.5rem;
+}
+container .tasks .completed-label {
+	cursor: pointer;
+}
+container .tasks .completed-label:before {
+	content: "\f105";
+	font-family: var(--font-icon-solid);
+	margin-right: 0.5rem;
+	display: inline-block;
+	transition: var(--transition);
+}
+container .tasks .completed-label.expanded:before {
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+container .tasks .task-container {
+	display: flex;
+	flex-direction: row;
+	column-gap: 0.5rem;
+}
+container .tasks .task {
+	display: flex;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	background-color: var(--background-tertiary-color);
+	flex-direction: column;
+	column-gap: 1rem;
+}
+container .tasks .task:hover {
+	background-color: var(--background-secondary-color);
+}
+container .tasks .task .complete {
+	font-family: var(--font-icon-solid);
+	font-weight: bold;
+	font-size: 1.5rem;
+	cursor: pointer;
+	line-height: 2rem;
+}
+container .tasks .task .complete.completed:before/*,
+container .tasks .todo .task .complete:hover:before*/ {
+	content: "\f058";
+}
+container .tasks .task .complete:before {
+	content: "\f111";
+}
+container .tasks .task .text,
+container .tasks .task-body {
+	-ms-flex: 1;
+	flex: 1;
+	line-height: 2rem;
+}
+container .tasks .task .delete {
+	font-size: 1.2rem;
+	width: min-content;
+	cursor: pointer;
+}
+container .tasks .task .delete:hover {
+	color: var(--danger-color);
+}
+container .tasks .task-body {
+	display: flex;
+	flex-direction: column;
+}
+container .tasks .subtask {
+	display: flex;
+	gap: 0.5rem;
+}
+container .tasks .subtask-label {
+	margin-left: 2rem;
+	cursor: pointer;
+	padding-top: 0.5rem;
+	color: var(--color-secondary-text);
+}
+container .tasks .subtask-label:before {
+	content: "\f105";
+	font-family: var(--font-icon-solid);
+	margin-right: 0.5rem;
+	display: inline-block;
+	transition: var(--transition);
+}
+container .tasks .subtask-label.expanded:before {
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+container .tasks .subtask-container {
+	margin-left: 2.5rem;
+	border-left: var(--color-tertiary-text) 2px solid;
+	padding-left: 0.5rem;
+	padding-top: 0.5rem;
+	color: var(--color-secondary-text);
+}
+
+container .panel:not(.opened) {
+	display: none;
+}
+container .panel {
+	height: 100%;
+}
+container .panel .body {
+	height: 100%;
+	width: 20rem;
+	background-color: var(--background-secondary-color);
+}
+
+@media screen and (max-width: 1000px) {
+	container .panel.opened {
+		top: 0;
+		right: 0;
+		position: absolute;
+		width: 100%;
+		display: flex;
+		flex-direction: row-reverse;
+	}
+	container .panel.opened .backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: rgba(0, 0, 0, 0.25);
+		box-shadow: 0px 0px 12px 2px black;
+	}
+}
+@media screen and (max-width: 700px) {
+	container .list {
+		padding-left: 1rem;
+	}
+	container .menu {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: 2;
+	}
+	container .menu:not(.opened) {
+		display: none;
+	}
+	container .menu .backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: rgba(0, 0, 0, 0.25);
+		box-shadow: 0px 0px 12px 2px black;
+	}
+	container .menu .body {
+		background-color: var(--background-secondary-color);
+	}
+	container .tasks .menu-icon,
+	container .menu .menu-icon {
+		display: block;
+	}
+}

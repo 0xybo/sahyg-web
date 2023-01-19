@@ -30,7 +30,7 @@ class Download extends Page {
 			else return res.redirect("/login?redirect=" + req.path);
 		}
 
-		return res.download(path);
+		return res.download(path, downloadConfig.filename || path.match(/[^/\\}]+$/gm)?.[0]);
 	}
 }
 

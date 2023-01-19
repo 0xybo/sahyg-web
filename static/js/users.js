@@ -4,7 +4,7 @@ $(function () {
 		$groupsListBody = $('[data-horizontal-tabs-id="groups"] c-input-array-body');
 		$groupsListTemplate = $('[data-horizontal-tabs-id="groups"] c-input-array-template c-input-array-row');
 		constructor() {
-			this.loader = SAHYG.Components.loader.replaceElementContents(this.$groupsListBody, false); // Place a loader symbol in groups list
+			this.loader = SAHYG.Components.loader.replaceContent(this.$groupsListBody, false); // Place a loader symbol in groups list
 
 			SAHYG.on("click", "[data-horizontal-tabs-id=groups] c-input-array-field[name=actions] .edit", this.edit.bind(this));
 			SAHYG.on("input", this.$groupsList, this.arrayUpdate.bind(this));
@@ -128,7 +128,7 @@ $(function () {
 		$usersListBody = $('[data-horizontal-tabs-id="users"] c-input-array-body');
 		$usersListTemplate = $('[data-horizontal-tabs-id="users"] c-input-array-template c-input-array-row');
 		constructor() {
-			this.loader = SAHYG.Components.loader.replaceElementContents(this.$usersListBody, false); // Place a loader symbol in users list
+			this.loader = SAHYG.Components.loader.replaceContent(this.$usersListBody, false); // Place a loader symbol in users list
 
 			SAHYG.on("click", "[data-horizontal-tabs-id=users] c-input-array-field[name=actions] .edit", this.edit.bind(this));
 			SAHYG.on("input", this.$usersList, this.arrayUpdate.bind(this));

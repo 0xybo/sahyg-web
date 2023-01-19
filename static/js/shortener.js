@@ -40,7 +40,7 @@ $(function () {
 		$count = $("container .count .current");
 		$countMax = $("container .count .total");
 		constructor() {
-			this.loader = SAHYG.Components.loader.replaceElementContents(this.$body, false);
+			this.loader = SAHYG.Components.loader.replaceContent(this.$body, false);
 
 			this.asyncConstructor();
 		}
@@ -90,7 +90,7 @@ $(function () {
 		}
 		async refresh() {
 			this.$body.children().remove();
-			this.loader = SAHYG.Components.loader.replaceElementContents(this.$body, false);
+			this.loader = SAHYG.Components.loader.replaceContent(this.$body, false);
 
 			this.shortcuts = await SAHYG.Api.get("/shortener/list");
 
@@ -236,7 +236,7 @@ $(function () {
 		}
 		async search() {
 			this.$body.children().remove();
-			this.loader = SAHYG.Components.loader.replaceElementContents(this.$body, false);
+			this.loader = SAHYG.Components.loader.replaceContent(this.$body, false);
 
 			let search = this.$search.val();
 			let shortcuts = this.shortcuts.filter((shortcut) => shortcut.name.includes(search) || shortcut.target.includes(search));

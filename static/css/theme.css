@@ -129,6 +129,8 @@ html,
 	--font-header: "Poppins", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial",
 		"Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 	--font-code: "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"; /* ANCHOR header */
+	--font-icon-solid: "Line Awesome Free Solid";
+	--font-icon-regular: "Line Awesome Free Regular";
 	--header-height: 4rem;
 	--success-color: hsl(145, 72%, 30%);
 	--danger-color: hsl(3, 85%, 48%);
@@ -151,9 +153,9 @@ html,
 	--link-color: var(--blue-600);
 	--color-text: var(--base-black);
 	--filter-color-text: invert(0%) sepia(100%) saturate(7500%) hue-rotate(194deg) brightness(87%) contrast(113%);
-	--color-primary-text: var(--gray-600);
-	--color-secondary-text: var(--gray-500);
-	--color-tertiary-text: var(--gray-400);
+	--color-primary-text: var(--gray-700);
+	--color-secondary-text: var(--gray-400);
+	--color-tertiary-text: var(--gray-200);
 	--color-disabled-text: var(--gray-350);
 	--color-base-header: var(--gray-900);
 	--color-disabled-header: var(--gray-350);
@@ -161,9 +163,10 @@ html,
 	--color-background-code: var(--gray-100);
 	--color-text-hover: var(--accent-color); /* ANCHOR selection */
 	--text-selection-background: var(--blue-200);
-	--text-selection-text: var(--gray-700); /* ANCHOR tooltip */
-	--tooltip-background-color: var(--gray-650);
-	--tooltip-text-color: var(--gray-100); /* ANCHOR account popup */
+	--text-selection-text: var(--gray-200);/* ANCHOR Tooltip */
+	--tooltip-background-primary-color: var(--gray-150);
+	--tooltip-background-secondary-color: var(--gray-300);
+	--tooltip-text-color: var(--gray-650); /* ANCHOR account popup */
 	--account-popup-header-color: var(--color-text);
 	--account-popup-header-background: var(--blue-200);
 }
@@ -182,14 +185,15 @@ html[theme~="dark"],
 	--color-text: var(--base-white);
 	--filter-color-text: invert(100%) sepia(0%) saturate(0%) hue-rotate(351deg) brightness(117%) contrast(100%);
 	--color-primary-text: var(--gray-150);
-	--color-secondary-text: var(--gray-100);
-	--color-tertiary-text: var(--gray-200);
+	--color-secondary-text: var(--gray-400);
+	--color-tertiary-text: var(--gray-500);
 	--color-disabled-text: var(--gray-300);
 	--color-text-hover: var(--blue-200); /* ANCHOR selection */
 	--text-selection-background: var(--blue-700);
-	--text-selection-text: var(--gray-200); /* ANCHOR tooltip */
-	--tooltip-background-color: var(--gray-150);
-	--tooltip-text-color: var(--gray-650); /* ANCHOR account popup */
+	--text-selection-text: var(--gray-700); /* ANCHOR tooltip */
+	--tooltip-background-primary-color: var(--gray-650);
+	--tooltip-background-secondary-color: var(--gray-600);
+	--tooltip-text-color: var(--gray-100); /* ANCHOR account popup */
 	--account-popup-header-color: var(--color-text);
 	--account-popup-header-background: var(--blue-500);
 } /* ANCHOR font */

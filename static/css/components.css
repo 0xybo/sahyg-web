@@ -178,6 +178,7 @@ label.required {
 	width: 95%;
 	height: 2px;
 	background-color: var(--divider-color);
+	border-radius: 2px;
 } /* ANCHOR Loader */
 @keyframes svg-loader {
 	100% {
@@ -249,7 +250,8 @@ c-loader.center .svg-loader {
 	width: 20vw;
 	height: 20vh;
 	color: var(--base-white);
-} /* ANCHOR Tippy */
+}
+/* ANCHOR Tippy */
 .tippy-box[data-animation="fade"][data-state="hidden"] {
 	opacity: 0;
 }
@@ -258,9 +260,9 @@ c-loader.center .svg-loader {
 }
 .tippy-box {
 	position: relative;
-	background-color: #333;
+	background-color: var(--tooltip-background-primary-color);
 	color: #fff;
-	border-radius: 4px;
+	border-radius: 0.3rem;
 	font-size: 14px;
 	line-height: 1.4;
 	white-space: normal;
@@ -311,7 +313,7 @@ c-loader.center .svg-loader {
 .tippy-arrow {
 	width: 16px;
 	height: 16px;
-	color: #333;
+	color: var(--tooltip-background-primary-color);
 }
 .tippy-arrow:before {
 	content: "";
@@ -323,7 +325,38 @@ c-loader.center .svg-loader {
 	position: relative;
 	padding: 5px 9px;
 	z-index: 1;
-} /* ANCHOR icon before */
+	box-shadow: 0 0 3px 0px var(--tooltip-background-primary-color);
+}
+.tippy-content .tooltip-menu {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding: 0.5rem 0;
+}
+.tippy-content .tooltip-menu .divider {
+	margin: 0.5rem auto;
+}
+.tippy-content .tooltip-menu .item {
+	padding: 0.5rem 1rem;
+	/* border-radius: 0.3rem; */
+}
+.tippy-content .tooltip-menu .item:hover {
+	background-color: var(--tooltip-background-secondary-color);
+}
+.tippy-content .tooltip-menu .item.button {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+	align-items: center;
+	cursor: pointer;
+	width: 100%;
+	justify-content: flex-start;
+}
+.tippy-content .tooltip-menu .item.button .icon {
+	font-size: 1.2rem;
+}
+
+/* ANCHOR icon before */
 [data-svg-icon="user"]:before {
 	content: "\f007";
 	font-family: "Line Awesome Free Solid";

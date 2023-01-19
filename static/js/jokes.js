@@ -63,7 +63,7 @@ $(async function () {
 			}
 		}
 	};
-	SAHYG.Components.loader.replaceElementContents($(".loading"));
+	SAHYG.Components.loader.replaceContent($(".loading"));
 	$(".loading").append(await SAHYG.translate("LOADING_RESOURCES"));
 	let jokes = await SAHYG.Api.post("/jokes").catch(() => {});
 	if (!jokes || jokes.length == 0) {

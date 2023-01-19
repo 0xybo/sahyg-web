@@ -31,11 +31,11 @@ c-select-current:hover,
 c-select.open c-select-current {
 	background-color: var(--background-secondary-color);
 }
-c-select-options {
+/* c-select-options {
 	display: flex;
 	position: absolute;
 	top: calc(100% + 0.5rem);
-	/* right: 0; */
+	right: 0;
 	padding: 0.5rem 0;
 	background-color: var(--background-tertiary-color);
 	border-radius: 0.5rem;
@@ -44,7 +44,7 @@ c-select-options {
 	width: max-content;
 	z-index: 100;
 	box-shadow: 0px 0px 1px 1px var(--background-tertiary-color);
-}
+} */
 c-select:not(.open) c-select-options {
 	display: none;
 }
@@ -58,7 +58,8 @@ c-select-option {
 }
 c-select-option:hover {
 	background-color: var(--background-secondary-color);
-} /* ANCHOR c-boolean */
+}
+ /* ANCHOR c-boolean */
 c-boolean {
 	width: 2.4rem;
 	height: 1.2rem;

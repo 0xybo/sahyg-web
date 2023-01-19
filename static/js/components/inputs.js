@@ -4,19 +4,34 @@ $(function () {
 		return true;
 	}
 
-	SAHYG.on("click", "c-select-current", function (e) {
-		let parent = $(this).closest("c-select");
-		if (parent.hasClass("disabled")) return;
-		$(
-			$("c-select.open")
-				.toArray()
-				.filter((e) => e != parent[0])
-		).removeClass("open");
-		$(this).parent().closest("c-select").toggleClass("open");
-		SAHYG.off("click", closeSelectMenu);
-		SAHYG.once("click", document, closeSelectMenu);
-		e.stopPropagation();
+	SAHYG.on("click", "c-select-current", function ({target}) {
+		console.log(target)
+		tippy(target, {
+			content: $(target).closest("c-select").children("c-select-options").clone().get(0),
+			trigger: "click",
+			interactive: true,
+			placement: "bottom",
+			duration: 200,
+			appendTo: $("tooltips").get(0),
+			onHidden(instance) {
+				instance.destroy()
+			}
+		}).show();
 	});
+
+	// SAHYG.on("click", "c-select-current", function (e) {
+	// 	let parent = $(this).closest("c-select");
+	// 	if (parent.hasClass("disabled")) return;
+	// 	$(
+	// 		$("c-select.open")
+	// 			.toArray()
+	// 			.filter((e) => e != parent[0])
+	// 	).removeClass("open");
+	// 	$(this).parent().closest("c-select").toggleClass("open");
+	// 	SAHYG.off("click", closeSelectMenu);
+	// 	SAHYG.once("click", document, closeSelectMenu);
+	// 	e.stopPropagation();
+	// });
 	SAHYG.on("click", "c-select-option", function () {
 		let select = $(this).closest("c-select");
 		let value = $(this).attr("data-value");

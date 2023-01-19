@@ -24,7 +24,7 @@ $(function () {
 		$("container .password-requirements li").removeClass("valid");
 		let val = $(this).val();
 		if (val == "") $(this).parent().removeClass("valid").addClass("invalid");
-		else if (pass.test(val)) $(this).parent().removeClass("invalid").addClass("valid"); 
+		else if (pass.test(val)) $(this).parent().removeClass("invalid").addClass("valid");
 		else {
 			$(this).parent().removeClass("valid").addClass("invalid");
 			if (/[A-Z]/.test(val)) $("container .password-requirements .upper").addClass("valid");
@@ -43,22 +43,20 @@ $(function () {
 		e.preventDefault();
 		if (!$("#password, #username, #email").parent().hasClass("valid"))
 			return SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("FILL_REQUIRED") }).show();
-		$.post("/signup", {
-			username: $("#username").val()?.toLowerCase(),
-			password: $("#password").val(),
-			firstname: $("#firstname").val(),
-			lastname: $("#lastname").val(),
-			email: $("#email").val(),
-		})
-			.done(function (res) {
-				if (res.success) {
-					window.location = res.redirect || "/";
-				} else {
-					SAHYG.Components.toast.Toast.danger({ message: res.value }).show();
-				}
+		SAHYG.Api.post(
+			"/signup",
+			{
+				username: $("#username").val()?.toLowerCase(),
+				password: $("#password").val(),
+				firstname: $("#firstname").val(),
+				lastname: $("#lastname").val(),
+				email: $("#email").val(),
+			},
+			true
+		)
+			.then((res) => {
+				if (res.success) window.location = SAHYG.Utils.url.getParams()?.redirect || "/";
 			})
-			.catch(function () {
-				SAHYG.Components.toast.Toast.info({ message: SAHYG.translate("ERROR_OCCURRED") }).show();
-			});
+			.catch(() => {});
 	});
 });

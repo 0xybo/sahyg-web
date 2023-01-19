@@ -12,6 +12,7 @@
 	-webkit-tap-highlight-color: transparent;
 	/* -webkit-touch-callout: none; */
 	/* scroll-behavior: smooth; */
+	overscroll-behavior: contain;
 }
 img {
 	height: 100%;
@@ -69,6 +70,7 @@ scroll-container {
 }
 ::-webkit-scrollbar {
 	height: 8px;
+	width: 8px;
 }
 ::-webkit-scrollbar-thumb {
 	background: rgba(26, 129, 250, 0.5);
@@ -219,7 +221,7 @@ header .right-content {
 }
 header .account {
 	background-color: var(--background-secondary-color);
-	padding: 5px 5px 5px 5px;
+	padding: 5px 10px 5px 5px;
 	display: flex;
 	-ms-flex-direction: row;
 	flex-direction: row;
@@ -363,7 +365,7 @@ header-menu .container .menus .expandable .menu .icon img:not(.colored) {
 	filter: var(--filter-color-text);
 }
 /* ANCHOR large window */
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 1024px) {
 	menu-icon {
 		display: none;
 	}
@@ -455,8 +457,14 @@ header-menu .container .menus .expandable .menu .icon img:not(.colored) {
 		font-size: 1.5rem;
 		color: var(--color-primary-text);
 	}
-	header .login btn:before {
+	header .authentication .login btn:before {
 		content: "\f2f6";
+		font-size: 1.5rem;
+		font-family: "Line Awesome Free Solid";
+		margin-right: 0.5rem;
+	}
+	header .authentication .signup btn:before {
+		content: "\f234";
 		font-size: 1.5rem;
 		font-family: "Line Awesome Free Solid";
 		margin-right: 0.5rem;
@@ -559,6 +567,7 @@ header-menu .container .menus .expandable .menu .icon img:not(.colored) {
 		padding-right: 0.5rem;
 		padding-top: 0.5rem;
 		padding-bottom: 0.5rem;
+		border-radius: 0.3rem;
 	}
 	header-menu .container .menus .expandable .menu > .item {
 		display: flex;
@@ -625,17 +634,28 @@ header-menu .container .menus .expandable .menu .icon img:not(.colored) {
 	}
 }
 /* ANCHOR very small window */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 800px) {
 	header .account > .username {
 		display: none;
 	}
-	header .login btn {
+	header .login btn,
+	header .signup btn {
 		font-size: 0;
 	}
 	header .login btn:before {
 		content: "\f2f6";
 		font-size: 1.5rem;
 		font-family: "Line Awesome Free Solid";
+	}
+	header .signup btn:before {
+		content: "\f234";
+		font-size: 1.5rem;
+		font-family: "Line Awesome Free Solid";
+	}
+}
+@media screen and (max-width: 500px) {
+	header .signup {
+		display: none;
 	}
 }
 footer {
@@ -775,25 +795,34 @@ toast > .content {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-tooltips:empty {
+tooltips:empty,
+menus:empty {
 	display: none;
 }
-tooltips {
+tooltips,
+menus {
 	top: 0;
 	left: 0;
 	position: fixed;
 	z-index: 9999;
 }
-tooltips .tippy-box {
-	background-color: var(--tooltip-background-color);
+tooltips .tippy-box,
+menus .tippy-box {
+	background-color: var(--tooltip-background-primary-color);
 	color: var(--tooltip-text-color);
 	width: max-content;
 }
-tooltips .tippy-content {
+tooltips .tippy-content,
+menus .tippy-content {
 	text-align: center;
 }
-tooltips .tippy-arrow {
-	color: var(--tooltip-background-color);
+tooltips .tippy-arrow,
+menus .tippy-arrow {
+	color: var(--tooltip-background-primary-color);
+	z-index: 2;
+}
+menus .tippy-content {
+	padding: 0;
 }
 /* ANCHOR User */
 tooltips .user-tooltip {
@@ -832,7 +861,7 @@ tooltips .user-tooltip .username {
 tooltips .user-tooltip .icons {
 	display: flex;
 	align-items: center;
-	font-size: 1rem;
+	font-size: 1.2rem;
 }
 popup-container {
 	z-index: 100;
@@ -893,6 +922,7 @@ popup.large .container {
 popup.visible .container {
 	transform: scale(1);
 	opacity: 1;
+	box-shadow: 0px 0px 5px 0px var(--background-color);
 }
 popup.visible .backdrop {
 	opacity: 0.5;
@@ -981,6 +1011,10 @@ popup .content form > div [data-input-type="url"] {
 	column-gap: 0.5rem;
 	transition: border var(--transition);
 }
+popup .content form > div [data-input-type="text"].invalid,
+popup .content form > div [data-input-type="url"].invalid {
+	border-bottom: 2px solid var(--danger-color);
+}
 popup .content form > div [data-input-type="text"] > input,
 popup .content form > div [data-input-type="url"] > input {
 	color: inherit;
@@ -1020,6 +1054,40 @@ popup .content form > div [data-input-type="textarea"] textarea {
 	border: none;
 	padding: 0.5rem;
 }
+popup .content form > div [data-input-type="color"] {
+	width: fit-content;
+	border-radius: 0.5rem;
+	background-color: transparent;
+	border: 2px solid var(--divider-color);
+}
+popup .content form > div [data-input-type="color"] input {
+	appearance: none;
+	background: transparent;
+	border: none;
+	height: 3rem;
+	width: auto;
+	cursor: pointer;
+	border-radius: 1rem;
+	display: grid;
+	align-items: center;
+	padding: 0.5rem;
+	grid-template-columns: 1fr 0fr;
+	column-gap: 1rem;
+}
+popup .content form > div [data-input-type="color"] input:before {
+	content: attr(value);
+	font-family: var(--font-code);
+	font-size: 1rem;
+	font-weight: bold;
+	letter-spacing: 1px;
+}
+popup .content form > div [data-input-type="color"] input::-webkit-color-swatch {
+	border-radius: 50%;
+	border: none;
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
 viewer {
 	position: fixed;
 	top: 0;

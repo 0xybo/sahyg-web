@@ -13,7 +13,11 @@ class Login extends Page {
 		/** @type {import('express').Response}*/ res,
 		/** @type {import('express').NextFunction}*/ next
 	) {
-		if (req.WebRequest.userExists) return res.redirect(req.query?.redirect || "/");
+		if (req.WebRequest.userExists) {
+			let redirect = req.query?.redirect || "/";
+			if (redirect.includes("/login")) redirect = "/";
+			return res.redirect(redirect);
+		}
 		res.WebResponse.render("login");
 	}
 	async login(
@@ -47,7 +51,6 @@ class Login extends Page {
 			target: user.email,
 			subject: req.__("MAIL_LOGIN_TITLE"),
 			locale: user.locale,
-			context: {},
 		});
 		await mail.save();
 		await mail.send();

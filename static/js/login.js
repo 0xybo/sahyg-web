@@ -30,7 +30,7 @@ $(function () {
 		let login = $("#login").val()?.toLowerCase();
 		let password = $("#password").val();
 		if (login && password) {
-			let loader = SAHYG.Components.loader.replaceElementContents($("container form > btn"), false);
+			let loader = SAHYG.Components.loader.replaceContent($("container form > btn"), false);
 			submit = true;
 			let res = (await SAHYG.Api.login(login, password))?.data;
 			if (!res.success) {

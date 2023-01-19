@@ -15,9 +15,10 @@ class User extends Page {
 	async get(req, res, next) {
 		let username = req.params.username;
 		let target = await this.Web.db.User({ username });
-		if (!target) return res.WebResponse.renderError("NOT_FOUND")
+		if (!target) return res.WebResponse.renderError("NOT_FOUND");
+		if (!target.confirmed) return res.WebResponse.renderError("NOT_FOUND");
 		let targetGroup = await target.getGroup();
-        return res.WebResponse.render("user", {target, targetGroup, md})
+		return res.WebResponse.render("user", { target, targetGroup, md });
 	}
 }
 

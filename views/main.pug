@@ -39,7 +39,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 		meta(name="sahyg-environment", content=Web.config.get("env.NODE_ENV"))
 
 		<!-- Global Icon -->
-		link(rel="icon" href="/img/favicon.svg" type="image/png")
+		link(rel="icon" href="/img/favicon96x96.png" type="image/png")
 
 		<!-- Global Stylesheet -->
 		link(rel="stylesheet" href="/css/main.css")
@@ -114,10 +114,13 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 														| !{sub.description.startsWith("i18n:")? i18n(sub.description.substring(5)) : sub.description}
 			div.right-content
 				if (!WebRequest.userExists) 
-					div.login
-						a(href="/login") 
+					div.authentication
+						a.login(href="/login") 
 							btn.btn-rounded.btn-link
 								| !{i18n("LOGIN")}
+						a.signup(href="/signup") 
+							btn.btn-rounded.btn-link
+								| !{i18n("SIGNUP")}
 				else 
 					div.account
 						div.avatar
@@ -171,5 +174,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 			popups
 			toasts
 			tooltips
+			right-click
+			menus
 		hidden-content
 

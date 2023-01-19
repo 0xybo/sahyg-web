@@ -121,14 +121,14 @@ $(function () {
 
 			await this.pieceAnimation(x, y);
 
-			let winLine = this.checkWin();
-			if (winLine) {
+			let winLines = this.checkWin();
+			if (winLines) {
 				new SAHYG.Components.popup.Popup()
 					.title(await SAHYG.translate("WIN"))
 					.content(await SAHYG.translate("CONNECT4_WIN", { player: this.player[this.currentPlayer] }))
 					.show();
-				winLine.forEach((cell) => {
-					$(`container .grid [column=${cell.x}] [row=${cell.y}]`).addClass("animated");
+				winLines.forEach((winLine) => {
+					winLine.forEach((cell) => $(`container .grid [column=${cell.x}] [row=${cell.y}]`).addClass("animated"));
 				});
 				this.playing = false;
 			} else {
@@ -137,26 +137,31 @@ $(function () {
 				this.$preview.attr("content", this.currentPlayer);
 			}
 		}
-		pieceAnimation(x, y) {
-			return new Promise((resolve) => {
-				this.previewEnabled = false;
-				let currentPlayer = Number(this.currentPlayer);
-				this.$preview.attr("content", currentPlayer).attr("column", x);
-				setTimeout(() => {
-					this.$preview.addClass("animated").css({
-						transform: `translateY(calc( var(--grid-border) + var(--piece-width) + 1rem + (var(--piece-width) + var(--grid-gap)) * ${y}))`,
-					});
-					setTimeout(() => {
-						this.$preview.removeClass("animated").css({ transform: "" });
-						this.showPreview({ target: $("container .grid [column]:hover") }, true);
-						this.$grid.find(`[column=${x}] [row=${y}]`).attr("content", currentPlayer);
-						setTimeout(() => {
-							this.previewEnabled = true;
-							resolve();
-						}, 100);
-					}, 200);
-				}, 100);
+		wait(ms) {
+			return new Promise((resolve) => setTimeout(resolve, ms));
+		}
+		async pieceAnimation(x, y) {
+			this.previewEnabled = false;
+			let currentPlayer = Number(this.currentPlayer);
+			this.$preview.attr("content", currentPlayer).attr("column", x);
+			
+			await this.wait(100);
+
+			this.$preview.addClass("animated").css({
+				transform: `translateY(calc( var(--grid-border) + var(--piece-width) + 1rem + (var(--piece-width) + var(--grid-gap)) * ${y}))`,
 			});
+
+			await this.wait(200);
+
+			this.$preview.removeClass("animated").css({ transform: "" });
+			this.showPreview({ target: $("container .grid [column]:hover") }, true);
+			this.$grid.find(`[column=${x}] [row=${y}]`).attr("content", currentPlayer);
+
+			// await this.wait(100);
+
+			this.previewEnabled = true;
+
+			return;
 		}
 		getPiecePosition(x) {
 			for (let y = 0; y < 6; y++) {
@@ -166,9 +171,11 @@ $(function () {
 		}
 		checkWin() {
 			let lines = this.getLines();
+			let winLines = [];
 			for (let line of lines) {
-				if (this.checkLine(line)) return line;
+				if (this.checkLine(line)) winLines.push(line);
 			}
+			if (winLines.length) return winLines;
 			return false;
 		}
 		getLines(board) {

@@ -7,7 +7,7 @@ block MAIL_BODY
 		"display": "block",
 		"width": "min(80%, 30rem)" 
 	}) !{i18n("MAIL_ACCOUNT_CREATED")}
-	a(href=Web.config.get("domain")+"/confirm_user?id="+mail.content.confirm style={
+	a(href=Web.config.get("domain")+"/confirm_email?id="+mail.content.data.confirm style={
 		"padding": "0.7rem 1.4rem",
 		"background-color": "#1a81fa",
 		"border-radius": "0.5rem",

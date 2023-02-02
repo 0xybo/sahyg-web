@@ -1,38 +1,4 @@
 $(function () {
-	// ANCHOR Add shortcut properties to DOM
-	// $(".table .row:not(.header)").each(function () {
-	// 	$(this).data("shortcut", {
-	// 		enabled: $(this).find(".enable btn").hasClass("enabled"),
-	// 		URL: $(this).find(".url a").attr("href"),
-	// 		target: $(this).find(".target a").attr("href"),
-	// 		clicked: Number($(this).find(".clicked").text()),
-	// 		name: $(this)
-	// 			.find(".url a")
-	// 			.attr("href")
-	// 			.match(/(?<=\/sc\/).+/gim)[0],
-	// 		line: $(this),
-	// 	});
-	// });
-
-	// // ANCHOR Search bar
-	// SAHYG.on("input", "#search", function () {
-	// 	let text = $(this).val();
-	// 	$(".table .row:not(.header)").each(function () {
-	// 		let elem = $(this);
-	// 		let shortcut = elem.data("shortcut");
-	// 		if (shortcut.URL.includes(text) || shortcut.target.includes(text)) elem.show();
-	// 		else elem.hide();
-	// 	});
-	// 	updateCount();
-	// });
-
-	// // ANCHOR events
-	// SAHYG.on("click", "container .row .copy", clickCopy);
-	// SAHYG.on("click", "container .row .edit", clickEdit);
-	// SAHYG.on("click", "container .row .remove", clickRemove);
-	// SAHYG.on("click", "container .row .enable btn", clickEnable);
-	// SAHYG.on("click", "container .new", clickAdd);
-
 	SAHYG.Classes.Shortener = class Shortener {
 		$search = $("container #search");
 		$body = $("container .body");

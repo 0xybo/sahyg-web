@@ -1,16 +1,18 @@
 function applyFunctions(model) {}
 
-async function TodoListCategory(obj, { get = true, limit = 1 } = {}) {
+async function TodoList_List(obj, { get = true, limit = 1 } = {}) {
 	let model;
 	if (get) {
-		model = await this.models.TodoListCategories.find(obj, null, { limit });
+		model = await this.models.TodoList_Lists.find(obj, null, { limit });
 		if (limit == 1) model = model[0];
 		if (!model) return null;
 	} else {
-		model = this.models.TodoListCategories();
+		model = this.models.TodoList_Lists();
 		model.user = obj.user;
 		model.name = obj.name;
 		model.color = obj.color;
+		model.icon = obj.icon
+		model.identifier = obj.identifier;
 	}
 
 	if (limit > 1) model.forEach(applyFunctions.bind(this));
@@ -19,4 +21,4 @@ async function TodoListCategory(obj, { get = true, limit = 1 } = {}) {
 	return model;
 }
 
-module.exports = TodoListCategory;
+module.exports = TodoList_List;

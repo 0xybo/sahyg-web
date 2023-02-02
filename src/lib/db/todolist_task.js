@@ -5,8 +5,8 @@ function applyFunctions(model) {
 		for (let task of model.subtasks || []) {
 			let subtask;
 			if (task.__proto__?._bsontype == "ObjectID" || typeof task == "string") {
-				subtask = await TodoListTask.call(this, { _id: task });
-			} else subtask = await TodoListTask.call(this, { user: model.user, ...task }, { get: false, save: true });
+				subtask = await TodoList_Task.call(this, { _id: task });
+			} else subtask = await TodoList_Task.call(this, { user: model.user, ...task }, { get: false, save: true });
 
 			subtasks.push(subtask._id);
 		}
@@ -19,7 +19,7 @@ function applyFunctions(model) {
 		let subtasks = [];
 		for (let subtask of model.subtasks) {
 			if (typeof subtask == "string" || subtask.__proto__?._bsontype == "ObjectID")
-				subtasks.push(await TodoListTask.call(this, { _id: subtask }));
+				subtasks.push(await TodoList_Task.call(this, { _id: subtask }));
 			else subtasks.push(subtask);
 		}
 		model.subtasks = subtasks;
@@ -33,19 +33,19 @@ function applyFunctions(model) {
 			subtask.remove();
 		}
 
-		await this.models.TodoListTasks.findOneAndDelete({ _id: model._id });
+		await this.models.TodoList_Tasks.findOneAndDelete({ _id: model._id });
 		return true;
 	}.bind(this);
 }
 
-async function TodoListTask(obj, { get = true, limit = 1, save = false, fetchSubtasks = false } = {}) {
+async function TodoList_Task(obj, { get = true, limit = 1, save = false, fetchSubtasks = false } = {}) {
 	let model;
 	if (get) {
-		model = await this.models.TodoListTasks.find(obj, null, { limit });
+		model = await this.models.TodoList_Tasks.find(obj, null, { limit });
 		if (limit == 1) model = model[0];
 		if (!model) return null;
 	} else {
-		model = this.models.TodoListTasks();
+		model = this.models.TodoList_Tasks();
 		model.user = obj.user;
 		model.date = obj.date;
 		model.text = obj.text;
@@ -53,16 +53,16 @@ async function TodoListTask(obj, { get = true, limit = 1, save = false, fetchSub
 		model.notifications = obj.notifications;
 		model.type = obj.type;
 		model.description = obj.description;
-		model.categories = obj.categories
+		model.lists = obj.lists;
 
 		model.subtasks = [];
 		for (let task of [...(obj.subtasks || []), ...(obj.fetchSubtasks || [])]) {
 			let subtask;
 			if (task._id) {
-				subtask = await TodoListTask({ _id: task._id });
+				subtask = await TodoList_Task({ _id: task._id });
 				Object.assign(subtask, task);
 				await subtask.save();
-			} else subtask = await TodoListTask({ user: model.user, ...task }, { get: false });
+			} else subtask = await TodoList_Task({ user: model.user, ...task }, { get: false });
 
 			model.subtasks.push(subtask._id);
 		}
@@ -81,4 +81,4 @@ async function TodoListTask(obj, { get = true, limit = 1, save = false, fetchSub
 	return model;
 }
 
-module.exports = TodoListTask;
+module.exports = TodoList_Task;

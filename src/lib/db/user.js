@@ -71,8 +71,9 @@ async function User(query, { create = false, multiple = false } = {}) {
 						firstname: model.firstname,
 						lastname: model.lastname,
 					});
+				model.temporaryPassword = !query.password;
 				model.password = await hash(query.password, await genSalt(this.Web.config.get("db.saltRounds")));
-				model.group = query.group || (await this.Group({ name: "user" }, true))?._id;
+				model.group = query.group || (await this.Group({ name: "guest" }, true))?._id;
 				model.avatar = Boolean(query.avatar);
 				model.allowedIps = query.allowedIps || [];
 				model.friends = query.friends || [];

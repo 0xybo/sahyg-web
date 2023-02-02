@@ -9,17 +9,25 @@ app-container {
 	height: 100%;
 }
 
+app-container > .menu .body {
+	overflow: hidden;
+	resize: horizontal;
+	min-width: 18rem;
+	max-width: 50vw;
+}
 container .menu .body {
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	width: 15rem;
+	width: -webkit-fill-available;
 	display: flex;
 	flex-direction: column;
 	row-gap: 1rem;
 	padding: 1rem 0 0 1rem;
 	height: 100%;
 	background-color: var(--background-tertiary-color);
+	z-index: 10;
+	position: relative;
 }
 container .menu .title {
 	font-weight: bold;
@@ -31,21 +39,18 @@ container .menu .title {
 	align-items: center;
 	padding-right: 1rem;
 }
-container .menu .text {
-	-ms-flex: 1;
-	flex: 1;
-}
 container .menu .menu-icon {
 	cursor: pointer;
 	font-size: 1.75rem;
 	display: none;
 }
-container .menu .categories {
+container .menu .lists {
 	height: 100%;
 	overflow-y: scroll;
 	display: flex;
 	flex-direction: column;
 	row-gap: 0.5rem;
+	overflow-x: hidden;
 }
 container .menu .item {
 	padding: 0.5rem 1rem;
@@ -53,17 +58,23 @@ container .menu .item {
 	border-radius: 0.5rem;
 	display: flex;
 	align-items: center;
-	column-gap: 1rem;
+	column-gap: 0.5rem;
 	height: 3rem;
+	flex-wrap: nowrap;
 }
-container .menu .item:hover {
+container .menu .item:hover, container .menu .item.opened {
 	background-color: var(--background-secondary-color);
 }
 container .menu .item .text {
 	flex-grow: 1;
+	text-overflow: ellipsis;
+	max-width: calc(100% - 2rem);
+	white-space: nowrap;
+	overflow: hidden;
 }
 container .menu .item .menu,
-container .tasks .task .menu {
+container .tasks .task .menu,
+container .tasks .header .actions .menu{
 	display: flex;
 	font-size: 1.2rem;
 	height: 2rem;
@@ -76,8 +87,10 @@ container .tasks .task .menu {
 }
 container .menu .item .menu:hover,
 container .tasks .task .menu:hover,
+container .tasks .header .actions .menu:hover,
 container .tasks .task .menu[aria-expanded="true"],
-container .menu .item .menu[aria-expanded="true"] {
+container .menu .item .menu[aria-expanded="true"],
+container .tasks .header .actions .menu[aria-expanded="true"] {
 	color: var(--color-text);
 	background-color: var(--accent-color);
 }
@@ -100,10 +113,11 @@ container .tasks {
 	display: flex;
 	padding: 1rem;
 	flex-direction: column;
-	width: 100%;
+	/* width: 100%; */
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	flex: 1;
 }
 container .tasks .header {
 	display: flex;
@@ -142,24 +156,26 @@ container .tasks .header .new-task-container .new-task {
 	padding: 0.5rem 0.25rem;
 	transition: var(--transition);
 }
+container .tasks .header .new-task-container .new-task:focus-visible.invalid {
+	border-bottom-color: var(--danger-color);
+}
 container .tasks .header .new-task-container .new-task:focus-visible {
 	outline: none;
 	border-bottom: var(--accent-color) 2px solid;
 }
 container .tasks .menu-icon {
 	font-size: 2rem;
-	margin-right: 1rem;
 	cursor: pointer;
 	display: none;
 }
-container .tasks .category {
+container .tasks .list {
 	display: flex;
 	align-items: center;
+	gap: 1rem;
 }
 container .tasks .header .icon {
 	font-family: var(--font-icon-solid);
 	font-size: 2rem;
-	margin-right: 1rem;
 }
 container .tasks .body {
 	display: flex;
@@ -204,6 +220,7 @@ container .tasks .task {
 	background-color: var(--background-tertiary-color);
 	flex-direction: column;
 	column-gap: 1rem;
+	cursor: pointer;
 }
 container .tasks .task:hover {
 	background-color: var(--background-secondary-color);
@@ -307,29 +324,105 @@ container .panel .body {
 	container .list {
 		padding-left: 1rem;
 	}
-	container .menu {
+	app-container > .menu {
 		position: absolute;
-		width: 100%;
+		width: 100vw;
 		height: 100%;
-		z-index: 2;
+		z-index: 8;
+		display: flex;
 	}
-	container .menu:not(.opened) {
-		display: none;
+	app-container > .menu.opened {
+		animation: slide-right var(--transition-duration) ease-in-out forwards normal;
 	}
-	container .menu .backdrop {
+	app-container > .menu:not(.opened) {
+		animation: slide-left var(--transition-duration) ease-in-out forwards normal;
+	}
+	app-container > .menu .backdrop {
 		position: absolute;
 		top: 0;
 		left: 0;
 		height: 100%;
-		width: 100%;
+		width: 100vw;
 		background-color: rgba(0, 0, 0, 0.25);
 		box-shadow: 0px 0px 12px 2px black;
+		z-index: 9;
 	}
-	container .menu .body {
-		background-color: var(--background-secondary-color);
+	app-container > .menu .title .text {
+		flex-grow: 1;
 	}
-	container .tasks .menu-icon,
-	container .menu .menu-icon {
+	app-container > .tasks .menu-icon,
+	app-container > .menu .menu-icon {
 		display: block;
 	}
+}
+
+@keyframes slide-right {
+	0% {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(0);
+	}
+}
+@keyframes slide-left {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translate(-100%);
+	}
+}
+
+menu .menu-body {
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+	padding: 0 0.5rem 1rem 0.5rem;
+}
+menu .task-container {
+	background-color: var(--background-secondary-color);
+	border-radius: 0.25rem;
+	padding: 0.5rem;
+}
+menu .task-complete:before,
+menu .task-subtask-complete:before {
+	content: "\f111";
+	font-family: var(--font-icon-solid);
+	font-size: 1.5rem;
+}
+menu .task-complete.completed:before,
+menu .task-subtask-complete.completed:before {
+	content: "\f058";
+}
+menu .task-text {
+	display: flex;
+	align-items: center;
+	padding: 0 0.5rem;
+}
+menu .task-text textarea ,
+menu .task-add-subtask textarea {
+	background-color: unset;
+	border: none;
+	flex-grow: 1;
+	padding: 0.5rem;
+	resize: none;
+	max-height: 300px;
+	min-height: 20px;
+	overflow: hidden;
+	height: 33px;
+}
+menu .task-text textarea:focus-visible ,
+menu .task-add-subtask textarea:focus-visible {
+	outline: none;
+}
+menu .task-subtasks {
+	padding-left: 2rem;
+}
+menu .task-add-subtask {
+	display: flex;
+	align-items: center;
 }

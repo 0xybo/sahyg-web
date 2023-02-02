@@ -138,6 +138,7 @@ html,
 	--popup-z-index: 100;
 	--toast-z-index: 200;
 	--scrollbar-width: 10px;
+	--backdrop-color: rgba(0, 0, 0, 0.25);
 }
 html,
 :after,

@@ -3,6 +3,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
     "colors": "^1.4.0",
+    "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -30,7 +31,12 @@
   "version": "0.6.1",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js",
+    "!build": "babel src -d build",
+    "start": "node build/index.js",
+    "dev": "node src/index.js",
+    "debug": "nodemon src/index.js"
   },
   "author": "Alban G.",
   "license": "ISC",
@@ -45,5 +51,14 @@
   "bugs": {
     "url": "https://github.com/0xybo/sahyg-web/issues"
   },
-  "homepage": "https://github.com/0xybo/sahyg-web#readme"
+  "homepage": "https://github.com/0xybo/sahyg-web#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "babel-loader": "^9.1.2",
+    "nodemon": "^2.0.20",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
 }

@@ -1,0 +1,55 @@
+extends main.pug 
+include components/navigation.pug
+
+append CONSTANTS
+	meta(name="sahyg-todolist-max-lists-per-user" content=maxListsPerUser type="number")
+	meta(name="sahyg-todolist-max-tasks-per-user" content=maxTasksPerUser type="number")
+	meta(name="sahyg-todolist-max-list-name-length" content=maxListNameLength type="number")
+	meta(name="sahyg-todolist-min-list-name-length" content=minListNameLength type="number")
+	meta(name="sahyg-todolist-max-task-text-length" content=maxTaskTextLength type="number")
+	meta(name="sahyg-todolist-min-task-text-length" content=minTaskTextLength type="number")
+	meta(name="sahyg-todolist-max-task-description-length" content=maxTaskDescriptionLength  type="number")
+	meta(name="sahyg-todolist-min-task-description-length" content=minTaskDescriptionLength type="number")
+	meta(name="sahyg-todolist-default-icon" content=defaultIcon type="string")
+
+append HEAD
+	+meta(i18n("TODOLIST"), i18n("TODOLIST_DESCRIPTION"))
+	meta(name="robots" content="index, follow, noarchive")
+
+	link(rel="stylesheet" href="/css/todolist.css")
+	script(src="/js/todolist.js") 
+
+	title !{i18n("TODOLIST")} | !{Web.config.get("text.title")}
+
+append BODY 
+	app-container
+		div.menu
+			div.body
+				div.title 
+					span.text !{i18n("LISTS")}
+					span.menu-icon.lafs &#xf00d;
+				div.lists
+					div.item.all-tasks
+						span.icon &#xf0ae;
+						span.text !{i18n("ALL_TASKS")}
+						span.count 0/0
+					div.divider
+				btn.btn-rounded.add !{i18n("ADD")}
+		div.tasks
+			div.header
+				div.title
+					div.menu-icon.lafs &#xf0c9;
+					div.list
+						span.icon &#xf022;
+						span.text
+						span.actions
+				div.new-task-container
+					span.plus.lafs &#xf067;
+					input.new-task(type="text" placeholder=i18n("NEW_TASK"))
+			div.body
+				div.todo
+				div.completed-label !{i18n("TASKS_COMPLETED")}
+				div.completed
+		div.panel
+			div.backdrop
+			div.body

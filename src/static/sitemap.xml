@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://sahyg.fr/</loc>
+        <loc>https://www.sahyg.fr/</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/jokes</loc>
+        <loc>https://www.sahyg.fr/jokes</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/tic_tac_toe</loc>
+        <loc>https://www.sahyg.fr/tic_tac_toe</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/hangman</loc>
+        <loc>https://www.sahyg.fr/hangman</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/gameoflife</loc>
+        <loc>https://www.sahyg.fr/gameoflife</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/connect4</loc>
+        <loc>https://www.sahyg.fr/connect4</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/login</loc>
+        <loc>https://www.sahyg.fr/login</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/about</loc>
+        <loc>https://www.sahyg.fr/about</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/signup</loc>
+        <loc>https://www.sahyg.fr/signup</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
     <url>
-        <loc>https://sahyg.fr/contact</loc>
+        <loc>https://www.sahyg.fr/contact</loc>
         <lastmod>2023-01-15</lastmod>
     </url>
 </urlset>

@@ -7,7 +7,7 @@ const Utils = new (require("./utils"))();
 
 class Config {
 	constructor(extras) {
-		this.config_path = "../" + process.env.CONFIG_FOLDER;
+	this.config_path = "../" + process.env.CONFIG_FOLDER;
 		this.loadedModules = {};
 
 		this.originConfig = {
@@ -19,7 +19,7 @@ class Config {
 			this.originConfig = this.concatenate(this.originConfig, this.importFile(extra));
 		}
 
-		this.package = require("../package.json");
+		this.package = require("../../package.json");
 
 		this.dev = this.originConfig.env.NODE_ENV == "development";
 

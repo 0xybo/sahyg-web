@@ -105,7 +105,7 @@ class WebResponse {
 		this.statusName = statusName;
 		this.statusCode = status.code;
 		this.success = status.success;
-		this.description = status.description? this.res.__(status.description) : false
+		this.description = status.description ? this.res.__(status.description) : false;
 		return this;
 	}
 	setContent(content) {

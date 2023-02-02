@@ -2,7 +2,7 @@ const Page = require("../lib/page");
 const md = require("marked").marked;
 
 class Users extends Page {
-	constructor(/** @type {import('../index')} */ Web) {
+	constructor(/** @type {import('../../index')} */ Web) {
 		super(Web);
 		this.Web = Web;
 

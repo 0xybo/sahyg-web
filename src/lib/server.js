@@ -10,6 +10,7 @@ const https = require("https");
 const path = require("path");
 const recursive_readdir = require("recursive-readdir");
 const { readFileSync } = require("fs");
+const compression = require("compression");
 
 const WebRequest = require("./web_request");
 const WebResponse = require("./web_response");
@@ -30,6 +31,8 @@ class Express {
 		this.express.set("views", this.Web.config.get("paths.views"));
 		this.express.set("trust proxy", true);
 		this.express.disable("x-powered-by");
+
+		if (!this.Web.config.dev) this.express.use(compression());
 
 		this.express.use(
 			cors(this.Web.config.get("cors")),

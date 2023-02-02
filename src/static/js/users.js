@@ -29,7 +29,7 @@ $(function () {
 			this.$groupsList.trigger("change");
 		}
 		async getAllGroups() {
-			return (await SAHYG.Api.get("/groups/list").catch(() => {})).groups;
+			return (await SAHYG.Api.get("/groups/list").catch(console.log)).groups;
 		}
 		async arrayUpdate(event, action, data) {
 			if (action == "delete") {
@@ -156,7 +156,7 @@ $(function () {
 			this.$usersList.trigger("change");
 		}
 		async getAllUsers() {
-			return (await SAHYG.Api.get("/users/list").catch(() => {})).users;
+			return (await SAHYG.Api.get("/users/list").catch(console.log)).users;
 		}
 		async arrayUpdate(event, action, data) {
 			if (action == "delete") {

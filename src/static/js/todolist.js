@@ -94,14 +94,14 @@ SAHYG.Classes.TodoList = class TodoList {
 		return new Promise((resolve) => {
 			SAHYG.Api.get(location.pathname + "/tasks")
 				.then((result) => resolve(result.tasks))
-				.catch(() => {});
+				.catch(console.log);
 		});
 	}
 	getLists() {
 		return new Promise((resolve) => {
 			SAHYG.Api.get(location.pathname + "/lists")
 				.then((result) => resolve(result.lists))
-				.catch(() => {});
+				.catch(console.log);
 		});
 	}
 
@@ -362,7 +362,7 @@ SAHYG.Classes.TodoList = class TodoList {
 
 				this.showList(list._id);
 			})
-			.catch(() => {});
+			.catch(console.log);
 	}
 	async renamePopup(listID) {
 		let name = await SAHYG.Utils.input.text({
@@ -385,7 +385,7 @@ SAHYG.Classes.TodoList = class TodoList {
 
 				this.showList(list._id);
 			})
-			.catch(() => {});
+			.catch(console.log);
 	}
 	async changeIconPopup(list, target) {
 		let icon = await SAHYG.Utils.input.icon(target);
@@ -409,7 +409,7 @@ SAHYG.Classes.TodoList = class TodoList {
 
 				this.showList(list._id);
 			})
-			.catch(() => {});
+			.catch(console.log);
 	}
 
 	async addList() {
@@ -436,7 +436,7 @@ SAHYG.Classes.TodoList = class TodoList {
 			},
 			true
 		)
-			.catch(() => {})
+			.catch(console.log)
 			.then(async (res) => {
 				if (!res?.success) return;
 				await this.addListElement({ _id: res.content.id, name: data.name, identifier: res.content.identifier });
@@ -449,7 +449,7 @@ SAHYG.Classes.TodoList = class TodoList {
 		else if (!(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("CONFIRM_DELETE"))).confirm) return;
 
 		await SAHYG.Api.post(location.pathname + "/delete_list", { id, deleteTasks: deleteTasks === true }, true)
-			.catch(() => {})
+			.catch(console.log)
 			.then((res) => {
 				if (!res?.success) return;
 				this.deleteListElement(id);
@@ -469,7 +469,7 @@ SAHYG.Classes.TodoList = class TodoList {
 				await this.showList(list || null);
 				this.updateCounter();
 			})
-			.catch(() => {});
+			.catch(console.log);
 	}
 	async deleteTask(id) {
 		let taskIndex = this.tasks.findIndex((task) => task._id == id);
@@ -480,7 +480,7 @@ SAHYG.Classes.TodoList = class TodoList {
 		if (!(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("CONFIRM_DELETE"))).confirm) return;
 
 		SAHYG.Api.post(location.pathname + "/delete", { id }, true)
-			.catch(() => {})
+			.catch(console.log)
 			.then((res) => {
 				if (!res?.success) return;
 
@@ -518,7 +518,7 @@ SAHYG.Classes.TodoList = class TodoList {
 			let completed = !this.tasks[taskIndex].subtasks[subtaskIndex].completed;
 
 			SAHYG.Api.post(location.pathname + "/complete", { id, completed }, true)
-				.catch(() => {})
+				.catch(console.log)
 				.then((res) => {
 					if (!res?.success) return;
 
@@ -540,7 +540,7 @@ SAHYG.Classes.TodoList = class TodoList {
 			let completed = !this.tasks[taskIndex].completed;
 
 			SAHYG.Api.post(location.pathname + "/complete", { id, completed }, true)
-				.catch(() => {})
+				.catch(console.log)
 				.then((res) => {
 					if (!res?.success) return;
 

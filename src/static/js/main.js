@@ -1231,7 +1231,7 @@ const SAHYG = {
 					if (saveIfPossible && SAHYG.Utils.user.isConnected()) {
 						SAHYG.Api.post("/settings", { locale })
 							.then(() => (reload ? location.reload() : null))
-							.cacth(() => {});
+							.catch(console.log);
 					} else if (reload) location.reload();
 					return null;
 				},
@@ -1481,7 +1481,7 @@ const SAHYG = {
 		icons: {
 			async getAll() {
 				if (SAHYG.Cache.icons.length) return true;
-				let icons = (await SAHYG.Api.getStatic("/line-awesome.json").catch(() => {})) || {};
+				let icons = (await SAHYG.Api.getStatic("/line-awesome.json").catch(console.log)) || {};
 				if (!icons) return false;
 				SAHYG.Cache.icons = icons;
 				return true;

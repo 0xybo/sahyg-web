@@ -65,7 +65,7 @@ $(async function () {
 	};
 	SAHYG.Components.loader.replaceContent($(".loading"));
 	$(".loading").append(await SAHYG.translate("LOADING_RESOURCES"));
-	let jokes = await SAHYG.Api.post("/jokes").catch(() => {});
+	let jokes = await SAHYG.Api.post("/jokes").catch(console.log);
 	if (!jokes || jokes.length == 0) {
 		$(".loading").contents().remove();
 		$(".loading").append($(`<span>${"⚠️ " + (await SAHYG.translate("NO_JOKES"))}</span>`));

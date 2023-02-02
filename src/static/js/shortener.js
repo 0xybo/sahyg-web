@@ -51,7 +51,7 @@ $(function () {
 						message: await SAHYG.translate("UPDATE_SUCCESS"),
 					}).show();
 				})
-				.catch(() => {});
+				.catch(console.log);
 			return false;
 		}
 		async refresh() {
@@ -129,7 +129,7 @@ $(function () {
 							message: await SAHYG.translate("ADD_SUCCESS"),
 						}).show();
 					})
-					.catch(() => {});
+					.catch(console.log);
 			});
 		}
 		async edit({ target }) {
@@ -165,7 +165,7 @@ $(function () {
 							message: await SAHYG.translate("UPDATE_SUCCESS"),
 						}).show();
 					})
-					.catch(() => {});
+					.catch(console.log)og);
 			});
 		}
 		async updateRow(row, { enabled, name, target, clicked }) {
@@ -197,7 +197,7 @@ $(function () {
 							message: await SAHYG.translate("DELETE_SUCCESS"),
 						}).show();
 					})
-					.catch(() => {});
+					.catch(console.log);
 			});
 		}
 		async search() {

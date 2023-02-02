@@ -322,7 +322,7 @@ $(function () {
 				moves: this.moves,
 				opponent: this.opponent == "computer" ? await SAHYG.translate("COMPUTER") : this.player1,
 				win: this.winner == null ? "null" : this.winner == this.player0,
-			}).catch(() => {});
+			}).catch(console.log);
 		}
 		compute() {
 			let wonMoves, opponentWonMoves;

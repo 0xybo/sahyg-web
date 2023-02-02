@@ -57,6 +57,6 @@ $(function () {
 			.then((res) => {
 				if (res.success) window.location = SAHYG.Utils.url.getParams()?.redirect || "/";
 			})
-			.catch(() => {});
+			.catch(console.log);
 	});
 });

@@ -27,6 +27,8 @@ $(function () {
 				))
 			);
 			this.$groupsList.trigger("change");
+
+			SAHYG.Instances.Users = new SAHYG.Classes.Users();
 		}
 		async getAllGroups() {
 			return (await SAHYG.Api.get("/groups/list").catch(console.log)).groups;
@@ -336,5 +338,4 @@ $(function () {
 			row.attr("data-user-id", id);
 		}
 	};
-	SAHYG.Instances.Users = new SAHYG.Classes.Users();
 });

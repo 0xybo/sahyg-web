@@ -6,9 +6,9 @@ mixin c_loader(visible)
 	c-loader(class=(visible? " visible" : ""))
 		svg(viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" class="svg-loader" + (visible? " visible" : ""))
 			circle(cx="170" cy="170" r="160" stroke="currentcolor")
-			circle(cx="170" cy="170" r="135" stroke="var(--color-text)")
+			circle(cx="170" cy="170" r="135" stroke="var(--color-primary-text)")
 			circle(cx="170" cy="170" r="110" stroke="currentcolor")
-			circle(cx="170" cy="170" r="85" stroke="var(--color-text)")
+			circle(cx="170" cy="170" r="85" stroke="var(--color-primary-text)")
 		span.status !{i18n("LOADING")}
 
 append COMPONENTS

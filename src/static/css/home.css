@@ -33,6 +33,7 @@ container .applications {
 	width: 100%;
 	display: flex;
 	justify-items: center;
+	-ms-grid-columns: repeat(auto-fit, min(8rem, 100%));
 	grid-template-columns: repeat(auto-fit, min(8rem, 100%));
 	justify-content: center;
 	gap: 1.5rem;
@@ -44,7 +45,7 @@ container .applications .application {
 	height: 10rem;
 	background-color: var(--background-secondary-color);
 	border-radius: 1rem;
-	color: var(--color-text);
+	color: var(--color-primary-text);
 	transition: background-color var(--transition);
 }
 container .applications .application:hover {

@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo");
+const SessionsMongoStore = require("connect-mongo");
+const RateLimiterMemoryStore = require("rate-limit-mongo");
 
 class DB {
 	constructor(/** @type {import('../index')} */ Web) {
 		this.Web = Web;
 
 		this.logger = Web.loggerStore.new("DB");
+		this.rateLimiterLogger = this.logger.new("RateLimiterMongo");
 		this.models = {};
 		this.databases = {};
 
@@ -16,29 +18,35 @@ class DB {
 			await this.addConnection(db.name, db.models);
 		}
 
-		this.sessionsMemoryStore = MongoStore.create({
-			mongoUrl: `${this.Web.config.get("db.mongo.uri")}/Sessions?${this.Web.config.get("db.mongo.params")}`,
+		this.sessionsMemoryStore = SessionsMongoStore.create({
+			mongoUrl: `${this.Web.config.get("db.mongo.uri")}/MemoryStores?${this.Web.config.get("db.mongo.params")}`,
 			collectionName: this.Web.config.get("sessions.collectionName"),
+		});
+		this.rateLimiterMemoryStore = new RateLimiterMemoryStore({
+			uri: `${this.Web.config.get("db.mongo.uri")}/MemoryStores`,
+			expireTimeMs: this.Web.config.get("rateLimiterExpress.windowMs"),
+			errorHandler: this.rateLimiterLogger.error.bind(this.rateLimiterLogger),
+			collectionName: this.Web.config.get("rateLimiter.collectionName"),
 		});
 
 		try {
-			let {patch, version} = require(this.Web.config.config_path + "/db_patch.js");
+			let { patch, version } = require(this.Web.config.config_path + "/db_patch.js");
 			let mongoDBConfig = await this.models.MongoDB.findOne({});
 			if (!mongoDBConfig) {
 				this.logger.warn("Applying full patch to the database");
 				await patch(this);
 				mongoDBConfig = this.models.MongoDB({ version });
 				mongoDBConfig.save();
-			} else if(version < mongoDBConfig.version) {
+			} else if (version < mongoDBConfig.version) {
 				this.logger.warn("Applying partial patch to the database");
 				await patch(this, mongoDBConfig.version);
 				mongoDBConfig.version = version;
 				await mongoDBConfig.save();
 			} else {
-				this.logger.info("Database is up to date")
+				this.logger.info("Database is up to date");
 			}
 		} catch (e) {
-			console.log(e)
+			console.log(e);
 			this.logger.warn("No Patch found for the database");
 		}
 	}

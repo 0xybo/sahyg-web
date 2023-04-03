@@ -234,7 +234,7 @@
 				);
 			},
 			trim: function (e) {
-				return e.trim ? e.trim() : e.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+				return e.trim ? e.trim() : e.replace(/^[\s\ufFEFF\xA0]+|[\s\ufFEFF\xA0]+$/g, "");
 			},
 			stripBOM: function (e) {
 				return 65279 === e.charCodeAt(0) && (e = e.slice(1)), e;

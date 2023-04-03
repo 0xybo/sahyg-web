@@ -310,9 +310,9 @@
 				var n = "0x" + e.slice(1) - 65536;
 				return t || (n < 0 ? String.fromCharCode(n + 65536) : String.fromCharCode((n >> 10) | 55296, (1023 & n) | 56320));
 			},
-			re = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,
+			re = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\ufFFFF\w-]/g,
 			ie = function (e, t) {
-				return t ? ("\0" === e ? "\ufffd" : e.slice(0, -1) + "\\" + e.charCodeAt(e.length - 1).toString(16) + " ") : "\\" + e;
+				return t ? ("\0" === e ? "\uffffd" : e.slice(0, -1) + "\\" + e.charCodeAt(e.length - 1).toString(16) + " ") : "\\" + e;
 			},
 			oe = function () {
 				T();
@@ -4500,7 +4500,7 @@
 				};
 			}
 		);
-	var Xt = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+	var Xt = /^[\s\ufFEFF\xA0]+|[\s\ufFEFF\xA0]+$/g;
 	(S.proxy = function (e, t) {
 		var n, r, i;
 		if (("string" == typeof t && ((n = e[t]), (t = e), (e = n)), m(e)))

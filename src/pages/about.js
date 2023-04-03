@@ -29,7 +29,7 @@ class About extends Page {
 						{
 							type: "list",
 							items: [
-								(release.new?.[locale] ? (l = locale) : release.new["en-UK"] ? (l = "en-UK") : (l = null),
+								(release.new?.[locale] ? (l = locale) : release.new["en-GB"] ? (l = "en-GB") : (l = null),
 								l
 									? {
 											type: "listItem",
@@ -37,7 +37,7 @@ class About extends Page {
 											subList: release.new[l],
 									  }
 									: null),
-								(release.fix?.[locale] ? (l = locale) : release.fix["en-UK"] ? (l = "en-UK") : (l = null),
+								(release.fix?.[locale] ? (l = locale) : release.fix["en-GB"] ? (l = "en-GB") : (l = null),
 								l
 									? {
 											type: "listItem",
@@ -45,7 +45,7 @@ class About extends Page {
 											subList: release.fix[l],
 									  }
 									: null),
-								(release.changes?.[locale] ? (l = locale) : release.changes["en-UK"] ? (l = "en-UK") : (l = null),
+								(release.changes?.[locale] ? (l = locale) : release.changes["en-GB"] ? (l = "en-GB") : (l = null),
 								l
 									? {
 											type: "listItem",

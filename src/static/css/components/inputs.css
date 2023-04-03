@@ -4,6 +4,7 @@ c-select {
 	user-select: none;
 	display: flex;
 	align-items: center;
+	width: -moz-fit-content;
 	width: fit-content;
 }
 c-select.disabled c-select-current {
@@ -28,7 +29,8 @@ c-select-current[data-label]:before {
 	margin-right: 0.5rem;
 }
 c-select-current:hover,
-c-select.open c-select-current {
+c-select.open c-select-current,
+c-select-current[aria-expanded="true"] {
 	background-color: var(--background-secondary-color);
 }
 /* c-select-options {
@@ -172,50 +174,4 @@ c-input-array-add btn:hover {
 c-input-array-add btn span {
 	margin-right: 0.5rem;
 }
-c-input-list {
-	background-color: var(--background-tertiary-color);
-	padding: 0.5rem 1rem;
-	border-radius: 1rem;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-c-input-list-values {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	flex-wrap: wrap;
-	flex: 1;
-	gap: 0.5rem;
-}
-c-input-list-value {
-	padding: 0.2rem 0.5rem;
-	background-color: var(--background-secondary-color);
-	border-radius: 0.5rem;
-	display: flex;
-	flex-wrap: nowrap;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.2rem;
-}
-c-input-list-value-remove:before {
-	transition: var(--transition);
-	font-family: "Line Awesome Free Solid";
-	content: "\f00d";
-	cursor: pointer;
-}
-c-input-list-value-remove:hover:before {
-	color: var(--danger-color);
-}
-c-input-list-add:before {
-	font-family: "Line Awesome Free Solid";
-	content: "\f067";
-	cursor: pointer;
-	padding: 0.5rem 0.5rem;
-	border-radius: 0.5rem;
-}
-c-input-list-add:hover:before {
-	transition: var(--transition);
-	background-color: var(--background-secondary-color);
-	color: var(--success-color);
-}
+

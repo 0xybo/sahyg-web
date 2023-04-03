@@ -69,7 +69,11 @@ class WebResponse {
 			if (link.type == "dropdown") {
 				let dropdown = [];
 				for (let linkDropdown of link.dropdown) {
-					if (await this.WebRequest.user.checkPermissions(linkDropdown.permissions)) dropdown.push(linkDropdown);
+					if (linkDropdown.type == "app") {
+						let app = this.Web.config.get("apps").find((app) => app.name == linkDropdown.name);
+						if (app && await this.WebRequest.user.checkPermissions(app.displayPermissions)) dropdown.push(app);
+					}
+					else if (await this.WebRequest.user.checkPermissions(linkDropdown.permissions)) dropdown.push(linkDropdown);
 				}
 				if (dropdown.length)
 					headerLinks.push({

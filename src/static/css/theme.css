@@ -142,7 +142,8 @@ html,
 }
 html,
 :after,
-:before {
+:before,
+::-webkit-scrollbar {
 	/* ANCHOR background */
 	--background-color: var(--color-white);
 	--background-secondary-color: var(--gray-150);
@@ -164,12 +165,15 @@ html,
 	--color-background-code: var(--gray-100);
 	--color-text-hover: var(--accent-color); /* ANCHOR selection */
 	--text-selection-background: var(--blue-200);
-	--text-selection-text: var(--gray-200);/* ANCHOR Tooltip */
+	--text-selection-text: var(--gray-200); /* ANCHOR Tooltip */
 	--tooltip-background-primary-color: var(--gray-150);
 	--tooltip-background-secondary-color: var(--gray-300);
-	--tooltip-text-color: var(--gray-650); /* ANCHOR account popup */
-	--account-popup-header-color: var(--color-text);
+	--tooltip-text-color: var(--gray-650); 
+	--tooltip-border-color: var(--gray-300);
+	/* ANCHOR account popup */
+	--account-popup-header-color: var(--color-primary-text);
 	--account-popup-header-background: var(--blue-200);
+	--scrollbar-width: 8px;
 }
 html[theme~="dark"],
 [theme~="dark"] :after,
@@ -194,8 +198,10 @@ html[theme~="dark"],
 	--text-selection-text: var(--gray-700); /* ANCHOR tooltip */
 	--tooltip-background-primary-color: var(--gray-650);
 	--tooltip-background-secondary-color: var(--gray-600);
-	--tooltip-text-color: var(--gray-100); /* ANCHOR account popup */
-	--account-popup-header-color: var(--color-text);
+	--tooltip-text-color: var(--color-primary-text);
+	--tooltip-border-color: var(--gray-600);
+	/* ANCHOR account popup */
+	--account-popup-header-color: var(--color-primary-text);
 	--account-popup-header-background: var(--blue-500);
 } /* ANCHOR font */
 @font-face {

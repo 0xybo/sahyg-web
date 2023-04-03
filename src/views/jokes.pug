@@ -12,7 +12,6 @@ append HEAD
 	title !{i18n('JOKES')} | !{Web.config.get("text.title")}
 
 block BODY 
-	span.loading !{i18n('LOADING')}
 	app
 		+c_horizontalTabs("tab", [{id: "random", title: i18n("RANDOM")}, {id: "about", title: i18n("ABOUT")}], "random")
 			app-content(data-horizontal-tabs-id="random")

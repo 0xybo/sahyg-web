@@ -99,7 +99,7 @@ container .table .row,
 container .table .header {
 	display: -ms-grid;
 	display: grid;
-	-ms-grid-columns: repeat(5, auto);
+	-ms-grid-columns: 5rem 1fr 1fr 8rem 10rem;
 	grid-template-columns: 5rem 1fr 1fr 8rem 10rem;
 	width: 100%;
 }

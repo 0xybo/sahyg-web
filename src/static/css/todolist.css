@@ -1,12 +1,16 @@
 container {
+	display: -ms-grid;
 	display: grid;
 	padding: 0;
+	height: calc(100vh - var(--header-height));
 }
 app-container {
 	display: flex;
 	flex-direction: row;
 	transition: var(--transition);
 	height: 100%;
+	position: absolute;
+	width: 100%;
 }
 
 app-container > .menu .body {
@@ -14,6 +18,9 @@ app-container > .menu .body {
 	resize: horizontal;
 	min-width: 18rem;
 	max-width: 50vw;
+}
+container .menu {
+	height: 100%;
 }
 container .menu .body {
 	-webkit-user-select: none;
@@ -62,7 +69,7 @@ container .menu .item {
 	height: 3rem;
 	flex-wrap: nowrap;
 }
-container .menu .item:hover, container .menu .item.opened {
+container .menu .item:is(:hover, .opened) {
 	background-color: var(--background-secondary-color);
 }
 container .menu .item .text {
@@ -74,7 +81,7 @@ container .menu .item .text {
 }
 container .menu .item .menu,
 container .tasks .task .menu,
-container .tasks .header .actions .menu{
+container .tasks .header .actions .menu {
 	display: flex;
 	font-size: 1.2rem;
 	height: 2rem;
@@ -91,7 +98,7 @@ container .tasks .header .actions .menu:hover,
 container .tasks .task .menu[aria-expanded="true"],
 container .menu .item .menu[aria-expanded="true"],
 container .tasks .header .actions .menu[aria-expanded="true"] {
-	color: var(--color-text);
+	color: var(--color-primary-text);
 	background-color: var(--accent-color);
 }
 container .menu .divider {
@@ -113,27 +120,27 @@ container .tasks {
 	display: flex;
 	padding: 1rem;
 	flex-direction: column;
-	/* width: 100%; */
 	-webkit-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	flex: 1;
+	flex-grow: 1;
+	min-width: 20rem;
 }
 container .tasks .header {
 	display: flex;
-	height: 7rem;
 	border-radius: 0.25rem 0.25rem 0 0;
 	padding: 0.25rem 1rem;
-	font-size: 1.2rem;
 	flex-direction: column;
 	width: 100%;
 	justify-content: space-between;
 	margin-bottom: 1rem;
+	gap: 1rem;
 }
 container .tasks .header .title {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	font-size: 1.2rem;
 }
 container .tasks .header .new-task-container {
 	display: flex;
@@ -163,6 +170,36 @@ container .tasks .header .new-task-container .new-task:focus-visible {
 	outline: none;
 	border-bottom: var(--accent-color) 2px solid;
 }
+container .tasks .task-filter {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+container .tasks .task-filter .search {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background-color: var(--background-tertiary-color);
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	height: 40px;
+}
+container .tasks .task-filter :is(.sort, .direction):not(.selected-hidden) {
+	width: 12rem;
+}
+container .tasks .task-filter .direction.selected-hidden .selected:before {
+	content: "\f362";
+	font-size: 1.2rem;
+	font-family: var(--font-icon-solid);
+	transform: rotate(90deg);
+}
+container .tasks .task-filter .sort.selected-hidden .selected:before {
+	content: "\f160";
+	font-size: 1.2rem;
+	font-family: var(--font-icon-solid);
+}
 container .tasks .menu-icon {
 	font-size: 2rem;
 	cursor: pointer;
@@ -173,7 +210,7 @@ container .tasks .list {
 	align-items: center;
 	gap: 1rem;
 }
-container .tasks .header .icon {
+container .tasks .header .title .icon {
 	font-family: var(--font-icon-solid);
 	font-size: 2rem;
 }
@@ -182,7 +219,6 @@ container .tasks .body {
 	flex-direction: column;
 	row-gap: 1rem;
 	overflow-y: scroll;
-	max-height: calc(100vh - var(--header-height) - 1rem - 1rem - 7rem - 1rem);
 	padding-right: 0.5rem;
 }
 container .tasks .body .todo,
@@ -244,6 +280,7 @@ container .tasks .task-body {
 	-ms-flex: 1;
 	flex: 1;
 	line-height: 2rem;
+	overflow-x: hidden;
 }
 container .tasks .task .delete {
 	font-size: 1.2rem;
@@ -256,37 +293,57 @@ container .tasks .task .delete:hover {
 container .tasks .task-body {
 	display: flex;
 	flex-direction: column;
+	flex-grow: 1;
 }
 container .tasks .subtask {
 	display: flex;
 	gap: 0.5rem;
 }
-container .tasks .subtask-label {
-	margin-left: 2rem;
-	cursor: pointer;
-	padding-top: 0.5rem;
-	color: var(--color-secondary-text);
+container .tasks .subtasks {
+	display: flex;
+	gap: 0.5rem;
+	width: 100%;
 }
-container .tasks .subtask-label:before {
+container .tasks .subtask-label {
+	cursor: pointer;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 0.5rem;
+	padding-top: 0.5rem;
+	height: 100%;
+	min-height: 1.5rem;
+}
+container .tasks .subtask-label .arrow:before {
 	content: "\f105";
 	font-family: var(--font-icon-solid);
-	margin-right: 0.5rem;
-	display: inline-block;
+	display: flex;
 	transition: var(--transition);
+	flex-direction: column;
+	color: var(--color-secondary-text);
+	line-height: 1.5rem;
 }
-container .tasks .subtask-label.expanded:before {
+container .tasks .subtask-label.expanded .arrow:before {
 	-webkit-transform: rotate(90deg);
 	-moz-transform: rotate(90deg);
 	-ms-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
 	transform: rotate(90deg);
 }
-container .tasks .subtask-container {
-	margin-left: 2.5rem;
-	border-left: var(--color-tertiary-text) 2px solid;
-	padding-left: 0.5rem;
-	padding-top: 0.5rem;
+container .tasks .subtask-label .alternative-text {
+	white-space: nowrap;
+	width: 100%;
 	color: var(--color-secondary-text);
+	display: none;
+	line-height: 1.5rem;
+}
+container .tasks .subtask-label .alternative-text:before {
+	content: attr(data-count);
+	margin-right: 0.5rem;
+}
+container .tasks .subtask-container {
+	/* color: var(--color-secondary-text); */
+	width: 100%;
 }
 
 container .panel:not(.opened) {
@@ -377,52 +434,69 @@ container .panel .body {
 	}
 }
 
-menu .menu-body {
+container menu .container {
 	display: flex;
 	gap: 1rem;
 	flex-direction: column;
 	padding: 0 0.5rem 1rem 0.5rem;
+	height: 100%;
 }
-menu .task-container {
+container menu .card {
 	background-color: var(--background-secondary-color);
 	border-radius: 0.25rem;
 	padding: 0.5rem;
+	display: flex;
+	flex-direction: column;
 }
-menu .task-complete:before,
-menu .task-subtask-complete:before {
+container menu .card-title {
+	font-weight: bold;
+	font-size: 1.1rem;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	margin-bottom: 0.5rem;
+}
+container menu .text-and-subtasks sahyg-textarea {
+	margin-left: 0.5rem;
+}
+container menu .complete:before,
+container menu .subtask-complete:before {
 	content: "\f111";
 	font-family: var(--font-icon-solid);
 	font-size: 1.5rem;
+	cursor: pointer;
 }
-menu .task-complete.completed:before,
-menu .task-subtask-complete.completed:before {
+container menu .complete.completed:before,
+container menu .subtask-complete.completed:before {
 	content: "\f058";
 }
-menu .task-text {
+container menu .text {
 	display: flex;
 	align-items: center;
-	padding: 0 0.5rem;
 }
-menu .task-text textarea ,
-menu .task-add-subtask textarea {
-	background-color: unset;
-	border: none;
-	flex-grow: 1;
-	padding: 0.5rem;
-	resize: none;
-	max-height: 300px;
-	min-height: 20px;
-	overflow: hidden;
-	height: 33px;
-}
-menu .task-text textarea:focus-visible ,
-menu .task-add-subtask textarea:focus-visible {
-	outline: none;
-}
-menu .task-subtasks {
+container menu .subtasks {
 	padding-left: 2rem;
 }
-menu .task-add-subtask {
+container menu .subtask-text {
 	display: flex;
 	align-items: center;
+}
+container menu .add-subtask {
+	display: flex;
+	align-items: center;
+}
+container menu .add-subtask-icon {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+}
+container menu .subtask-delete {
+	font-size: 1.2rem;
+}
+container menu .subtask-delete:hover {
+	color: var(--danger-color);
+	transition: var(--transition);
 }

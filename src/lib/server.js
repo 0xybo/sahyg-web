@@ -11,6 +11,7 @@ const path = require("path");
 const recursive_readdir = require("recursive-readdir");
 const { readFileSync } = require("fs");
 const compression = require("compression");
+const rateLimiter = require("express-rate-limit");
 
 const WebRequest = require("./web_request");
 const WebResponse = require("./web_response");
@@ -29,12 +30,21 @@ class Express {
 
 		this.express.set("view engine", "pug");
 		this.express.set("views", this.Web.config.get("paths.views"));
-		this.express.set("trust proxy", true);
+		this.express.set("trust proxy", "192.168.0.253, 192.168.0.254");
 		this.express.disable("x-powered-by");
 
 		if (!this.Web.config.dev) this.express.use(compression());
 
 		this.express.use(
+			rateLimiter({
+				...this.Web.config.get("rateLimiterExpress"),
+				message: (req, res, next) => {
+					this.Web.i18n.init(req, res, next);
+
+					return req.__("RATE_LIMITED");
+				},
+				store: this.Web.db.rateLimiterMemoryStore,
+			}),
 			cors(this.Web.config.get("cors")),
 			helmet(this.Web.config.get("helmet")),
 			this.setHeaders(this.Web.config.get("headers")),

@@ -6,9 +6,23 @@ function applyFunctions(model) {
 			let subtask;
 			if (task.__proto__?._bsontype == "ObjectID" || typeof task == "string") {
 				subtask = await TodoList_Task.call(this, { _id: task });
-			} else subtask = await TodoList_Task.call(this, { user: model.user, ...task }, { get: false, save: true });
+			} else
+				subtask = await TodoList_Task.call(
+					this,
+					{
+						lists: task.lists || [],
+						completed: task.completed,
+						text: task.text,
+						user: model.user,
+						type: "subtask",
+						description: "",
+						notifications: [],
+						subtasks: [],
+					},
+					{ get: false, save: true }
+				);
 
-			subtasks.push(subtask._id);
+			if (subtask) subtasks.push(subtask._id);
 		}
 
 		model.subtasks = subtasks;
@@ -18,9 +32,10 @@ function applyFunctions(model) {
 	model.fetchSubtasks = async function () {
 		let subtasks = [];
 		for (let subtask of model.subtasks) {
-			if (typeof subtask == "string" || subtask.__proto__?._bsontype == "ObjectID")
-				subtasks.push(await TodoList_Task.call(this, { _id: subtask }));
-			else subtasks.push(subtask);
+			if (typeof subtask == "string" || subtask.__proto__?._bsontype == "ObjectID") {
+				let fetched = await TodoList_Task.call(this, { _id: subtask });
+				if (fetched) subtasks.push(fetched);
+			} else subtasks.push(subtask);
 		}
 		model.subtasks = subtasks;
 		return subtasks;
@@ -56,7 +71,7 @@ async function TodoList_Task(obj, { get = true, limit = 1, save = false, fetchSu
 		model.lists = obj.lists;
 
 		model.subtasks = [];
-		for (let task of [...(obj.subtasks || []), ...(obj.fetchSubtasks || [])]) {
+		for (let task of obj.subtasks instanceof Array ? obj.subtasks : []) {
 			let subtask;
 			if (task._id) {
 				subtask = await TodoList_Task({ _id: task._id });

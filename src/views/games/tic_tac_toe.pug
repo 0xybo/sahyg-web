@@ -1,6 +1,5 @@
 extends ../main.pug
 include ../components/navigation.pug
-include ../components/inputs.pug
 
 append HEAD
 	+meta("Tic Tac Toe", "Tic Tac Toe game")
@@ -27,17 +26,25 @@ block BODY
 							btn.btn-full#edit-opponent !{i18n("EDIT_OPPONENT")}
 						div.change-opponent
 							span.label !{i18n("PLAY_AGAINST")}
-							+c_select([
-								{"title": "i18n:PLAYER","value": "player"},
-								{"title": "i18n:COMPUTER","value": "computer"}
-							], "change-opponent", "player")
+							sahyg-select#change-opponent(
+								options=[
+									{"value": i18n("PLAYER"),"id": "player"},
+									{"value": i18n("COMPUTER"),"id": "computer"},
+								]
+								selected=["player"]
+								multiple="false"
+							)
 						div.first-player
 							span.label !{i18n("FIRST_PLAYER")}
-							+c_select([
-								{"title": "i18n:ME","value": "0"},
-								{"title": "i18n:OPPONENT","value": "1"},
-								{"title": "i18n:RANDOM","value": "random"}
-							], "first-player", "0")
+							sahyg-select#first-player(
+								options=[
+									{"value": i18n("ME"),"id": "0"},
+									{"value": i18n("OPPONENT"),"id": "1"},
+									{"value": i18n("RANDOM"),"id": "random"}
+								]
+								selected=["0"]
+								multiple="false"
+							)
 				div.informations
 					div.title !{i18n("INFORMATIONS")}
 					div.player !{i18n("PLAYER_TURN")} :
@@ -52,30 +59,14 @@ block BODY
 				div.body(data-empty=i18n("NOTHING_HERE"))
 					if history
 						each party in history.reverse().slice(0, 20)
-							- let win = party.win == "null" ? "draw" : party.win ? "victory" : "defeat"
-							div.row
-								div.cell.win(class=win)
-								div.cell.opponent !{party.opponent}
-								div.cell.moves
-									div.grid(data-move=0)
-										each position in [[0,0], [0,1], [0,2], [1,0], [1,1], [1,2], [2,0], [2,1], [2,2]]
-											- let index = party.moves.findIndex(cell => cell.row == position[0] && cell.column == position[1])
-											- let dataIndex = index == -1? null : index
-											- let player = party.moves[index]?.player? (WebRequest.user.username == (party.moves[index]?.player) ? 0 : 1) : null
-											div.cell(data-index=dataIndex data-row=position[0] data-column=position[1] data-player=player)
-									div.commands
-										btn.start.disabled
-											span.lafs &#xf04a;
-											| !{i18n("START")}
-										btn.previous.disabled 
-											span.lafs &#xf0d9; 
-											|!{i18n("PREVIOUS")}
-										btn.next 
-											| !{i18n("NEXT")}
-											span.lafs &#xf0da;
-										btn.end
-											| !{i18n("END")}
-											span.lafs &#xf04e;
+							- let winner = party.win == "null" ? null : party.win ? WebRequest.user.username : party.opponent
+							sahyg-tictactoe-history-row(
+								moves=party.moves, 
+								player0=WebRequest.user.username, 
+								player1=party.opponent, 
+								winner=winner
+								opponent=party.opponent
+							)
 		div.statistics(data-horizontal-tabs-id="statistics")
 			| work in progress
 

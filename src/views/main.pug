@@ -27,6 +27,8 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 		//- meta(http-equiv="X-UA-Compatible" content="IE=edge")
 		meta(name="viewport" content="width=device-width, initial-scale=1.0")
 		meta(name="color-scheme" content="dark light")
+		meta(name="theme-color" media="(prefers-color-scheme: light)" content="#fff")
+		meta(name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1219")
 		meta(name="application-name" content=Web.config.get("text.name"))
 		meta(name="application-url" content=Web.config.get("origin"))
 		meta(name="keywords" content="SAHYG, Godier")
@@ -37,6 +39,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 		//- meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
 		meta(name="sahyg-api-domain", content=Web.config.get("domain"))
 		meta(name="sahyg-environment", content=Web.config.get("env.NODE_ENV"))
+		meta(name="sahyg-username", content=WebRequest.user.username)
 
 		block CONSTANTS
 
@@ -85,10 +88,10 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 					div.commands
 						div.theme(data-tooltip=i18n("THEME"))
 						div.locale
-							img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"])  data-tooltip=i18n("LANGUAGE"))
+							img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"]) data-tooltip=i18n("LANGUAGE"), alt="icon "+WebResponse.locale)
 							dropdown
 								each props, locale in Web.config.get("locales")
-									img(id=locale class=(locale == WebResponse.locale? "current" : "") src=props.flag)
+									img(id=locale class=(locale == WebResponse.locale? "current" : "") src=props.flag alt="icon "+locale)
 						a.settings(href="/settings" data-tooltip=i18n("SETTINGS"))
 					div.menus 
 						each item in headerLinks
@@ -102,11 +105,11 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 										each sub in item.dropdown
 											a.item(href=sub.link)
 												div.icon
-													if sub.icon
-														if sub.icon.startsWith("icon:")
-															span !{sub.icon.substring(5)}
+													if sub.img
+														if sub.img.startsWith("icon:")
+															span !{sub.img.substring(5)}
 														else 
-															img(src=sub.icon alt="icon" class=sub.coloredIcon? "colored" : "" loading="lazy")
+															img(src=sub.img alt="icon" class=sub.coloredImg? "colored" : "" loading="lazy")
 
 												div.body
 													div.title 
@@ -117,11 +120,9 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 				if (!WebRequest.userExists) 
 					div.authentication
 						a.login(href="/login") 
-							btn.btn-rounded.btn-link
-								| !{i18n("LOGIN")}
+							sahyg-button.rounded.link !{i18n("LOGIN")}
 						a.signup(href="/signup") 
-							btn.btn-rounded.btn-link
-								| !{i18n("SIGNUP")}
+							sahyg-button.rounded.link !{i18n("SIGNUP")}
 				else 
 					div.account
 						div.avatar
@@ -177,5 +178,6 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 			tooltips
 			right-click
 			menus
+		#popups
 		hidden-content
 

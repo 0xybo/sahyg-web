@@ -3,7 +3,7 @@ container {
 	-ms-flex-direction: column;
 	flex-direction: column;
 	max-width: 70rem;
-	--moves-width: 17rem;
+	--moves-width: 20rem;
 	--history-width: 28rem;
 }
 c-horizontal-tabs-container {
@@ -22,10 +22,13 @@ app[status="pending"]:before {
 	content: attr("data-pending-text");
 }
 app .grid {
+	display: -ms-grid;
 	display: grid;
 	width: 30rem;
 	height: 30rem;
+	-ms-grid-columns: repeat(3, 10rem);
 	grid-template-columns: repeat(3, 10rem);
+	-ms-grid-rows: repeat(3, 10rem);
 	grid-template-rows: repeat(3, 10rem);
 }
 app .grid .cell {
@@ -147,7 +150,9 @@ app .interactive-panel > div {
 	app .grid {
 		width: calc(100vw - 64px);
 		height: calc(100vw - 64px);
+		-ms-grid-columns: repeat(3, calc((100vw - 64px) / 3));
 		grid-template-columns: repeat(3, calc((100vw - 64px) / 3));
+		-ms-grid-rows: repeat(3, calc((100vw - 64px) / 3));
 		grid-template-rows: repeat(3, calc((100vw - 64px) / 3));
 	}
 	app .grid .cell:before {
@@ -223,17 +228,17 @@ app .interactive-panel > div {
 	content: attr(data-empty);
 	padding: 0.5rem 1rem;
 }
-.history .body .row {
+sahyg-tictactoe-history-row {
 	display: flex;
 	padding: 0.5rem 0;
 }
-.history .body .row:nth-child(2n + 2) {
+sahyg-tictactoe-history-row:nth-child(2n + 2) {
 	background-color: var(--background-tertiary-color);
 }
-.history .body .row .cell {
+sahyg-tictactoe-history-row .cell {
 	flex: 1;
 }
-.history .body .row .cell.win {
+sahyg-tictactoe-history-row .cell.win {
 	-ms-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
@@ -242,27 +247,27 @@ app .interactive-panel > div {
 	justify-content: flex-start;
 	padding-left: 1rem;
 }
-.history .body .row .cell.win:before {
+sahyg-tictactoe-history-row .cell.win:before {
 	font-family: "Line Awesome Free Solid";
 	font-size: 1.5rem;
 }
-.history .body .row .cell.win.victory:before {
+sahyg-tictactoe-history-row .cell.win.victory:before {
 	content: "\f00c";
 	color: var(--success-color);
 }
-.history .body .row .cell.win.defeat:before {
+sahyg-tictactoe-history-row .cell.win.defeat:before {
 	content: "\f00d";
 	color: var(--danger-color);
 }
-.history .body .row .cell.win.draw:before {
+sahyg-tictactoe-history-row .cell.win.draw:before {
 	content: "\f52c";
 	color: var(--warning-color);
 }
-.history .body .row .cell.opponent {
+sahyg-tictactoe-history-row .cell.opponent {
 	display: flex;
 	align-items: center;
 }
-.history .body .row .cell.moves {
+sahyg-tictactoe-history-row .cell.moves {
 	-ms-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
@@ -272,71 +277,66 @@ app .interactive-panel > div {
 	flex-direction: column;
 	min-width: var(--moves-width);
 }
-.history .body .row .cell.moves .grid {
+sahyg-tictactoe-history-row .cell.moves .grid {
+	display: -ms-grid;
 	display: grid;
+	-ms-grid-rows: repeat(3, 1fr);
 	grid-template-rows: repeat(3, 1fr);
+	-ms-grid-columns: repeat(3, 1fr);
 	grid-template-columns: repeat(3, 1fr);
 	width: calc(9rem + 5px);
 	height: calc(9rem + 5px);
 	border: 1px solid var(--divider-color);
 }
-.history .body .row .cell.moves .grid .cell[data-column="0"],
-.history .body .row .cell.moves .grid .cell[data-column="1"] {
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-column="0"],
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-column="1"] {
 	border-right: 1px solid var(--divider-color);
 }
-.history .body .row .cell.moves .grid .cell[data-row="0"],
-.history .body .row .cell.moves .grid .cell[data-row="1"] {
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-row="0"],
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-row="1"] {
 	border-bottom: 1px solid var(--divider-color);
 }
-.history .body .row .cell.moves .grid .cell:before {
+sahyg-tictactoe-history-row .cell.moves .grid .cell:before {
 	font-size: 3rem;
 	display: none;
 }
-.history .body .row .cell.moves .grid .cell[data-player="0"]:before {
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-player="0"]:before {
 	content: "\f00d";
 	font-family: "Line Awesome Free Solid";
 }
-.history .body .row .cell.moves .grid .cell[data-player="1"]:before {
+sahyg-tictactoe-history-row .cell.moves .grid .cell[data-player="1"]:before {
 	content: "\f111";
 	font-family: "Line Awesome Free Regular";
 }
-.history .body .row .cell.moves .grid[data-move="0"] .cell[data-index="0"]:before,
-.history
-	.body
-	.row
+sahyg-tictactoe-history-row .cell.moves .grid[data-move="0"] .cell[data-index="0"]:before,
+sahyg-tictactoe-history-row
 	.cell.moves
 	.grid[data-move="1"]
 	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):not(
 		[data-index="2"]
 	):before,
-.history
-	.body
-	.row
+sahyg-tictactoe-history-row
 	.cell.moves
 	.grid[data-move="2"]
 	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):not([data-index="3"]):before,
-.history
-	.body
-	.row
+sahyg-tictactoe-history-row
 	.cell.moves
 	.grid[data-move="3"]
 	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):not([data-index="4"]):before,
-.history
-	.body
-	.row
+sahyg-tictactoe-history-row
 	.cell.moves
 	.grid[data-move="4"]
 	.cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):not([data-index="5"]):before,
-.history .body .row .cell.moves .grid[data-move="5"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):before,
-.history .body .row .cell.moves .grid[data-move="6"] .cell:not([data-index="8"]):not([data-index="7"]):before,
-.history .body .row .cell.moves .grid[data-move="7"] .cell:not([data-index="8"]):before,
-.history .body .row .cell.moves .grid[data-move="8"] .cell:before {
+sahyg-tictactoe-history-row .cell.moves .grid[data-move="5"] .cell:not([data-index="8"]):not([data-index="7"]):not([data-index="6"]):before,
+sahyg-tictactoe-history-row .cell.moves .grid[data-move="6"] .cell:not([data-index="8"]):not([data-index="7"]):before,
+sahyg-tictactoe-history-row .cell.moves .grid[data-move="7"] .cell:not([data-index="8"]):before,
+sahyg-tictactoe-history-row .cell.moves .grid[data-move="8"] .cell:before {
 	display: unset;
 }
-.history .body .row .cell.moves .commands {
+sahyg-tictactoe-history-row .cell.moves .commands {
 	display: flex;
-	column-gap: 0.5rem;
+	column-gap: 0.75rem;
 }
-.history .body .row .cell.moves .commands btn {
+sahyg-tictactoe-history-row .cell.moves .commands btn {
 	padding: 0;
 }

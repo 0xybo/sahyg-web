@@ -54,7 +54,7 @@ function verticalTabSearch() {
 
 $(function () {
 	// ANCHOR Horizontal Tab
-	SAHYG.on("click", "c-horizontal-tabs-item[data-horizontal-tabs-target]", openHorizontalTab);
+	SAHYG.oldOn("click", "c-horizontal-tabs-item[data-horizontal-tabs-target]", openHorizontalTab);
 
 	$(`[data-horizontal-tabs-id=${$("c-horizontal-tabs-item[data-horizontal-tabs-target].active").attr("data-horizontal-tabs-target")}]`).addClass(
 		"active"
@@ -64,14 +64,14 @@ $(function () {
 	$(`[data-vertical-tabs-id="${$("c-vertical-tabs-item[data-vertical-tabs-target].active").attr("data-vertical-tabs-target")}"]`).addClass(
 		"active"
 	);
-	SAHYG.on("click", "c-vertical-tabs-item[data-vertical-tabs-target]", openVerticalTab);
-	SAHYG.on("input", "c-vertical-tabs-search input", verticalTabSearch);
-	SAHYG.on("click", "c-vertical-tabs-display-button", function () {
+	SAHYG.oldOn("click", "c-vertical-tabs-item[data-vertical-tabs-target]", openVerticalTab);
+	SAHYG.oldOn("input", "c-vertical-tabs-search input", verticalTabSearch);
+	SAHYG.oldOn("click", "c-vertical-tabs-display-button", function () {
 		$(this).closest("c-vertical-tabs-panel").toggleClass("opened");
 	});
 
 	// ANCHOR Section
-	SAHYG.on("click", "c-section-title", function () {
+	SAHYG.oldOn("click", "c-section-title", function () {
 		$(this).parent().toggleClass("open");
 	});
 	$("c-section-content:empty").parent().hide();

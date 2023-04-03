@@ -34,7 +34,12 @@ flex-container {
 #hangman[stage*="10"] .node,
 #hangman[stage*="10"] .rope,
 #hangman[stage*="10"] .head2 {
-	fill: var(--color-text);
+	fill: var(--color-primary-text);
+}
+#hangman .errors {
+	display: flex;
+	column-gap: 0.5rem;
+	transform: scaleX(-1);
 }
 #word {
 	flex-grow: 1;

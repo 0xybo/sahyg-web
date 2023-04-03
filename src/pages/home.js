@@ -12,9 +12,9 @@ class Home extends Page {
 		/** @type {import('express').NextFunction}*/ next
 	) {
 		let apps = [];
-		let configApps = this.Web.config.get("pages.home.apps");
+		let configApps = this.Web.config.get("apps");
 		for (const app of configApps) {
-			if (await req.WebRequest.user.checkPermissions(app.permissions)) apps.push(app);
+			if (await req.WebRequest.user.checkPermissions(app.displayPermissions)) apps.push(app);
 		}
 		res.WebResponse.render("home", { apps });
 	}

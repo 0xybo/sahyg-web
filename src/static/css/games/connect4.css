@@ -57,6 +57,7 @@ container .grid {
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
+	width: -moz-fit-content;
 	width: fit-content;
 	background-color: var(--background-secondary-color);
 	padding: var(--grid-border);

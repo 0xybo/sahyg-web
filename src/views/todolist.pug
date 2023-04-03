@@ -46,10 +46,27 @@ append BODY
 				div.new-task-container
 					span.plus.lafs &#xf067;
 					input.new-task(type="text" placeholder=i18n("NEW_TASK"))
+				div.task-filter
+					div.search
+						div.icon.lafs &#xf002;
+						sahyg-textarea(clear-icon="true" placeholder=i18n("SEARCH"))
+					sahyg-select.sort(
+						min-width-to-show-selected=1024 
+						search="false" 
+						selected=["creation-date"] 
+						options=[{id: "creation-date", value: i18n("CREATION_DATE")}, {id: "name", value: i18n("NAME")}]
+					)
+					sahyg-select.direction(
+						min-width-to-show-selected=1024 
+						search="false" 
+						selected=["decrease"] 
+						options=[{id: "decrease", value: i18n("DECREASE")}, {id: "increase", value: i18n("INCREASE")}]
+					)
 			div.body
 				div.todo
 				div.completed-label !{i18n("TASKS_COMPLETED")}
 				div.completed
+
 		div.panel
 			div.backdrop
 			div.body

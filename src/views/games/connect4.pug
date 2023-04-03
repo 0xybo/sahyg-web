@@ -31,16 +31,27 @@ block BODY
 						span.lafs &#xf02d;
 						| !{i18n("RULES")}
 					div.first-player
-						+c_select([
-							{"title": "i18n:ME","value": "0"},
-							{"title": "i18n:OPPONENT","value": "1"},
-							{"title": "i18n:RANDOM","value": "random"}
-						], "first-player", "0", false, i18n("FIRST_PLAYER"))
+						sahyg-select#first-player(
+							options=[
+								{"value": i18n("ME"), "id": "0"},
+								{"value": i18n("OPPONENT"), "id": "1"},
+								{"value": i18n("RANDOM"), "id": "random"},
+							]
+							selected=["0"]
+							multiple="false"
+							label=i18n("FIRST_PLAYER")
+						)
 					div.opponent
-						+c_select([
-							{"title": "i18n:PLAYER","value": "player"},
-							{"title": "i18n:COMPUTER","value": "computer"}
-						], "opponent", "player", false, i18n("OPPONENT"))
+						sahyg-select#opponent(
+							options=[
+								{"value": i18n("PLAYER"), "id": "player"},
+								{"value": i18n("COMPUTER"), "id": "computer"},
+
+							]
+							selected=["player"]
+							multiple="false"
+							label=i18n("OPPONENT")
+						)
 				div.informations
 					div.current-player
 						div.label !{i18n("PLAYER_TURN")}

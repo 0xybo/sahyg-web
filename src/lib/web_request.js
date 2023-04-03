@@ -37,11 +37,13 @@ class WebRequest {
 	async asyncConstructor() {
 		if (this.isStatic.test(this.req.path)) {
 			this.requestType = "static";
-			this.permissions = this.Web.config.get(["static", decodeURI(this.req.path)]) || ["OWNER_GROUP"];
+			let url = decodeURI(this.req.path);
+			this.permissions = this.Web.config.get(["static", url]) || ["OWNER_GROUP"];
 			if (this.permissions === true) {
 				this.permissions = [];
 				this.res.setHeader("cross-origin-resource-policy", "cross-origin");
 			}
+			if (!/\.(?:js|css|json)$/g.test(url)) this.res.setHeader("Cache-Control", "max-age=86400");
 		} else if (!this.fetchPage()) return void (await this.notFound());
 
 		if (await this.validToken()) this.next();

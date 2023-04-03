@@ -25,7 +25,7 @@ container form .ta {
 	margin-bottom: 1rem;
 	margin-top: 0.25rem;
 }
-container form > btn {
+container form > sahyg-button {
 	margin-top: 1rem;
 	padding: 1.2rem;
 	height: 2rem;
@@ -50,14 +50,19 @@ container .links span:last-child {
 		width: 100%;
 	}
 }
-btn.show {
+sahyg-button.show {
 	font-family: "Line Awesome Free Solid";
 	font-size: 1.5rem;
 	padding: unset;
 }
-btn.show[status="off"]:before {
+sahyg-button.show[status="off"]:before {
 	content: "\f06e";
 }
-btn.show[status="on"]:before {
+sahyg-button.show[status="on"]:before {
 	content: "\f070";
+}
+
+container .submit sahyg-loader {
+	height: 2rem;
+	display: contents;
 }

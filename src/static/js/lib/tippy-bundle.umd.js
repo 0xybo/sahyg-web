@@ -308,11 +308,11 @@
 				clearDelayTimeouts: function () {
 					clearTimeout(p), clearTimeout(g), cancelAnimationFrame(b);
 				},
-				setProps: function (t) {
+				setProps: function (properties) {
 					if (Y.state.isDestroyed) return;
-					at("onBeforeUpdate", [Y, t]), bt();
+					at("onBeforeUpdate", [Y, properties]), bt();
 					var n = Y.props,
-						r = M(e, Object.assign({}, n, v(t), { ignoreAttributes: !0 }));
+						r = M(e, Object.assign({}, n, v(properties), { ignoreAttributes: !0 }));
 					(Y.props = r), ht(), n.interactiveDebounce !== r.interactiveDebounce && (pt(), (F = u(wt, r.interactiveDebounce)));
 					n.triggerTarget && !r.triggerTarget
 						? c(n.triggerTarget).forEach(function (t) {
@@ -325,10 +325,10 @@
 						At().forEach(function (t) {
 							requestAnimationFrame(t._tippy.popperInstance.forceUpdate);
 						}));
-					at("onAfterUpdate", [Y, t]);
+					at("onAfterUpdate", [Y, properties]);
 				},
-				setContent: function (t) {
-					Y.setProps({ content: t });
+				setContent: function (stringOrElement) {
+					Y.setProps({ content: stringOrElement });
 				},
 				show: function () {
 					var t = Y.state.isVisible,

@@ -87,12 +87,10 @@ SAHYG.Classes.GameOfLife = class GameOfLife {
 			this.share();
 		});
 		this.$rules.on("click", async () => {
-			new SAHYG.Components.popup.Popup({
-				title: await SAHYG.translate("RULES"),
+			SAHYG.createElement("sahyg-dialog", {
 				content: await SAHYG.translate("GAME_OF_LIFE_RULES"),
-			})
-				.addClass("large")
-				.show();
+				title: await SAHYG.translate("RULES"),
+			}).show();
 		});
 		this.$columnCount.on("input", (event) => {
 			this.columnCount = Number(event.target.value);
@@ -113,10 +111,9 @@ SAHYG.Classes.GameOfLife = class GameOfLife {
 			cell_width: this.cellWidth(),
 			board: this.encodeBoard(this.cells),
 		});
+		history.pushState({}, "", url);
 		navigator.clipboard.writeText(url).then(async () => {
-			SAHYG.Components.toast.Toast.success({
-				message: await SAHYG.translate("COPIED"),
-			}).show();
+			SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("COPIED"), show: true, type: "ok" });
 		});
 	}
 	encodeBoard(cells) {
@@ -155,7 +152,12 @@ SAHYG.Classes.GameOfLife = class GameOfLife {
 			);
 		}, []);
 		if (!cells.every((column) => column.length === cells.length && column.every((cell) => cell >= 0 && cell <= 1))) {
-			(async () => SAHYG.Components.toast.Toast.danger({ message: await SAHYG.translate("GAME_OF_LIFE_INVALID_ENCODED_BOARD") }).show())();
+			(async () =>
+				SAHYG.createElement("sahyg-toast", {
+					message: await SAHYG.translate("GAME_OF_LIFE_INVALID_ENCODED_BOARD"),
+					type: "danger",
+					show: true,
+				}))();
 			return this.cells;
 		}
 		return cells;
@@ -224,7 +226,11 @@ SAHYG.Classes.GameOfLife = class GameOfLife {
 			realY = (y / this.$canvas.height) * this.$canvas.height;
 		let cellX = ~~(realX / this.cellWidth()),
 			cellY = ~~(realY / this.cellWidth());
-		this.$debug.innerHTML = [`clientX: ${x.toFixed(0)} / canvasX: ${realX.toFixed(0)}`, `clientY: ${y.toFixed(0)} / canvasY: ${realY.toFixed(0)}`, `cell: ${cellX}:${cellY}`].join("</br>");
+		this.$debug.innerHTML = [
+			`clientX: ${x.toFixed(0)} / canvasX: ${realX.toFixed(0)}`,
+			`clientY: ${y.toFixed(0)} / canvasY: ${realY.toFixed(0)}`,
+			`cell: ${cellX}:${cellY}`,
+		].join("</br>");
 	}
 	placeCell(e) {
 		let rect = this.$canvas.getBoundingClientRect();

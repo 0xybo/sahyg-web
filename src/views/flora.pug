@@ -1,5 +1,4 @@
 extends main.pug 
-include components/navigation.pug
 
 append HEAD 
 	+meta("Flora", "Flora page")
@@ -13,29 +12,35 @@ append HEAD
 block BODY
 	app
 		if languageAvailable
-			+c_horizontalTabs("tab", [{id: "identification", title: i18n("IDENTIFICATION")}, {id: "search", title: i18n("SEARCH")}, {id: "glossary", title: i18n("GLOSSARY")}], "identification")
-				div(data-horizontal-tabs-id="identification")
+			sahyg-tabs#tab(
+				orientation="horizontal"
+				default="identification"
+				tabs=[{"text": i18n("IDENTIFICATION"),"id": "identification",},{"text": i18n("SEARCH"),"id": "search"},{"text": i18n("GLOSSARY"),"id": "glossary"}]
+			)
+				div(sahyg-tab="identification")
 					div.actions
-						btn.btn-full.start !{i18n("START")}
-						btn.btn-full.previous.disabled !{i18n("PREVIOUS")}
+						sahyg-button(full-color=true content=i18n("START") full-width=true icon=String.fromCharCode(0xf100)).start
+						sahyg-button(full-color=true content=i18n("PREVIOUS") disabled=true full-width=true icon=String.fromCharCode(0xf104)).previous
 					div(id="1" class="visible possibilities question")
 						each possibility in identification.possibilities
 							div.possibility(target=possibility.target) !{possibility.text}
-				div(data-horizontal-tabs-id="search")
+				div(sahyg-tab="search")
 					div.search-bar
-						div.ta.ta-search
-							input#flora-search(type="text" name="flora-search" placeholder=i18n("FLORA_SEARCH"))
-						btn.confirm.btn-full !{i18n("CONFIRM")}
+						sahyg-textarea#flora-search(placeholder=i18n("FLORA_SEARCH") outline=true multiline=false rounded=true icon=String.fromCharCode(0xf002))
+						sahyg-button(full-color=true content=i18n("CONFIRM")).confirm
 					div.counter
 						| !{i18n("FLORA_COUNTER")}
 						span.value 0
 						| / 100 (max)
 					div.results
-				div(data-horizontal-tabs-id="glossary")
-					+c_verticalTabs("definition", glossaryMenu, "0", true, "all")
+				div(sahyg-tab="glossary")
+					sahyg-tabs#glossary(
+						default="0"
+						tabs=glossaryMenu
+					)
 						each item, index in Object.entries(glossary)
-							div(data-vertical-tabs-id=index)
-								+c_pageTitle(item[0])
+							div(sahyg-tab=index)
+								sahyg-page-title !{item[0]}
 								span !{item[1].description.replace("\n", "<br/><br/>")}
 								br
 								br

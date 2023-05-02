@@ -71,17 +71,20 @@ container .header .icons {
 	font-size: 2rem;
 	margin-top: 0.5rem;
 }
-container c-horizontal-tabs-container {
+container sahyg-tabs {
+	margin: 1rem auto 0 auto
+}
+container [sahyg-tab] {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
-container c-horizontal-tabs-container .body {
+container [sahyg-tab] .body {
 	padding: 0 1rem 1rem 1rem;
 	max-width: 50rem;
 	width: 100%;
 }
-[data-horizontal-tabs-id="bio"] .title {
+[sahyg-tab="bio"] .title {
 	font-size: 1.5rem;
 	font-weight: bold;
 	margin-bottom: 1rem;
@@ -91,16 +94,16 @@ container c-horizontal-tabs-container .body {
 	-ms-user-select: none;
 	user-select: none;
 }
-[data-horizontal-tabs-id="bio"] .values {
+[sahyg-tab="bio"] .values {
 	display: flex;
 	flex-direction: column;
 	row-gap: 1rem;
 	margin-bottom: 3rem;
 }
-[data-horizontal-tabs-id="bio"] .values:empty:before {
+[sahyg-tab="bio"] .values:empty:before {
 	content: "/";
 }
-[data-horizontal-tabs-id="bio"] .values > div {
+[sahyg-tab="bio"] .values > div {
 	display: flex;
 	width: 100%;
 	flex-direction: row;
@@ -108,7 +111,7 @@ container c-horizontal-tabs-container .body {
 	justify-content: space-between;
 	row-gap: 0.5rem;
 }
-[data-horizontal-tabs-id="bio"] .values .label {
+[sahyg-tab="bio"] .values .label {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -117,10 +120,10 @@ container c-horizontal-tabs-container .body {
 	-ms-user-select: none;
 	user-select: none;
 }
-[data-horizontal-tabs-id="bio"] .values .value {
+[sahyg-tab="bio"] .values .value {
 	margin-left: 1rem;
 }
-[data-horizontal-tabs-id="bio"] .values .label > * {
+[sahyg-tab="bio"] .values .label > * {
 	height: 1rem;
 	width: 1rem;
 	margin-right: 0.5rem;

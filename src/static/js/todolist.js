@@ -1,4 +1,5 @@
 SAHYG.Classes.TodoList = class TodoList {
+	$appContainer = SAHYG.$0("app-container");
 	$menu = SAHYG.$0("container .menu");
 	$menuBody = SAHYG.$0("container .menu .body .lists");
 	$tasksBody = SAHYG.$0("container .tasks .body .todo");
@@ -23,9 +24,77 @@ SAHYG.Classes.TodoList = class TodoList {
 	currentList = null;
 	constructor() {
 		this.$completedBody.slideHide(0);
-		this.loader = SAHYG.Components.loader.center();
+		this.loader = SAHYG.Components.Loader.center();
 
-		this.taskViewer = new SAHYG.Components.popup.Menu({ over: 1200, appendTo: SAHYG.$0("app-container") });
+		this.$taskViewer = SAHYG.createElement("sahyg-menu", { target: "app-container" });
+		this.$taskViewer.shadowRoot.setStyle({
+			".task-container": {
+				display: "flex",
+				gap: "1rem",
+				flexDirection: "column",
+				padding: "0 0.5rem 1rem 0.5rem",
+				height: "100%",
+			},
+			".card": {
+				backgroundColor: "var(--background-secondary-color)",
+				borderRadius: "0.25rem",
+				padding: "0.5rem",
+				display: "flex",
+				flexDirection: "column",
+			},
+			".card-title": {
+				fontWeight: "bold",
+				fontSize: "1.1rem",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				marginBottom: "0.5rem",
+			},
+			".text-and-subtasks sahyg-textarea": {
+				marginLeft: "0.5rem",
+				flex: "1",
+			},
+			":is(.complete, .subtask-complete):before": {
+				content: '"\\f111"',
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.5rem",
+				cursor: "pointer",
+			},
+			":is(.complete, .subtask-complete).completed:before": {
+				content: '"\\f058"',
+			},
+			".text": {
+				display: "flex",
+				alignItems: "center",
+			},
+			".subtasks": {
+				paddingLeft: "2rem",
+			},
+			".subtask-text": {
+				display: "flex",
+				alignItems: "center",
+			},
+			".add-subtask": {
+				display: "flex",
+				alignItems: "center",
+			},
+			".add-subtask-icon": {
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				cursor: "pointer",
+				fontFamily: "var(--font-icon-solid)",
+			},
+			".subtask-delete": {
+				fontSize: "1.2rem",
+			},
+			".subtask-delete:hover": {
+				color: "var(--danger-color)",
+				transition: "var(--transition)",
+			},
+		});
 
 		this.textareaTimeout = null;
 
@@ -69,14 +138,14 @@ SAHYG.Classes.TodoList = class TodoList {
 	getTasks() {
 		return new Promise((resolve) => {
 			SAHYG.Api.get(location.pathname + "/tasks")
-				.then((result) => resolve(result.tasks))
+				.then((result) => resolve(result?.content?.tasks))
 				.catch(console.error);
 		});
 	}
 	getLists() {
 		return new Promise((resolve) => {
 			SAHYG.Api.get(location.pathname + "/lists")
-				.then((result) => resolve(result.lists))
+				.then((result) => resolve(result?.content?.lists))
 				.catch(console.error);
 		});
 	}
@@ -142,139 +211,154 @@ SAHYG.Classes.TodoList = class TodoList {
 		let task = this.tasks.find((task) => task._id == id);
 		if (!task) return;
 
-		this.taskViewer
-			.setTitle(await SAHYG.translate("EDIT_TASK"))
-			.setContent([
-				SAHYG.createElement(
-					"div",
-					{ class: "container", "data-id": id },
-					SAHYG.createElement(
-						"div",
-						{ class: "text-and-subtasks card" },
-						SAHYG.createElement(
-							"div",
-							{ class: "text" },
-							SAHYG.createElement("span", { class: "complete" + (task.completed ? " completed" : "") }).on(
-								"click",
-								this.µClickTaskCompleteInMenu.bind(this)
-							),
-							SAHYG.createElement("sahyg-textarea", {
-								placeholder: await SAHYG.translate("TEXT"),
-								"border-bottom": false,
-								"dynamic-height": true,
-								multiline: false,
-								"default-value": task.text,
-								"max-length": SAHYG.Constants.todolist_max_task_text_length,
-							})
-								.setValidator(this.textValidator)
-								.on("change", this.µChangeTaskText.bind(this))
-								.on("input", this.µInputTaskText.bind(this))
-						),
-						SAHYG.createElement(
-							"div",
-							{ class: "subtasks" },
-							...(await Promise.all(
-								task.subtasks.map(async (subtask) =>
-									SAHYG.createElement(
-										"div",
-										{ class: "subtask", "data-id": subtask._id },
-										SAHYG.createElement(
-											"div",
-											{ class: "subtask-text" },
-											SAHYG.createElement("span", { class: "subtask-complete" + (subtask.completed ? " completed" : "") }).on(
-												"click",
-												this.µClickSubtaskCompleteInMenu.bind(this)
-											),
-											SAHYG.createElement("sahyg-textarea", {
-												placeholder: await SAHYG.translate("NAME"),
-												"border-bottom": false,
-												"dynamic-height": true,
-												multiline: false,
-												"default-value": subtask.text,
-												"max-length": SAHYG.Constants.todolist_max_task_text_length,
-											})
-												.setValidator(this.textValidator)
-												.on("change", this.µChangeSubtaskText.bind(this))
-												.on("input", this.µInputSubtaskText.bind(this)),
-											SAHYG.createElement("btn", { class: "subtask-delete lafs" }, "\uf2ed").on(
-												"click",
-												this.µClickDeleteSubtaskInMenu.bind(this)
-											)
-										)
-									)
-								)
-							)),
-							SAHYG.createElement(
-								"div",
-								{ class: "add-subtask" },
-								SAHYG.createElement("span", { class: "add-subtask-icon lafs" }, "\uf067").on(
-									"click",
-									this.µClickAddSubtaskIcon.bind(this)
-								),
-								SAHYG.createElement("sahyg-textarea", {
-									placeholder: await SAHYG.translate("ADD"),
-									"border-bottom": false,
-									"dynamic-height": true,
-									multiline: false,
-									"max-length": SAHYG.Constants.todolist_max_task_text_length,
-								})
-									.setValidator(this.textValidator)
-									.on("keydown", this.µKeydownAddSubtask.bind(this))
-							)
-						)
-					),
-					SAHYG.createElement(
-						"div",
-						{ class: "description card" },
-						SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("DESCRIPTION")),
-						SAHYG.createElement("sahyg-textarea", {
-							placeholder: await SAHYG.translate("DESCRIPTION"),
-							"border-bottom": true,
-							"dynamic-height": true,
-							"character-counter": true,
-							multiline: true,
-							"default-value": task.description,
-							"max-length": SAHYG.Constants.todolist_max_task_description_length,
-						})
-							.setValidator(this.descriptionValidator)
-							.on("click", this.µChangeDescription.bind(this))
-							.on("input", this.µInputDescription.bind(this))
-					),
-					// SAHYG.createElement(
-					// 	"div",
-					// 	{ class: "date card" },
-					// 	SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("DATE")),
-					// 	SAHYG.Components.input.datetime()
-					// ),
-					// SAHYG.createElement(
-					// 	"div",
-					// 	{ class: "tags card" },
-					// 	SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("TAGS")),
-					// 	SAHYG.createElement(
-					// 		"sahyg-input-list",
-					// 		{},
-					// 		...(task.tags || []).map((list) => SAHYG.createElement("span", { id: list }, this.lists.find((l) => l._id == list).name))
-					// 	)
-					// ),
-					SAHYG.createElement(
-						"div",
-						{ class: "lists card" },
-						SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("LISTS")),
-						SAHYG.createElement("sahyg-select", {
-							options: JSON.stringify(
-								this.lists.map((list) => {
-									return { id: list._id, value: list.name };
-								})
-							),
-							selected: JSON.stringify(task.lists),
-							multiple: "true",
-						}).on("change", this.µClickAddTaskToList.bind(this))
-					)
-				),
-			])
-			.open()
-			.$.querySelectorAll("textarea")
-			.forEach((elem) => SAHYG.Utils.element.resizeTextarea(elem));
+		// TASK COMPLETE and TEXT
+		this.$taskViewer.$complete = SAHYG.createElement("span", { class: "complete" + (task.completed ? " completed" : "") }).on(
+			"click",
+			this.taskCompleteInMenuClickHandler.bind(this, id)
+		);
+		this.$taskViewer.$textarea = SAHYG.createElement("sahyg-textarea", {
+			placeholder: await SAHYG.translate("TEXT"),
+			"border-bottom": false,
+			"dynamic-height": true,
+			multiline: false,
+			"default-value": task.text,
+			"max-length": SAHYG.Constants.todolist_max_task_text_length,
+		})
+			.setValidator(this.textValidator)
+			.on("change", this.taskTextChangeHandler.bind(this, id))
+			.on("input", this.taskTextInputHandler.bind(this, id));
+		this.$taskViewer.$text = SAHYG.createElement("div", { class: "text" }, this.$taskViewer.$complete, this.$taskViewer.$textarea);
+		// SUBTASKS
+		this.$taskViewer.$subtasks = SAHYG.createElement("div", { class: "subtasks" });
+		this.$taskViewer.subtasks = [];
+		for (let subtask of task.subtasks) {
+			let $complete = SAHYG.createElement("span", { class: "subtask-complete" + (subtask.completed ? " completed" : "") }).on(
+				"click",
+				this.subtaskCompleteInMenuClickHandler.bind(this, subtask._id)
+			);
+			let $textarea = SAHYG.createElement("sahyg-textarea", {
+				placeholder: await SAHYG.translate("NAME"),
+				"border-bottom": false,
+				"dynamic-height": true,
+				multiline: false,
+				"default-value": subtask.text,
+				"max-length": SAHYG.Constants.todolist_max_task_text_length,
+			})
+				.setValidator(this.textValidator)
+				.on("change", this.subtaskTextChangeHandler.bind(this, subtask._id))
+				.on("input", this.subtaskTextInputHandler.bind(this, subtask._id));
+			let $delete = SAHYG.createElement("sahyg-button", { class: "subtask-delete", icon: String.fromCharCode(0xf2ed) }).on(
+				"click",
+				this.deleteSubtaskInMenuClickHandler.bind(this, subtask._id)
+			);
+			let $text = SAHYG.createElement("span", { class: "subtask-text" }, $complete, $textarea, $delete);
+			let $subtask = SAHYG.createElement("div", { class: "subtask", "data-id": subtask._id }, $text);
+			this.$taskViewer.subtasks.push({
+				$subtask,
+				$complete,
+				$textarea,
+				$delete,
+				$text,
+				...subtask,
+			});
+			this.$taskViewer.$subtasks.append($subtask);
+		}
+		// ADD SUBTASK
+		this.$taskViewer.$addSubtaskIcon = SAHYG.createElement("span", { class: "add-subtask-icon" }, "\uf067").on(
+			"click",
+			this.addSubtaskIconClickHandler.bind(this, id)
+		);
+		this.$taskViewer.$addSubtaskTextarea = SAHYG.createElement("sahyg-textarea", {
+			placeholder: await SAHYG.translate("ADD"),
+			"border-bottom": false,
+			"dynamic-height": true,
+			multiline: false,
+			"max-length": SAHYG.Constants.todolist_max_task_text_length,
+		})
+			.setValidator(this.textValidator)
+			.on("keydown", this.addSubtaskKeydownHandler.bind(this, id));
+		this.$taskViewer.$addSubtask = SAHYG.createElement(
+			"div",
+			{ class: "add-subtask" },
+			this.$taskViewer.$addSubtaskIcon,
+			this.$taskViewer.$addSubtaskTextarea
+		);
+		// TEXT AND SUBTASKS
+		this.$taskViewer.$textAndSubtasks = SAHYG.createElement(
+			"div",
+			{ class: "text-and-subtasks card" },
+			this.$taskViewer.$text,
+			this.$taskViewer.$subtasks,
+			this.$taskViewer.$addSubtask
+		);
+
+		// DESCRIPTION
+		this.$taskViewer.$descriptionTitle = SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("DESCRIPTION"));
+		this.$taskViewer.$descriptionTextarea = SAHYG.createElement("sahyg-textarea", {
+			placeholder: await SAHYG.translate("DESCRIPTION"),
+			"border-bottom": true,
+			"dynamic-height": true,
+			"character-counter": true,
+			multiline: true,
+			"default-value": task.description,
+			"max-length": SAHYG.Constants.todolist_max_task_description_length,
+		})
+			.setValidator(this.descriptionValidator)
+			.on("click", this.descriptionClickHandler.bind(this, id))
+			.on("input", this.descriptionInputHandler.bind(this, id));
+		this.$taskViewer.$description = SAHYG.createElement(
+			"div",
+			{ class: "description card" },
+			this.$taskViewer.$descriptionTitle,
+			this.$taskViewer.$descriptionTextarea
+		);
+
+		// TODO DATE, TAGS
+		// SAHYG.createElement(
+		// 	"div",
+		// 	{ class: "date card" },
+		// 	SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("DATE")),
+		// 	SAHYG.Components.input.datetime()
+		// ),
+		// SAHYG.createElement(
+		// 	"div",
+		// 	{ class: "tags card" },
+		// 	SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("TAGS")),
+		// 	SAHYG.createElement(
+		// 		"sahyg-input-list",
+		// 		{},
+		// 		...(task.tags || []).map((list) => SAHYG.createElement("span", { id: list }, this.lists.find((l) => l._id == list).name))
+		// 	)
+		// ),
+
+		this.$taskViewer.$listsTitle = SAHYG.createElement("span", { class: "card-title" }, await SAHYG.translate("LISTS"));
+		this.$taskViewer.$listsSelect = SAHYG.createElement("sahyg-select", {
+			options: JSON.stringify(
+				this.lists.map((list) => {
+					return { id: list._id, value: list.name };
+				})
+			),
+			selected: JSON.stringify(task.lists),
+			multiple: "true",
+		}).on("change", this.addTaskToListChangeHandler.bind(this, id));
+		this.$taskViewer.$lists = SAHYG.createElement("div", { class: "lists card" }, this.$taskViewer.$listsTitle, this.$taskViewer.$listsSelect);
+
+		this.$taskViewer.$taskContainer = SAHYG.createElement(
+			"div",
+			{ class: "task-container", dataId: id },
+			this.$taskViewer.$textAndSubtasks,
+			this.$taskViewer.$description,
+			this.$taskViewer.$lists
+		);
+
+		this.$taskViewer.setTitle(await SAHYG.translate("EDIT_TASK"));
+		this.$taskViewer.setContent(this.$taskViewer.$taskContainer);
+
+		this.$taskViewer.open();
+
+		SAHYG.Utils.element.resizeTextarea(this.$taskViewer.$descriptionTextarea);
+		SAHYG.Utils.element.resizeTextarea(this.$taskViewer.$descriptionTextarea);
+		SAHYG.Utils.element.resizeTextarea(this.$taskViewer.$textarea);
 	}
 	async listElement({ _id, name, color, icon, identifier }) {
 		let menu;
@@ -312,17 +396,20 @@ SAHYG.Classes.TodoList = class TodoList {
 				SAHYG.createElement("div", { class: "task-body" }, SAHYG.createElement("span", { class: "text" }, text)),
 				(menu = SAHYG.createElement("span", { class: "menu lafs" }, "\uf141"))
 			)
-		).on("click", this.µClickOpenTask.bind(this));
+		).on("click", this.openTaskClickHandler.bind(this));
 		// Create task options menu
-		SAHYG.Components.tooltip.menu(menu, [
-			{
-				type: "button",
-				text: await SAHYG.translate("REMOVE"),
-				icon: "\uf2ed",
-				callback: this.deleteTask.bind(this, id),
-				attributes: { style: "color: var(--danger-color)" },
-			},
-		]);
+		SAHYG.Components.tooltipMenu({
+			target: menu,
+			items: [
+				{
+					type: "button",
+					text: await SAHYG.translate("REMOVE"),
+					icon: "\uf2ed",
+					callback: this.deleteTask.bind(this, id),
+					options: { style: "color: var(--danger-color)" },
+				},
+			],
+		});
 
 		if (subtasks.length) {
 			let container;
@@ -353,84 +440,90 @@ SAHYG.Classes.TodoList = class TodoList {
 					)
 				);
 				// Create subtask options menu
-				SAHYG.Components.tooltip.menu(menu, [
-					{
-						type: "button",
-						text: await SAHYG.translate("REMOVE"),
-						icon: "\uf2ed",
-						callback: this.deleteSubtask.bind(this, subtask._id),
-						attributes: { style: "color: var(--danger-color)" },
-					},
-				]);
+				SAHYG.Components.tooltipMenu({
+					target: menu,
+					items: [
+						{
+							type: "button",
+							text: await SAHYG.translate("REMOVE"),
+							icon: "\uf2ed",
+							callback: this.deleteSubtask.bind(this, subtask._id),
+							options: { style: "color: var(--danger-color)" },
+						},
+					],
+				});
 			}
 		}
 
 		return element;
 	}
 	async listMenu(menu, id) {
-		SAHYG.Components.tooltip.menu(menu, [
-			{
-				type: "dropdown",
-				icon: "\uf304",
-				text: await SAHYG.translate("EDIT"),
-				dropdown: [
-					{
-						type: "button",
-						text: await SAHYG.translate("RENAME"),
-						icon: "\uf031",
-						callback: this.renamePopup.bind(this, id),
-					},
-					{ type: "divider" },
-					{
-						type: "button",
-						text: await SAHYG.translate("CHANGE_COLOR"),
-						icon: "\uf53f",
-						callback: this.changeColorPopup.bind(this, id, menu),
-					},
-					{
-						type: "button",
-						text: await SAHYG.translate("RESET_COLOR"),
-						icon: "\uf5c7",
-						callback: this.changeColor.bind(this, id, null),
-					},
-					{ type: "divider" },
-					{
-						type: "button",
-						text: await SAHYG.translate("CHANGE_ICON"),
-						icon: "\uf03a",
-						callback: this.changeIconPopup.bind(this, id, menu),
-					},
-					{
-						type: "button",
-						text: await SAHYG.translate("RESET_ICON"),
-						icon: "\uf0ae",
-						callback: this.changeIcon.bind(this, id, null),
-					},
-				],
-			},
-			{ type: "divider" },
-			{
-				type: "button",
-				text: await SAHYG.translate("REMOVE"),
-				icon: "\uf2ed",
-				callback: this.deleteList.bind(this, id),
-				attributes: { style: "color: var(--danger-color)" },
-			},
-			{
-				type: "button",
-				text: await SAHYG.translate("REMOVE_WITH_TASKS"),
-				icon: "\uf2ed",
-				callback: this.deleteList.bind(this, id, true),
-				attributes: { style: "color: var(--danger-color)" },
-			},
-		]);
+		SAHYG.Components.tooltipMenu({
+			target: menu,
+			items: [
+				{
+					type: "dropdown",
+					icon: "\uf304",
+					text: await SAHYG.translate("EDIT"),
+					dropdown: [
+						{
+							type: "button",
+							text: await SAHYG.translate("RENAME"),
+							icon: "\uf031",
+							callback: this.renamePopup.bind(this, id),
+						},
+						{ type: "divider" },
+						{
+							type: "button",
+							text: await SAHYG.translate("CHANGE_COLOR"),
+							icon: "\uf53f",
+							callback: this.changeColorPopup.bind(this, id, menu),
+						},
+						{
+							type: "button",
+							text: await SAHYG.translate("RESET_COLOR"),
+							icon: "\uf5c7",
+							callback: this.changeColor.bind(this, id, null),
+						},
+						{ type: "divider" },
+						{
+							type: "button",
+							text: await SAHYG.translate("CHANGE_ICON"),
+							icon: "\uf03a",
+							callback: this.changeIconPopup.bind(this, id, menu),
+						},
+						{
+							type: "button",
+							text: await SAHYG.translate("RESET_ICON"),
+							icon: "\uf0ae",
+							callback: this.changeIcon.bind(this, id, null),
+						},
+					],
+				},
+				{ type: "divider" },
+				{
+					type: "button",
+					text: await SAHYG.translate("REMOVE"),
+					icon: "\uf2ed",
+					callback: this.deleteList.bind(this, id),
+					options: { style: "color: var(--danger-color)" },
+				},
+				{
+					type: "button",
+					text: await SAHYG.translate("REMOVE_WITH_TASKS"),
+					icon: "\uf2ed",
+					callback: this.deleteList.bind(this, id, true),
+					options: { style: "color: var(--danger-color)" },
+				},
+			],
+		});
 	}
 	toggleMenu() {
 		this.$menuIcon.toggleClass("opened");
 		this.$menu.toggleClass("opened");
 	}
 	async changeColorPopup(list, target) {
-		let color = await SAHYG.Utils.input.color(target, this.lists.find((l) => l._id == list)?.color);
+		let color = await SAHYG.ask.colorByTooltip({ target, defaultColor: this.lists.find((l) => l._id == list)?.color });
 
 		if (!color) return;
 
@@ -457,15 +550,25 @@ SAHYG.Classes.TodoList = class TodoList {
 			.catch(console.error);
 	}
 	async renamePopup(listID) {
-		let name = await SAHYG.Utils.input.text({
-			defaultValue: this.lists.find((list) => list._id == listID)?.name,
-			title: await SAHYG.translate("RENAME"),
-			validator: (value) => {
-				return (value?.length || 0) <= SAHYG.Constants.todolist_max_list_name_length;
-			},
-		});
-		if (!name) return;
-		this.rename(listID, name);
+		let response = await SAHYG.createElement("sahyg-input-dialog", {
+			inputs: [
+				{
+					type: "text",
+					id: "name",
+					label: await SAHYG.translate("RENAME"),
+					options: { placeholder: await SAHYG.translate("RENAME"), borderBottom: true },
+					defaultValue: this.lists.find((list) => list._id == listID)?.name,
+					validator: (value) => {
+						return (value?.length || 0) <= SAHYG.Constants.todolist_max_list_name_length;
+					},
+				},
+			],
+		})
+			.show()
+			.toPromise();
+		if (!response?.changed?.name) return;
+
+		this.rename(listID, response.data.name);
 	}
 	async rename(id, name) {
 		SAHYG.Api.post(location.pathname + "/rename_list", { id, name }, true)
@@ -480,9 +583,9 @@ SAHYG.Classes.TodoList = class TodoList {
 			.catch(console.error);
 	}
 	async changeIconPopup(list, target) {
-		let icon = await SAHYG.Utils.input.icon(target);
+		let icon = await SAHYG.ask.iconByTooltip({ target });
 		if (!icon) return;
-		await this.changeIcon(list, `&#x${icon.unicode};`);
+		await this.changeIcon(list, String.fromCharCode(`0x${icon.unicode}`));
 	}
 	async changeIcon(list, icon) {
 		list = this.lists.find((l) => l._id == list);
@@ -541,29 +644,30 @@ SAHYG.Classes.TodoList = class TodoList {
 			.catch(console.error);
 	}
 	async addList() {
-		let data = await SAHYG.Components.popup.Popup.input(
-			await SAHYG.translate("ADD_CATEGORY"),
-			[
-				{
-					name: "name",
-					label: await SAHYG.translate("NAME"),
-					placeholder: await SAHYG.translate("NAME"),
-					type: "text",
-					required: true,
-					validator: (value) => value.length > 2 && value.length < 20,
-				},
-			],
-			false
-		);
+		let data = (
+			await SAHYG.createElement("sahyg-input-dialog", {
+				header: await SAHYG.translate("ADD_CATEGORY"),
+				inputs: [
+					{
+						id: "name",
+						title: await SAHYG.translate("NAME"),
+						placeholder: await SAHYG.translate("NAME"),
+						type: "text",
+						validator: (value) => value.length > 2 && value.length < 20,
+						options: {
+							borderBottom: true,
+						},
+					},
+				],
+			})
+				.show()
+				.toPromise()
+		)?.data;
 		if (!data) return;
 
-		await SAHYG.Api.post(
-			location.pathname + "/add_list",
-			{
-				name: data.name,
-			},
-			true
-		)
+		await SAHYG.Api.post(location.pathname + "/add_list", {
+			name: data.name,
+		})
 			.catch(console.error)
 			.then(async (res) => {
 				if (!res?.success) return;
@@ -572,9 +676,12 @@ SAHYG.Classes.TodoList = class TodoList {
 			});
 	}
 	async deleteList(id, deleteTasks) {
-		if (deleteTasks === true && !(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("REMOVE_WITH_TASKS_DESCRIPTION"))).confirm)
+		if (
+			deleteTasks === true &&
+			!(await SAHYG.createElement("sahyg-confirm-dialog", { content: await SAHYG.translate("REMOVE_WITH_TASKS_DESCRIPTION") }).show().toPromise())
+		)
 			return;
-		else if (!(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("CONFIRM_DELETE"))).confirm) return;
+		else if (!(await SAHYG.createElement("sahyg-confirm-dialog", { content: await SAHYG.translate("CONFIRM_DELETE") }).show().toPromise())) return;
 
 		await SAHYG.Api.post(location.pathname + "/delete_list", { id, deleteTasks: deleteTasks === true }, true)
 			.catch(console.error)
@@ -631,7 +738,7 @@ SAHYG.Classes.TodoList = class TodoList {
 		let taskIndex = this.tasks.findIndex((task) => task._id == id);
 		if (taskIndex == -1) return;
 
-		if (!(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("CONFIRM_DELETE"))).confirm) return;
+		if (!(await SAHYG.createElement("sahyg-confirm-dialog", { content: await SAHYG.translate("CONFIRM_DELETE") }).show().toPromise())) return;
 
 		let task = this.tasks.splice(taskIndex, 1);
 
@@ -648,7 +755,7 @@ SAHYG.Classes.TodoList = class TodoList {
 		let task = this.tasks.find((t) => (subtaskIndex = t.subtasks.findIndex((subtask) => subtask._id == id)) != -1);
 		if (!task) return;
 
-		if (!(await SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("CONFIRM_DELETE"))).confirm) return;
+		if (!(await SAHYG.createElement("sahyg-confirm-dialog", { content: await SAHYG.translate("CONFIRM_DELETE") }).show().toPromise())) return;
 
 		let subtask = task.subtasks.splice(subtaskIndex, 1);
 
@@ -703,8 +810,10 @@ SAHYG.Classes.TodoList = class TodoList {
 							else subtaskElement.$0(".complete").removeClass("completed");
 						}
 					}
-					if (completed) SAHYG.$0(`menu .subtask[data-id="${id}"] .subtask-complete`)?.addClass("completed");
-					else SAHYG.$0(`menu .subtask[data-id="${id}"] .subtask-complete`)?.removeClass("completed");
+
+					let $subtaskComplete = this.$taskViewer.subtasks?.find((st) => st._id === id)?.$complete;
+					if (completed && $subtaskComplete) $subtaskComplete?.addClass("completed");
+					else $subtaskComplete?.removeClass("completed");
 
 					this.updateCounter();
 				});
@@ -726,14 +835,14 @@ SAHYG.Classes.TodoList = class TodoList {
 					} else {
 						taskElement = this.$completedBody.$0(`.task[data-id="${id}"]`);
 						if (taskElement) {
-							if (completed) taskElement.$0("task-.container .complete").addClass("completed");
+							if (completed) taskElement.$0(".task-container .complete").addClass("completed");
 							else taskElement.$0(".task-container .complete").removeClass("completed");
 							taskElement.remove();
 							this.$tasksBody.append(taskElement);
 						}
 					}
-					if (completed) SAHYG.$0(`menu .container[data-id="${id}"] .complete`)?.addClass("completed");
-					else SAHYG.$0(`menu .container[data-id="${id}"] .complete`)?.removeClass("completed");
+					if (completed) this.$taskViewer.$complete?.addClass("completed");
+					else this.$taskViewer.$complete?.removeClass("completed");
 
 					this.updateCounter();
 				});
@@ -799,44 +908,39 @@ SAHYG.Classes.TodoList = class TodoList {
 		target.closest(".task").$0(".subtask-container").slideToggle(200);
 		target.toggleClass("expanded");
 	}
-	µChangeSubtaskText({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
+	subtaskTextChangeHandler(id) {
 		if (this.textareaTimeout) {
 			clearTimeout(this.textareaTimeout);
 			this.textareaTimeout = null;
 		}
 
-		this.setText(taskId, target.value.trim());
+		let $textarea = this.$taskViewer.subtasks.find((st) => st._id === id).$textarea;
+		this.setText(id, $textarea.value.trim());
 	}
-	µInputSubtaskText({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
-
+	subtaskTextInputHandler(id) {
 		if (this.textareaTimeout) clearTimeout(this.textareaTimeout);
 		this.textareaTimeout = setTimeout(() => {
-			this.setText(taskId, target.value.trim());
+			let $textarea = this.$taskViewer.subtasks.find((st) => st._id === id).$textarea;
+			this.setText(id, $textarea.value.trim());
 			this.textareaTimeout = null;
 		}, 10000);
 	}
-	µChangeTaskText({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
+	taskTextChangeHandler(id) {
 		if (this.textareaTimeout) {
 			clearTimeout(this.textareaTimeout);
 			this.textareaTimeout = null;
 		}
 
-		this.setText(taskId, target.value.trim());
+		this.setText(id, this.$taskViewer.$textarea.value.trim());
 	}
-	µInputTaskText({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
-
+	taskTextInputHandler(id) {
 		if (this.textareaTimeout) clearTimeout(this.textareaTimeout);
 		this.textareaTimeout = setTimeout(() => {
-			this.setText(taskId, target.value.trim());
+			this.setText(id, this.$taskViewer.$textarea.value.trim());
 			this.textareaTimeout = null;
 		}, 10000);
 	}
-	µClickAddTaskToList({ target, added, removed, selected }) {
-		let id = target.closest("[data-id]").getAttribute("data-id");
+	addTaskToListChangeHandler(id, { selected }) {
 		let task = this.tasks.find((task) => task._id == id);
 
 		SAHYG.Api.post(location.pathname + "/set_lists", { lists: selected, task: id }, true)
@@ -850,9 +954,8 @@ SAHYG.Classes.TodoList = class TodoList {
 				this.updateCounter();
 			});
 	}
-	µClickDeleteSubtaskInMenu({ target }) {
-		let subtaskId = target.closest("[data-id]").getAttribute("data-id");
-		this.deleteSubtask(subtaskId);
+	deleteSubtaskInMenuClickHandler(id) {
+		this.deleteSubtask(id);
 	}
 	µClickCompleteTask({ target }) {
 		let task = target.closest(".subtask");
@@ -896,45 +999,40 @@ SAHYG.Classes.TodoList = class TodoList {
 		this.directionType = this.$direction.selected?.[0] || "decrease";
 		this.updateSort();
 	}
-	µChangeDescription({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
+	descriptionClickHandler(id) {
 		if (this.textareaTimeout) {
 			clearTimeout(this.textareaTimeout);
 			this.textareaTimeout = null;
 		}
 
-		this.setDescription(taskId, target.value.trim());
+		this.setDescription(id, this.$taskViewer.$descriptionTextarea.value.trim());
 	}
-	µInputDescription({ target }) {
-		let taskId = target.closest("menu .container").getAttribute("data-id");
+	descriptionInputHandler(id) {
 		if (this.textareaTimeout) clearTimeout(this.textareaTimeout);
 		this.textareaTimeout = setTimeout(() => {
-			this.setDescription(taskId, target.value.trim());
+			this.setDescription(id, this.$taskViewer.$descriptionTextarea.value.trim());
 			this.textareaTimeout = null;
 		}, 10000);
 	}
-	µClickSubtaskCompleteInMenu({ target }) {
-		let subtask = target.closest(".subtask");
-		this.completeTask(subtask.getAttribute("data-id"));
+	subtaskCompleteInMenuClickHandler(id) {
+		this.completeTask(id);
 	}
-	µClickTaskCompleteInMenu({ target }) {
-		let taskContainer = target.closest(".container");
-		this.completeTask(taskContainer.getAttribute("data-id"));
+	taskCompleteInMenuClickHandler(id) {
+		this.completeTask(id);
 	}
-	async µClickAddSubtaskIcon({ target }) {
-		let input = SAHYG.$0("container menu .add-subtask textarea");
-		if (!((input.value?.length || 0) < SAHYG.Constants.todolist_min_task_text_length))
-			await this.addSubtask(input.closest(".container").getAttribute("data-id"), input.value);
-		input.focus();
+	async addSubtaskIconClickHandler(id) {
+		if (!((this.$taskViewer.$addSubtaskTextarea.value?.length || 0) < SAHYG.Constants.todolist_min_task_text_length))
+			await this.addSubtask(id, this.$taskViewer.$addSubtaskTextarea.value);
+		this.$taskViewer.$addSubtaskTextarea.focus();
 	}
-	async µKeydownAddSubtask({ target, keyCode }) {
+	async addSubtaskKeydownHandler(id, { keyCode }) {
 		if (keyCode == 13) {
-			await this.addSubtask(target.closest(".container").getAttribute("data-id"), target.value);
-			SAHYG.$0("container menu .add-subtask textarea").focus();
+			await this.addSubtask(id, target.value);
+			SAHYG.$0(".add-subtask textarea").focus();
 		}
 		return true;
 	}
-	µClickOpenTask({ target }) {
+	openTaskClickHandler({ target }) {
 		if (target.closest(".complete, .menu, .subtask-label")) return true;
 		this.showTask(target.closest(".task")?.getAttribute("data-id"));
 	}

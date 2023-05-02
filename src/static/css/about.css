@@ -72,3 +72,21 @@ container .section .content .list-item .list-item {
 container .section .content .list-item::marker {
 	content: "●";
 }
+container .return-top {
+	font-size: 2rem;
+	padding: 0.5rem;
+	border-radius: 100%;
+	background-color: var(--background-tertiary-color);
+	width: 3rem;
+	height: 3rem;
+	position: sticky;
+	cursor: pointer;
+	z-index: 20;
+	top: calc(100vh - var(--header-height) - 3rem - 2rem);
+	left: calc(100vw - 3rem - 2rem);
+	opacity: 0.5;
+	transition: var(--transition);
+}
+container .return-top:hover {
+	opacity: 1;
+}

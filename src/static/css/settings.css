@@ -29,7 +29,15 @@ container .setting {
 container .setting.vertical {
 	flex-direction: column;
 }
-container .setting .informations {
+container .section {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	column-gap: 1rem;
+	row-gap: 1rem;
+	flex-direction: column;
+}
+container .informations {
 	display: flex;
 	flex-direction: column;
 	min-width: 10rem;
@@ -42,7 +50,7 @@ container .setting .informations {
 }
 container .informations .title {
 	font-size: 1.2rem;
-	font-weight: bold;
+	font-weight: 400;
 	display: flex;
 	flex-direction: row;
 	column-gap: 0.5rem;
@@ -51,12 +59,17 @@ container .informations .description {
 	font-size: 0.8rem;
 	min-height: 14px;
 	color: var(--color-secondary-text);
+	font-style: italic;
 }
 container .value {
 	min-width: min(15rem, 100%);
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+}
+
+container .value sahyg-input-array {
+	width: 100%;
 }
 @media screen and (max-width: 600px) {
 	container .setting {
@@ -175,6 +188,20 @@ container #tab .need-reload.needed {
 		opacity: 0.5;
 	}
 }
+container #tab > .tabs-container .tab {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+container #tab > .tabs-container .unsaved-icon {
+	font-family: var(--font-icon-solid);
+	color: var(--danger-color);
+	font-size: 1.3rem;
+	animation: blink 0.5s ease-in-out 0s infinite both alternate;
+}
+container #tab > .tabs-container .unsaved-icon.hidden {
+	display: none;
+}
 
 container .avatar .title {
 	font-size: 1.3rem;
@@ -203,4 +230,9 @@ container .avatar img:before {
 	height: 100%;
 	font-family: "Line Awesome Free Solid";
 	font-size: 10rem;
+}
+
+#password_save_button {
+	margin-top: 1rem;
+	display: block;
 }

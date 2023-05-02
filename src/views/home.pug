@@ -12,7 +12,7 @@ block BODY
 	div.title !{i18n("WELCOME")}
 	if !WebRequest.userExists
 		a.login(href="/login") 
-			btn.btn-full !{i18n("LOGIN")}
+			sahyg-button(full-color=true, content=i18n("LOGIN"))
 	div.section
 		span.title !{i18n("APPS")}
 		div.applications

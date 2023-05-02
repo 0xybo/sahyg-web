@@ -19,7 +19,7 @@ container form {
 	width: 70%;
 	max-width: 30rem;
 }
-container form .ta {
+container form sahyg-textarea {
 	margin-bottom: 1rem;
 	margin-top: 0.25rem;
 }

@@ -1,6 +1,4 @@
 extends ../main.pug
-include ../components/inputs.pug
-include ../components/navigation.pug
 
 append HEAD
 	+meta(i18n("CONNECT4"), i18n("CONNECT4_DESCRIPTION"))
@@ -12,7 +10,7 @@ append HEAD
 	title !{i18n("CONNECT4")} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_pageTitle("i18n:CONNECT4")
+	h1 !{i18n("CONNECT4")}
 	game-container 
 		div.grid-container 
 			div.placement-preview 
@@ -24,12 +22,8 @@ block BODY
 							div(row=y)
 			div.panel
 				div.commands
-					btn.new.btn-full 
-						span.lafs &#xf2f9;
-						| !{i18n("NEW_GAME")}
-					btn.rules.btn-full  
-						span.lafs &#xf02d;
-						| !{i18n("RULES")}
+					sahyg-button(icon-before=String.fromCharCode(0xf2f9)).new.full !{i18n("NEW_GAME")}
+					sahyg-button(icon-before=String.fromCharCode(0xf02d)).rules.full !{i18n("RULES")}
 					div.first-player
 						sahyg-select#first-player(
 							options=[

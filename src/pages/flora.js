@@ -43,7 +43,7 @@ class Flora extends Page {
 			identification: this.identification[locale][1],
 			glossary: this.glossary[locale],
 			glossaryMenu: Object.entries(this.glossary[locale]).map(([k, v], i) => {
-				return { id: String(i), title: k };
+				return { id: String(i), text: k };
 			}),
 		});
 	}

@@ -30,7 +30,7 @@
     "uid-safe": "^2.1.5"
   },
   "name": "sahyg-web",
-  "version": "0.6.1",
+  "version": "0.9.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

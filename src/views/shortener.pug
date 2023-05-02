@@ -1,5 +1,4 @@
 extends main.pug 
-include components/navigation.pug
 
 append HEAD
 	+meta("Shortener", "URL shortener")
@@ -11,27 +10,25 @@ append HEAD
 	title !{i18n("SHORTENER")} | !{Web.config.get("text.title")}
 
 block BODY 
-	+c_pageTitle("i18n:SHORTENER")
-	div.commands
-		btn.new.btn-full 
-			span.lafs &#xf067;
-			| !{i18n("NEW_SHORTCUT")}
-		div.search 
-			div.ta.ta-search
-				input#search(type="text" name="search" placeholder=i18n("SEARCH"))
-			div.count 
-				span.current 0
-				| /
-				span.total 0
-		btn.refresh.btn-full 
-			span.lafs &#xf2f9;
-			| !{i18n("REFRESH")}
-	div.table
-		div.container
-			div.header
-				div.cell.enable !{i18n("ENABLED")}
-				div.cell.url !{i18n("URL")}
-				div.cell.target !{i18n("TARGET")}
-				div.cell.clicked !{i18n("CLICKED_COUNT")}
-				div.cell.commands !{i18n("COMMANDS")}
-			div.body(data-replace-text=i18n("SHORTENER_NOTHING"))
+	sahyg-page-title !{i18n("SHORTENER")}
+	sahyg-input-array(
+		confirm-clear=true,
+		columns=[
+			{type: "buttons", id: "enabled", name: i18n("ENABLED"), width: "6rem", align: "center", 
+				buttons: [
+					{icon: String.fromCharCode(0xf14a), tooltip: i18n("ENABLE/DISABLE"), "button-id": "enable"},
+				]
+			},
+			{type: "link", id: "url", name: i18n("URL"), width: 45, options: {target: "_blank"}},
+			{type: "link", id: "target", name: i18n("TARGET"), width: 45, options: {target: "_blank"}},
+			{type: "staticText", id: "clicked", name: i18n("CLICKED_COUNT"), width: 10, align: "right"},
+			{type: "buttons", id: "actions", name: i18n("ACTIONS"), width: "13rem", align: "right", 
+				buttons: [
+					{icon: String.fromCharCode(0xf0c5), tooltip: i18n("COPY_URL"), "button-id": "copy"},
+					{icon: String.fromCharCode(0xf044), tooltip: i18n("EDIT"), "button-id": "edit"},
+					{icon: String.fromCharCode(0xf2ed), tooltip: i18n("REMOVE"), "button-id": "remove"}
+				]
+			}
+		]
+		min-width="60rem"
+	)

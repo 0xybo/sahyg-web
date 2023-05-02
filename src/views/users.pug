@@ -1,6 +1,4 @@
 extends main.pug 
-include components/navigation.pug
-include components/inputs.pug
 
 append HEAD 
 	+meta("Users", "Page to manage website users.")
@@ -12,21 +10,38 @@ append HEAD
 	title !{i18n('USERS')} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_horizontalTabs("tab", [{id: "users", title: i18n("USERS")}, {id: "groups", title: i18n("GROUPS")}], "users")
-		div(data-horizontal-tabs-id="users")
-			+c_pageTitle(i18n("USERS"))
+	sahyg-tabs#tab(orientation="horizontal", tabs=[{id: "users", text: i18n("USERS")}, {id: "groups", text: i18n("GROUPS")}], default="users")
+		div(sahyg-tab="users")
+			sahyg-page-title !{i18n("USERS")}
 			div.table
-				+c_list([
-					{type: "string", name: "username", displayName: i18n("USERNAME"), disabled: true},
-					{type: "string", name: "email", displayName: i18n("EMAIL"), disabled: true},
-					{type: "string", name: "group", displayName: i18n("GROUP"), disabled: true},
-					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
-				], [])
-		div(data-horizontal-tabs-id="groups")
-			+c_pageTitle(i18n("GROUPS"))
+				sahyg-input-array( 
+					confirm-clear=true,
+					columns=[
+						{type: "staticText", id: "username", name: i18n("USERNAME"), width: 20},
+						{type: "staticText", id: "email", name: i18n("EMAIL"), width: 40},
+						{type: "staticText", id: "group", name: i18n("GROUP"), width: 20},
+						{type: "buttons", id: "actions", name: i18n("ACTIONS"), width: 20, align: "right",
+							buttons: [
+								{icon: String.fromCharCode(0xf044), tooltip: i18n("EDIT"), "button-id": "edit"},
+								{icon: String.fromCharCode(0xf2ed), tooltip: i18n("REMOVE"), "button-id": "remove"}
+							]
+						},
+					]
+
+				)
+		div(sahyg-tab="groups")
+			sahyg-page-title !{i18n("GROUPS")}
 			div.table
-				+c_list([
-					{type: "string", name: "name", displayName: i18n("NAME"), disabled: true},
-					{type: "string", name: "parent", displayName: i18n("PARENT"), disabled: true},
-					{type: "html", name: "actions", displayName: i18n("ACTIONS"), defaultContent: `<btn class="edit lafs" data-tooltip="${i18n("EDIT")}">&#xf304;</btn>`},
-				], [])
+				sahyg-input-array(
+					confirm-clear=true,
+					columns=[
+						{type: "staticText", id: "name", name: i18n("NAME"), width: 40},
+						{type: "staticText", id: "parent", name: i18n("PARENT"), width: 40},
+						{type: "buttons", id: "actions", name: i18n("ACTIONS"), width: 20, align: "right", 
+							buttons: [
+								{icon: String.fromCharCode(0xf044), tooltip: i18n("EDIT"), "button-id": "edit"},
+								{icon: String.fromCharCode(0xf2ed), tooltip: i18n("REMOVE"), "button-id": "remove"}
+							]
+						}
+					]
+				)

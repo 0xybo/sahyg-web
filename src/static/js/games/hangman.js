@@ -29,12 +29,12 @@ SAHYG.Classes.Hangman = class Hangman {
 		this.initGame();
 	}
 	async abandon() {
-		let { word } = await SAHYG.Api.get("/hangman/word");
+		let { word } = (await SAHYG.Api.get("/hangman/word"))?.content;
 		this.$hiddenWord.children.forEach((hiddenLetter, i) => hiddenLetter.text(word[i]));
 		this.$keyboard.children.addClass("disabled");
 		this.$abandon.addClass("disabled");
 		this.stage(10);
-		SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("YOU_ABANDON") }).show();
+		SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("YOU_ABANDON") }).show();
 	}
 	async initGame() {
 		this.$keyboard.children.forEach((key) => key.removeClass("disabled"));
@@ -49,23 +49,23 @@ SAHYG.Classes.Hangman = class Hangman {
 		}
 	}
 	async getNewWord() {
-		this.wordProperties = await SAHYG.Api.get("/hangman/new_word/" + this.difficulty);
+		this.wordProperties = (await SAHYG.Api.get("/hangman/new_word/" + this.difficulty))?.content;
 	}
 	async letterClicked({ target }) {
 		let letter = target.getAttribute("letter");
 
-		let { positions, stage, gameOver } = await SAHYG.Api.get("/hangman/letter/" + letter);
+		let { positions, stage, gameOver } = ((await SAHYG.Api.get("/hangman/letter/" + letter))?.content) || {};
 
 		this.stage(stage);
 		positions.forEach((pos) => this.$hiddenWord.children[pos]?.text(letter.toUpperCase()));
 		target.addClass("disabled");
 
 		if (gameOver == "win") {
-			SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("YOU_WIN") }).show();
+			SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("YOU_WIN") }).show();
 			this.$keyboard.children.addClass("disabled");
 			this.$abandon.addClass("disabled");
 		} else if (gameOver == "lose") {
-			SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("YOU_LOSE") }).show();
+			SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("YOU_LOSE") }).show();
 			this.$keyboard.children.addClass("disabled");
 			this.$abandon.addClass("disabled");
 		}

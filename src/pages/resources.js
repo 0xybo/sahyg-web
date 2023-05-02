@@ -23,6 +23,9 @@ class Resources extends Page {
 		if (!file) return res.WebResponse.status(404).send();
 		res.sendFile(file, {
 			root: process.cwd() + "/" + this.Web.config.get("paths.storage") + "/avatar",
+			headers: {
+				"Content-Type": "image/jpeg"
+			}
 		});
 	}
 	async user(req, res) {

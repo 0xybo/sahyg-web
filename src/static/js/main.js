@@ -6,19 +6,17 @@ const SAHYG = {
 		translationsFetchError: false,
 		icons: [],
 	},
-	Events: {}, // Centralize event binding for keep the update event bound to the selector
 	Classes: {},
 	Instances: {}, // Store class instance associate with specific page
-	currentEventID: 0, // Store the current event ID
 	Constants: Object.fromEntries(
 		Array.from(document.querySelectorAll('head meta[name*="sahyg-"]'))?.map(($) => {
 			let name = $.getAttribute("name");
 			let value = $.getAttribute("content");
 			let type = $.getAttribute("type");
 
-			if (type == "number") value = Number(value);
+			if (type === "number") value = Number(value);
 
-			return [name.substring(6).replace(/-/g, "_"), value];
+			return [name.substring(6).replace(/-/g, "_").toUpperCase(), value];
 		}) || []
 	),
 	get popupsContainer() {
@@ -33,15 +31,19 @@ const SAHYG = {
 	 * @return {Promise<String>}
 	 */
 	async translate(name, options = null) {
-		if (SAHYG.Cache.translationsFetchError) return "";
+		if (SAHYG.Cache.translationsFetchError) return name;
 
 		if (!SAHYG.Cache.translations) {
 			SAHYG.Cache.translations = SAHYG.Api.get("/resources/translate", {
 				locale: SAHYG.$("html")?.[0]?.getAttribute("lang"),
-			}).catch((e) => (SAHYG.Cache.translationsFetchError = true));
+			});
 		}
 
-		if (SAHYG.Cache.translations instanceof Promise) SAHYG.Cache.translations = await SAHYG.Cache.translations;
+		if (SAHYG.Cache.translations instanceof Promise) {
+			let res = await SAHYG.Cache.translations;
+			if (!res.success) SAHYG.Cache.translationsFetchError = true;
+			else SAHYG.Cache.translations = res.content;
+		}
 
 		let result = SAHYG.Cache.translations[name] || name;
 		if (options) {
@@ -73,26 +75,39 @@ const SAHYG = {
 				if (!(callbacks instanceof Array)) callbacks = [callbacks];
 
 				callbacks.forEach((callback) => {
-					eventListener = element.addEventListener(eventType, callback, { signal: new AbortController().signal });
+					eventListener = element.addEventListener(eventType, callback, {
+						signal: new AbortController().signal,
+					});
 				});
 			});
 			delete attributes.once;
 		}
-		Object.entries(attributes).forEach(([attributeName, attributeValue]) =>
-			element.setAttribute(SAHYG.Utils.text.camelToKebab(attributeName), attributeValue)
-		);
+		Object.entries(attributes).forEach(([attributeName, attributeValue]) => {
+			if (
+				attributeValue === false ||
+				attributeValue === undefined ||
+				attributeValue === NaN ||
+				attributeValue === null ||
+				attributeValue === "false"
+			)
+				return;
+			element.setAttribute(
+				SAHYG.Utils.text.camelToKebab(attributeName),
+				typeof attributeValue === "string" ? attributeValue : JSON.stringify(attributeValue)
+			);
+		});
 		element.append(
 			...children
-				.filter((elem) => elem != undefined && elem != null && elem != NaN)
+				.filter((elem) => elem !== undefined && elem !== null && elem !== NaN && elem !== false)
 				.reduce((prev, curr) => (curr instanceof Array ? prev.push(...curr) : prev.push(curr), prev), [])
-				.map((elem) => (elem instanceof Element || typeof elem == "string" ? elem : JSON.stringify(elem)))
+				.map((elem) => (elem instanceof Element || typeof elem === "string" ? elem : JSON.stringify(elem)))
 		);
 		return element;
 	},
 	registerCustomElement(name, element, options = {}) {
-		if (this.CustomElements[name]) throw new Error(`sahyg-${name} already exists`);
+		if (this.Components[name]) throw new Error(`sahyg-${name} already exists`);
 
-		this.CustomElements[name] = element;
+		this.Components[name] = element;
 		customElements.define("sahyg-" + name, element, options);
 	},
 	html(htmlString) {
@@ -109,7 +124,7 @@ const SAHYG = {
 	 * @returns {{callback: Function, type: String, element: HTMLElement, off: Function}[]}
 	 */
 	on(type, elements, ...callbacks) {
-		if (typeof elements == "string") elements = SAHYG.$(elements);
+		if (typeof elements === "string") elements = SAHYG.$(elements);
 
 		if (elements instanceof HTMLCollection) elements = Array.from(elements);
 		else if (!(elements instanceof NodeList) && !(elements instanceof Array)) elements = [elements];
@@ -117,7 +132,12 @@ const SAHYG = {
 		return elements.map((element) =>
 			callbacks.map((callback) => {
 				element.addEventListener(type, callback);
-				return { callback, type, element, off: element.removeEventListener.bind(element, type, callback) };
+				return {
+					callback,
+					type,
+					element,
+					off: element.removeEventListener.bind(element, type, callback),
+				};
 			})
 		);
 	},
@@ -129,7 +149,7 @@ const SAHYG = {
 	 * @returns {{callback: Function, type: String, element: HTMLElement, off: Function}[]}
 	 */
 	once(type, elements, ...callbacks) {
-		if (typeof elements == "string") elements = SAHYG.$(elements);
+		if (typeof elements === "string") elements = SAHYG.$(elements);
 
 		if (elements instanceof Array || elements instanceof HTMLCollection) elements = Array.fron(elements);
 		else elements = [elements];
@@ -137,7 +157,12 @@ const SAHYG = {
 		return elements.map((element) =>
 			callbacks.map((callback) => {
 				element.addEventListener(type, callback, { once: true });
-				return { callback, type, element, off: element.removeEventListener.bind(element, type, callback) };
+				return {
+					callback,
+					type,
+					element,
+					off: element.removeEventListener.bind(element, type, callback),
+				};
 			})
 		);
 	},
@@ -161,7 +186,7 @@ const SAHYG = {
 	},
 	dynamicOn(type, selector, ...callbacks) {
 		document.addEventListener(type, async function (event) {
-			if (SAHYG.$(selector).contains(event.target)) {
+			if (SAHYG.$$(selector).contains(event.target)) {
 				let propagate = true;
 				event.stopPropagation = ((stopPropagation) =>
 					function () {
@@ -178,8 +203,8 @@ const SAHYG = {
 					if (propagate) await callback.call(event.target, ...arguments);
 					else return false;
 				}
-				return true;
 			}
+			return true;
 		});
 	},
 	/**
@@ -187,11 +212,11 @@ const SAHYG = {
 	 * @param {String} selector CSS selector
 	 * @returns {HTMLELement[]}
 	 */
-	$(selector) {
+	$(selector, root = document) {
 		if (selector instanceof HTMLElement) return SAHYG.createNodeList(...arguments);
 
 		try {
-			let elements = Array.from(document.querySelectorAll(selector));
+			let elements = Array.from(root.querySelectorAll(selector));
 			if (elements) elements = SAHYG.createNodeList(elements);
 			return elements;
 		} catch (e) {
@@ -204,9 +229,87 @@ const SAHYG = {
 	 * @param {String} selector CSS selector
 	 * @returns {HTMLELement}
 	 */
-	$0(selector) {
+	$0(selector, root = document) {
 		try {
-			return document.querySelectorAll(selector)[0];
+			return root.querySelectorAll(selector)[0];
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	},
+	/**
+	 * Select all elements that match the selector. Use `::shadow` to represent shadowed elements.
+	 *
+	 * Don't use `:is` or other functions that accept `,` inside parentheses.
+	 *
+	 * `:is` should be used only if it doesn't contain `::shadow`.
+	 *
+	 * Multiple selectors can be used, separated by `,`.
+	 *
+	 * Example: `div ::shadow .class, div > .class::shadow, ::shadow > .class`
+	 *
+	 * Inspired by https://stackoverflow.com/a/75241202
+	 *
+	 * @param {String} selector
+	 * @param {HTMLElement} root
+	 * @returns {NodeList}
+	 */
+	$$(selector, root = document) {
+		try {
+			let selectors = selector.split(/(?<!:is\([^)]+),/gm);
+			if (selectors.length > 1) return SAHYG.createNodeList(...[].concat(...selectors.map((selector) => SAHYG.$$(selector, root))));
+
+			selector = selector.replace(/(?<=[\s>~+|\])])(?=::shadow)|(?<=::shadow)(?=(?:\s)?[>~+|\[])/gm, "*");
+			let partials = selector.split("::shadow");
+
+			if (partials.length === 1) return root.querySelectorAll(selector);
+
+			let elems = root.querySelectorAll(partials.shift() || "*");
+			let elemsList = [];
+
+			for (let elem of elems) {
+				if (elem.shadowRoot) elemsList.push(...SAHYG.$$(partials.join("::shadow") || "*", elem.shadowRoot));
+			}
+
+			return SAHYG.createNodeList(...elemsList);
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	},
+	/**
+	 * Select the first element that match the selector. Use `::shadow` to represent shadowed elements.
+	 *
+	 * Don't use `:is` or other functions that accept `,` inside parentheses.
+	 *
+	 * `:is` should be used only if it doesn't contain `::shadow`.
+	 *
+	 * Multiple selectors can be used, separated by `,`.
+	 *
+	 * Example: `div ::shadow .class, div > .class::shadow, ::shadow > .class`
+	 *
+	 * Inspired by https://stackoverflow.com/a/75241202
+	 *
+	 * @param {String} selector
+	 * @param {HTMLElement} root
+	 * @returns {HTMLElement}
+	 */
+	$$0(selector, root = document) {
+		try {
+			let selectors = selector.split(/(?<!:is\([^)]+),/gm);
+			if (selectors.length > 1) return [].concat(...selectors.map((selector) => SAHYG.$$0(selector, root)))?.[0];
+
+			selector = selector.replace(/(?<=[\s>~+|\])])(?=::shadow)|(?<=::shadow)(?=(?:\s)?[>~+|\[])/gm, "*");
+			let partials = selector.split("::shadow");
+
+			if (partials.length === 1) return root.querySelector(selector);
+
+			let elems = root.querySelectorAll(partials.shift() || "*");
+			for (let elem of elems) {
+				if (elem.shadowRoot) return SAHYG.$$0(partials.join("::shadow") || "*", elem.shadowRoot);
+			}
+
+			return null;
 		} catch (e) {
 			console.error(e);
 			return null;
@@ -228,998 +331,15 @@ const SAHYG = {
 	onload(fn) {
 		document.addEventListener("DOMContentLoaded", fn, { once: true });
 	},
-	/**
-	 * Bind event to an element(s) by adding specified informations to SAHYG.Events variable
-	 * @deprecated
-	 * @param {String} type Event type to bind on specified element
-	 * @param {String | HTMLElement | JQuery} element Element
-	 * @param  {...Function} callbacks
-	 * @returns {String [ HTMLElement | JQuery]}
-	 */
-	oldOn(type, element, callback, important = false) {
-		if (!SAHYG.Events[type]) SAHYG.Events[type] = [];
+	createAkeeInstance() {
+		let options = {};
+		if (SAHYG.Constants.ENVIRONMENT === "development") {
+			options.ignoreLocalhost = false;
+			options.ignoreOwnVisits = false;
+			options.detailed = true;
+		} else if (localStorage.getItem("accept_detailed_stats") === "true") options.detailed = true;
 
-		let event = {
-			element,
-			callback,
-			id: ++SAHYG.currentEventID,
-		};
-
-		if (important) SAHYG.Events[type]?.unshift(event);
-		else SAHYG.Events[type]?.push(event);
-		return { id: SAHYG.currentEventID, remove: SAHYG.oldOff.bind(null, SAHYG.currentEventID) };
-	},
-	/**
-	 * Create a JQuery element with specified attributes and bind event on it if specified
-	 * @deprecated
-	 * @param {String} type Element name (ex: `div`) or html (ex: `<div></div>`)
-	 * @param {{events: {[eventName: String]: Function}, [attributeName: String]: String}} attr Element attributes
-	 * @param  {...HTMLELement | String | JQuery} children
-	 * @returns {JQuery}
-	 */
-	oldCreateElement(type, attr = {}, ...children) {
-		let e = type.startsWith("<") ? $(type) : $(`<${type}></${type}>`);
-		if (attr.events || attr.on) {
-			Object.entries(attr.events || attr.on).forEach(([name, callback]) => {
-				if (callback) SAHYG.oldOn(name, e, callback, true);
-			});
-			delete attr.events;
-			delete attr.on;
-		}
-		if (attr.once) {
-			Object.entries(attr.once).forEach(([name, callback]) => {
-				if (callback) SAHYG.oldOnce(name, e, callback, true);
-			});
-			delete attr.once;
-		}
-		Object.entries(attr).forEach(([k, v]) => {
-			e.attr(k, v);
-		});
-		children.forEach((child) => (child ? e.append(child) : null));
-		return e;
-	},
-	/**
-	 *
-	 * @deprecated
-	 * @param {*} typeOrID
-	 * @param {*} elementOrCallback
-	 * @returns
-	 */
-	oldOff(typeOrID, elementOrCallback) {
-		if (typeof typeOrID == "number") {
-			type = SAHYG.oldFindEventById(typeOrID)[0]?.type;
-			if (!type) return false;
-			if (SAHYG.Events[type]) SAHYG.Events[type] = SAHYG.Events[type]?.filter((event) => event.id != typeOrID);
-		} else if (SAHYG.Events[typeOrID])
-			SAHYG.Events[typeOrID] = SAHYG.Events[typeOrID]?.filter(
-				(event) => event.element != elementOrCallback && event.callback != elementOrCallback
-			);
-	},
-	/**
-	 *
-	 * @deprecated
-	 * @param {*} id
-	 * @param {*} type
-	 * @returns
-	 */
-	findEventById(id, type) {
-		let list = Object.entries(type ? { [type]: SAHYG.Events[type] || [] } : SAHYG.Events);
-		let result = [];
-		list.forEach(([type, events]) => {
-			events.forEach((event) => {
-				if (event.id == id) result.push({ type, ...event });
-			});
-		});
-		return result.length ? result : null;
-	},
-	Components: {
-		popup: {
-			$container: "popups",
-			Popup: class Popup {
-				events = {
-					closed: () => {},
-				};
-				buttons = {};
-				popup = $();
-				style = {
-					fullColor: {
-						"background-color": "var(--accent-color)",
-						color: "var(--background-color)",
-					},
-				};
-
-				constructor({ title, content, buttons = {} } = {}) {
-					this.parent = $("popups");
-
-					this.popup = SAHYG.oldCreateElement(
-						"popup",
-						{},
-						(this.backdrop = SAHYG.oldCreateElement("div", {
-							class: "backdrop",
-							events: { click: this.close.bind(this) },
-						})),
-						SAHYG.oldCreateElement(
-							"div",
-							{ class: "container" },
-							SAHYG.oldCreateElement("div", { class: "header" }, SAHYG.oldCreateElement("h3", { class: "title" })),
-							SAHYG.oldCreateElement("div", { class: "content" }),
-							SAHYG.oldCreateElement("div", { class: "buttons" })
-						)
-					);
-
-					Object.entries(buttons).forEach(([id, prop]) => this.button(id, prop));
-					if (content) this.content(content);
-					if (title) this.title(title);
-
-					this.popup.get(0)._popup = this;
-				}
-
-				show() {
-					return new Promise((resolve, reject) => {
-						if (Object.entries(this.buttons).length == 0) {
-							this.buttons.ok = {
-								callback: (event) => this.close(event, this),
-								text: "Ok",
-								style: `background-color": "var(--accent-color)";color: "var(--background-color)`,
-							};
-							this.events.ok = this.buttons.ok.callback;
-							this.buttons.ok.$ = SAHYG.oldCreateElement("input", {
-								class: "btn",
-								type: "button",
-								events: { click: this.events.ok },
-								"data-btn-id": "ok",
-								value: this.buttons.ok.text,
-								style: this.buttons.ok.style,
-							});
-							this.popup.find(".buttons").append(this.buttons.ok.$);
-						}
-
-						this.parent.append(this.popup);
-						setTimeout(() => {
-							this.popup.addClass("visible");
-							resolve(this);
-						}, 0);
-					});
-				}
-
-				close = async function (event) {
-					this.popup.remove();
-
-					// Remove popup events listener
-					SAHYG.oldOff("click", this.backdrop);
-					for (let i in this.buttons) {
-						SAHYG.oldOff("click", this.buttons[i].$);
-					}
-
-					// Trigger internal popup event `closed`
-					this.events.closed(event || null);
-
-					return true;
-				}.bind(this);
-
-				_promise(name) {
-					return new Promise((resolve, reject) => (this.events[name] = (...args) => this.close().then(resolve.bind(null, ...args))));
-				}
-
-				button(eventName, { callback, text, style }) {
-					this.buttons[eventName] = {
-						callback,
-						text,
-						style: this._style(style),
-					};
-
-					this.events[eventName] = callback.bind(null, this);
-					this.buttons[eventName].$ = SAHYG.oldCreateElement("input", {
-						class: "btn",
-						type: "button",
-						events: { click: this.events[eventName] },
-						"data-btn-id": eventName,
-						value: this.buttons[eventName].text,
-						style: this.buttons[eventName].style,
-					});
-
-					this.popup.find(".buttons").append(this.buttons[eventName].$);
-					return this;
-				}
-
-				content(content) {
-					this.popup.find(".content").html(content);
-					return this;
-				}
-
-				addClass(classToAdd) {
-					this.popup.addClass(classToAdd);
-					return this;
-				}
-
-				title(title) {
-					this.popup.find(".title").text(title);
-					return this;
-				}
-
-				closed(cb) {
-					this.events.closed = (e) => cb(e, this);
-					return this;
-				}
-
-				_style(obj) {
-					if (!obj) return "";
-					if (typeof obj == "string") {
-						if (this.style[obj])
-							return Object.entries(this.style[obj])
-								.map(([k, v]) => `${k}:${v};`)
-								.join("");
-						else return obj;
-					} else
-						return Object.entries(obj)
-							.map(([k, v]) => `${k}:${v};`)
-							.join("");
-				}
-
-				static confirm(content) {
-					return new Promise(async (resolve) =>
-						new SAHYG.Components.popup.Popup({
-							title: await SAHYG.translate("CONFIRM"),
-							content,
-							buttons: {
-								discard: {
-									text: await SAHYG.translate("DISCARD"),
-									style: undefined,
-									callback: (popup, event) => {
-										popup.close();
-										resolve({ confirm: false, event, popup });
-									},
-								},
-								confirm: {
-									text: await SAHYG.translate("CONFIRM"),
-									style: "fullColor",
-									callback: (popup, event) => {
-										popup.close();
-										resolve({ confirm: true, event, popup });
-									},
-								},
-							},
-						}).show()
-					);
-				}
-
-				static alert(content) {
-					return new Promise(async (resolve) =>
-						new SAHYG.Components.popup.Popup({
-							title: "⚠️ " + (await SAHYG.translate("ALERT")),
-							content,
-							buttons: {
-								ok: {
-									text: await SAHYG.translate("OK"),
-									style: "fullColor",
-									callback: (popup, event) => {
-										popup.close();
-										resolve({ event, popup });
-									},
-								},
-							},
-						}).show()
-					);
-				}
-
-				static input(title, inputs, large = true) {
-					let data = Object.fromEntries(inputs.map((input) => [input.name, input.defaultValue]));
-					let focus = () => {};
-					return new Promise(async (resolve) => {
-						let popup = new SAHYG.Components.popup.Popup();
-						if (large) popup.addClass("large");
-						popup
-							.title(title)
-							.content(
-								SAHYG.oldCreateElement(
-									"form",
-									{
-										events: {
-											submit: (event) => {
-												event.preventDefault();
-												popup.events.ok(null, popup);
-												popup.close();
-											},
-										},
-									},
-									...(await Promise.all(
-										inputs.map(async (input) => {
-											if (!input.validator) input.validator = () => true;
-											let inputElement;
-											if (["text", "url"].includes(input.type))
-												inputElement = SAHYG.oldCreateElement("input", {
-													events: {
-														input: async (event) => {
-															if (!(await input.validator(event.target.value)))
-																return void $(event.target)
-																	.closest("[data-input-type]")
-																	.addClass("invalid")
-																	.removeClass("valid");
-															else
-																$(event.target).closest("[data-input-type]").removeClass("invalid").addClass("valid");
-															data[input.name] = event.target.value;
-														},
-													},
-													placeholder: input.placeholder,
-													type: input.type,
-													value: input.defaultValue,
-													id: input.name,
-												});
-											else if (input.type == "textarea")
-												inputElement = SAHYG.oldCreateElement(
-													"textarea",
-													{
-														events: {
-															input: async (event) => {
-																if (!(await input.validator(event.target.value)))
-																	return void $(event.target)
-																		.closest("[data-input-type]")
-																		.addClass("invalid")
-																		.removeClass("valid");
-																else
-																	$(event.target)
-																		.closest("[data-input-type]")
-																		.removeClass("invalid")
-																		.addClass("valid");
-																data[input.name] = event.target.value;
-															},
-														},
-														placeholder: input.placeholder,
-														id: input.name,
-													},
-													input.defaultValue
-												);
-											else if (input.type == "select")
-												inputElement = SAHYG.createElement("sahyg-select", {
-													options: JSON.stringify(input.options),
-													selected: JSON.stringify([input.defaultValue]),
-													placeholder: input.placeholder,
-													multiple: "false",
-												}).on("input", async ({ target }) => {
-													let value = target.getAttribute("data-value");
-
-													let parent = target.closest("[data-input-type]");
-													if (!(await input.validator(value))) {
-														parent.classList.add("invalid");
-														parent.classList.remove("valid");
-														return;
-													} else {
-														parent.classList.remove("invalid");
-														parent.classList.add("valid");
-													}
-
-													data[input.name] = value;
-												});
-											else if (input.type == "boolean")
-												inputElement = await SAHYG.Components.input.boolean({
-													defaultValue: input.defaultValue,
-													events: {
-														input: async ({ target }) => {
-															let value = $(target).attr("value") == "true";
-
-															if (!(await input.validator(value)))
-																return void $(target)
-																	.closest("[data-input-type]")
-																	.addClass("invalid")
-																	.removeClass("valid");
-															else $(target).closest("[data-input-type]").removeClass("invalid").addClass("valid");
-
-															data[input.name] = value;
-														},
-													},
-												});
-											else if (input.type == "list")
-												inputElement = SAHYG.createElement("sahyg-input-list", {
-													values: JSON.stringify(input.defaultValue),
-												}).on("input", async ({ target, values, added, removed }) => {
-													if (!(await input.validator(added))) {
-														let parentElement = target.closest("[data-input-type]");
-														parentElement.classList.add("invalid");
-														parentElement.classList.remove("valid");
-														return;
-													} else {
-														let parentElement = target.closest("[data-input-type]");
-														parentElement.classList.add("valid");
-														parentElement.classList.remove("invalid");
-
-														data[input.name] = values.map((val) => val.value);
-													}
-												});
-											else if (input.type == "color") {
-												inputElement = SAHYG.oldCreateElement("input", {
-													type: "color",
-													on: {
-														input: async ({ target }) => {
-															let value = $(target).val();
-
-															if (!(await input.validator(value)))
-																return void $(target)
-																	.closest("[data-input-type]")
-																	.addClass("invalid")
-																	.removeClass("valid");
-															else $(target).closest("[data-input-type]").removeClass("invalid").addClass("valid");
-
-															$(target).attr("value", (data[input.name] = value));
-														},
-													},
-													value: input.defaultValue,
-												});
-
-												focus = () => {
-													if (input.autoFocus) $(inputElement).click();
-												};
-											}
-
-											input.$ = inputElement;
-
-											return SAHYG.oldCreateElement(
-												"div",
-												{ class: input.inline ? "inline" : "" },
-												SAHYG.oldCreateElement("label", { for: input.name }, input.label),
-												SAHYG.oldCreateElement("span", { class: "description" }, input.description),
-												(input.$container = SAHYG.oldCreateElement("div", { "data-input-type": input.type }, inputElement))
-											);
-										})
-									))
-								)
-							)
-							.button("discard", {
-								text: await SAHYG.translate("DISCARD"),
-								style: undefined,
-								callback: (popup) => {
-									resolve(null);
-									popup.close();
-								},
-							})
-							.button("ok", {
-								text: await SAHYG.translate("OK"),
-								style: "fullColor",
-								callback: (popup) => {
-									for (let input of inputs) {
-										if (input.required && !data[input.name]) {
-											input.$container?.addClass("invalid");
-											return false;
-										}
-										if (!input.validator(data[input.name])) return false;
-									}
-									resolve(data);
-									popup.close();
-								},
-							})
-							.closed(() => resolve(null));
-						await popup.show();
-						focus();
-					});
-				}
-			},
-			Viewer: class Viewer {
-				events = { closed: async () => {} };
-				constructor({ img, title, widthHeight, size, zoom = false, type, openOriginal }) {
-					this.options = {
-						img,
-						title,
-						widthHeight,
-						size,
-						zoom,
-						type,
-						openOriginal,
-					};
-					this.parent = $("popups");
-					this.popup = SAHYG.oldCreateElement(
-						"viewer",
-						{},
-						SAHYG.oldCreateElement("div", { class: "backdrop", events: { click: this.close.bind(this) } }),
-						(this.container = SAHYG.oldCreateElement("div", { class: "container" })),
-						SAHYG.oldCreateElement("div", { class: "close-button lafs", events: { click: this.close.bind(this) } }, "\uf00d")
-					);
-
-					this.popup._viewer = this;
-				}
-				async load() {
-					this.imageBlob = await (await fetch(this.options.img)).blob();
-					if (this.imageBlob.size == 0) return Promise.reject();
-
-					this.image = new Image();
-					this.image.src = URL.createObjectURL(this.imageBlob);
-					await this.image.decode();
-
-					this.container.append(this.image);
-					this.container.append((this.infos = SAHYG.oldCreateElement("div", { class: "infos" })));
-
-					if (this.options.title) this.infos.append(SAHYG.oldCreateElement("span", { class: "title" }, decodeURI(this.options.title)));
-					else
-						this.infos.append(
-							SAHYG.oldCreateElement("span", { class: "title" }, decodeURI((this.options.title = this.options.img.split("/").pop())))
-						);
-					if (this.options.type) this.infos.append(SAHYG.oldCreateElement("span", {}, this.options.type));
-					else
-						this.infos.append(
-							SAHYG.oldCreateElement("span", {}, (this.options.type = this.imageBlob.type.split("/").pop().toUpperCase()))
-						);
-					if (this.options.widthHeight) this.infos.append(SAHYG.oldCreateElement("span", {}, this.options.widthHeight));
-					else
-						this.infos.append(
-							SAHYG.oldCreateElement("span", {}, (this.options.widthHeight = this.image.width + "x" + this.image.height))
-						);
-					if (this.options.size) this.infos.append(SAHYG.oldCreateElement("span", {}, SAHYG.Utils.units.formatOctets(this.options.size)));
-					else
-						this.infos.append(
-							SAHYG.oldCreateElement("span", {}, (this.options.size = SAHYG.Utils.units.formatOctets(this.imageBlob.size)))
-						);
-
-					if (this.options.openOriginal)
-						this.infos.append(
-							SAHYG.oldCreateElement(
-								"span",
-								{ class: "link", events: { click: this.openOriginal.bind(this) } },
-								await SAHYG.translate("OPEN_ORIGINAL")
-							)
-						);
-				}
-				async show(load = true) {
-					let loader = SAHYG.Components.loader.center();
-					if (load)
-						await this.load()
-							.catch(() => {
-								loader.remove();
-							})
-							.then(() => {
-								loader.remove();
-								this.parent.append(this.popup);
-							});
-				}
-				async close(event) {
-					this.popup.remove();
-					await this.events.closed(event || null);
-					URL.revokeObjectURL(this.imageBlob);
-					return true;
-				}
-				openOriginal() {
-					window.open(this.options.img, "_blank");
-				}
-			},
-			Menu: class Menu {
-				constructor({
-					content,
-					footerContent,
-					title,
-					target,
-					position = "right",
-					fullHeight = false,
-					appendTo = SAHYG.Components.popup.$container,
-					over = true,
-				} = {}) {
-					this.content = content;
-					this.footerContent = footerContent;
-					this.title = title;
-					this.$target = target;
-					this.fullHeight = fullHeight;
-					this.$appendTo = appendTo;
-
-					this.$ = SAHYG.createElement(
-						"menu",
-						{
-							on: {
-								click: this.µclick.bind(this),
-							},
-							class: `${fullHeight ? "full-height" : ""} ${position == "right" ? "right" : "left"}`,
-						},
-						SAHYG.createElement(
-							"div",
-							{ class: "menu-container" },
-							SAHYG.createElement(
-								"div",
-								{ class: "menu-header" },
-								SAHYG.createElement("div", { class: "menu-close-icon lafs", on: { click: this.close.bind(this) } }, "\uf00d"),
-								SAHYG.createElement("div", { class: "menu-title" }, title || "")
-							),
-							SAHYG.createElement(
-								"div",
-								{ class: "menu-body" },
-								content,
-								SAHYG.createElement("div", { class: "menu-footer" }, footerContent)
-							)
-						)
-					);
-
-					if (target?.on) {
-						target.on("click", this.toggle.bind(this));
-						target._menu = this;
-					}
-
-					if (over === true) this.$.addClass("over");
-					else if (typeof over == "number") {
-						if (document.body.clientWidth < over) this.$.addClass("over");
-						SAHYG.on("resize", window, ({ target }) => {
-							if (document.body.clientWidth < over) this.$.addClass("over");
-							else this.$.removeClass("over");
-							return true;
-						});
-					}
-				}
-				µclick({ target }) {
-					if (target.contains("menu")) return this.close(), false;
-					return true;
-				}
-				close() {
-					this.$.removeClass("opened");
-					return this;
-				}
-				open(mount = true) {
-					if (mount && !this.isMounted()) this.mount();
-					this.$.addClass("opened");
-					return this;
-				}
-				toggle() {
-					if (this.isOpened()) this.close();
-					else this.open();
-					return this;
-				}
-				isOpened() {
-					return this.$.hasClass("opened");
-				}
-				isMounted() {
-					return Boolean(this.$appendTo.contains(this.$));
-				}
-				mount() {
-					this.$appendTo.append(this.$);
-					return this;
-				}
-				unmount() {
-					if (!this.isMounted()) return this;
-					this.$.remove();
-					return this;
-				}
-				setContent(content) {
-					this.content = content;
-					let body = this.$.querySelector(".menu-body");
-					body.innerHTML = "";
-					body.append(...(content instanceof Array ? content : [content]));
-					return this;
-				}
-				setTitle(title) {
-					this.title = title;
-					this.$.querySelector(".menu-title").textContent = title;
-					return this;
-				}
-			},
-		},
-		toast: {
-			$container: "toasts",
-			errorOccured: async function () {
-				SAHYG.Components.toast.Toast.danger({
-					message: await SAHYG.translate("ERROR_OCCURRED"),
-				}).show();
-			},
-			Toast: class Toast {
-				timeout;
-				events = {
-					closed: (event) => {},
-					clicked: (event) => {},
-				};
-
-				constructor({ message = "", type = "info", timeout = 5000, ...options }) {
-					this.params = { message, type, timeout, ...options };
-					this.container = SAHYG.Components.toast.$container;
-					this.element = SAHYG.createElement(
-						"toast",
-						{ type },
-						SAHYG.createElement("span", { class: "content" }, message),
-						SAHYG.createElement("div", { class: "close" }, "\uf00d").on("click", this.remove.bind(this))
-					);
-
-					this.element._toast = this;
-				}
-
-				remove(event) {
-					event?.preventDefault();
-					event?.stopPropagation();
-					this.element.removeClass("visible");
-					setTimeout(() => {
-						this.element.remove();
-						this.events.closed(event || null);
-					}, 200);
-					return this;
-				}
-
-				show() {
-					this.container.append(this.element);
-					this.timeout = setTimeout(this.remove.bind(this), this.params.timeout);
-					setTimeout(this.element.addClass.bind(this.element, "visible"), 0);
-					return this;
-				}
-
-				closed(cb) {
-					this.events.closed = (e) => cb(e, this);
-					return this;
-				}
-
-				clicked(cb) {
-					this.events.clicked = (e) => cb(e, this);
-					this.element.addClass("clickable");
-					SAHYG.on("click", this.element, this.events.clicked);
-					return this;
-				}
-
-				static info({ message, timeout, ...options }) {
-					return new SAHYG.Components.toast.Toast({ message, type: "info", timeout, ...options });
-				}
-				static success({ message, timeout, ...options }) {
-					return new SAHYG.Components.toast.Toast({ message, type: "success", timeout, ...options });
-				}
-				static warning({ message, timeout, ...options }) {
-					return new SAHYG.Components.toast.Toast({ message, type: "warning", timeout, ...options });
-				}
-				static danger({ message, timeout, ...options }) {
-					return new SAHYG.Components.toast.Toast({ message, type: "danger", timeout, ...options });
-				}
-			},
-		},
-		tooltip: {
-			$container: "tooltips",
-			userTooltip: function (data) {
-				return SAHYG.oldCreateElement(
-					"div",
-					{ class: "user-tooltip" },
-					data.avatarUrl == null
-						? SAHYG.oldCreateElement("span", { class: "lafs avatar" }, "\uf007")
-						: SAHYG.oldCreateElement("img", { src: data.avatarUrl, class: "avatar" }),
-					SAHYG.oldCreateElement(
-						"div",
-						{ class: "infos" },
-						SAHYG.oldCreateElement("span", { class: "username" }, data.username),
-						SAHYG.oldCreateElement(
-							"div",
-							{ class: "icons" },
-							data.certified ? SAHYG.oldCreateElement("span", { class: "lafs", style: "color: var(--green-700)" }, "\uf0a3") : null,
-							data.group?.name == "owner"
-								? SAHYG.oldCreateElement("span", { class: "lafs", style: "color: var(--yellow-600)" }, "\uf521")
-								: null,
-							data.group?.name == "administrator"
-								? SAHYG.oldCreateElement("span", { class: "lafs", style: "color: var(--red-600)" }, "\uf7d9")
-								: null,
-							data.group?.name == "vip"
-								? SAHYG.oldCreateElement("span", { class: "lafr", style: "color: var(--blue-600)" }, "\uf005")
-								: null
-						)
-					)
-				).get(0).outerHTML;
-			},
-			menu: function (target, items, options = {}, mainInstance) {
-				return tippy(typeof target == "string" ? target : $(target).get(0), {
-					appendTo: document.querySelector("menus"),
-					content: "",
-					trigger: "click",
-					interactive: true,
-					placement: "bottom",
-					duration: 200,
-					onCreate(instance) {
-						let menu = SAHYG.oldCreateElement("div", { class: "tooltip-menu" });
-						for (let item of items) {
-							if (item.type == "divider") menu.append(SAHYG.oldCreateElement("span", { class: "divider", ...(item.attributes || {}) }));
-							else if (item.type == "button")
-								menu.append(
-									SAHYG.oldCreateElement(
-										"div",
-										{
-											class: "item button",
-											on: {
-												click: function () {
-													if (!item.keepOpen) instance.hide(), mainInstance?.hide?.();
-													item.callback.call(this, instance, ...arguments);
-												},
-											},
-											...(item.attributes || {}),
-										},
-										SAHYG.oldCreateElement("span", { class: "icon lafs" }, item.icon || ""),
-										SAHYG.oldCreateElement("span", { class: "text" }, item.text)
-									)
-								);
-							else if (item.type == "dropdown") {
-								let dropdownTarget;
-								menu.append(
-									(dropdownTarget = SAHYG.oldCreateElement(
-										"div",
-										{ class: "item dropdown", ...(item.attributes || {}) },
-										SAHYG.oldCreateElement("span", { class: "icon lafs" }, item.icon || ""),
-										SAHYG.oldCreateElement("span", { class: "text" }, item.text),
-										SAHYG.oldCreateElement("span", { class: "dropdown-icon lafs" }, "\uf105")
-									))
-								);
-								SAHYG.Components.tooltip.menu(
-									dropdownTarget,
-									item.dropdown,
-									{
-										trigger: "mouseenter focus",
-										placement: "right",
-										appendTo: "parent",
-										popperOptions: {
-											modifiers: [
-												{
-													name: "flip",
-													options: {
-														fallbackPlacements: ["right", , "left", "bottom", "top"],
-													},
-												},
-											],
-										},
-										interactiveBorder: 30,
-										interactiveDebounce: 1,
-									},
-									instance
-								);
-							}
-						}
-						instance.setContent(menu.get(0));
-					},
-					...options,
-				});
-			},
-		},
-		loader: {
-			$popups: "popups",
-			replaceContent: function (element, loadingText = true) {
-				let content = SAHYG.createNodeList(element.children).cloneNode(true);
-				let loader = SAHYG.createElement("sahyg-loader", { "loading-text": String(loadingText) });
-				SAHYG.createNodeList(element.children).remove();
-				element.append(loader);
-
-				loader.done = () => {
-					SAHYG.createNodeList(element.children).remove();
-					element.append(...content);
-				};
-				loader.replacedContent = content;
-
-				return loader;
-			},
-			center: function (loadingText = true) {
-				let loader = SAHYG.createElement("sahyg-loader", { class: "center", "loading-text": String(loadingText) });
-
-				SAHYG.Components.loader.$popups.append(loader);
-
-				return loader;
-			},
-		},
-		headerMenu: {
-			$menu: "header-menu",
-			$menuIcon: "menu-icon",
-			isOpened: function () {
-				return SAHYG.Components.headerMenu.$menu.getAttribute("status") == "opened";
-			},
-			toggle: function () {
-				if (SAHYG.Components.headerMenu.isOpened()) SAHYG.Components.headerMenu.close();
-				else SAHYG.Components.headerMenu.open();
-			},
-			close: function () {
-				SAHYG.Components.headerMenu.$menu.setAttribute("status", "closed");
-				SAHYG.Components.headerMenu.$menuIcon.setAttribute("status", "closed");
-			},
-			open: function () {
-				SAHYG.Components.headerMenu.$menu.setAttribute("status", "opened");
-				SAHYG.Components.headerMenu.$menuIcon.setAttribute("status", "opened");
-			},
-		},
-		headerAccount: {
-			$menu: "header .account .menu",
-			toggle: function (e) {
-				e?.stopPropagation();
-				if (!SAHYG.Components.headerAccount.$menu) return true;
-				if (e.target.closest("header .account .menu")) return null;
-				if (SAHYG.Components.headerAccount.isOpened()) return SAHYG.Components.headerAccount.close(), false;
-				else return SAHYG.Components.headerAccount.open(), false;
-			},
-			open: function () {
-				if (!SAHYG.Components.headerAccount.$menu) return true;
-				SAHYG.Components.headerAccount.$menu.setAttribute("status", "opened");
-				return false;
-			},
-			close: function () {
-				if (!SAHYG.Components.headerAccount.$menu) return true;
-				SAHYG.Components.headerAccount.$menu.setAttribute("status", "closed");
-				return false;
-			},
-			outsideClose: function (e) {
-				if (!SAHYG.Components.headerAccount.$menu) return true;
-				if (SAHYG.Components.headerAccount.isOpened()) {
-					if (e ? e.target.closest("header .account .menu") || e.target.closest("popups") : false) return true;
-					e?.stopPropagation();
-					SAHYG.Components.headerAccount.$menu.setAttribute("status", "closed");
-					return false;
-				} else return true;
-			},
-			isOpened: function () {
-				if (!SAHYG.Components.headerAccount.$menu) return null;
-				return SAHYG.Components.headerAccount.$menu.getAttribute("status") == "opened";
-			},
-		},
-		input: {
-			select: async function ({ options, defaultValue, events, placeholder }) {
-				return SAHYG.oldCreateElement(
-					"c-select",
-					{
-						events,
-						placeholder: placeholder,
-					},
-					SAHYG.oldCreateElement("c-select-current", {}, options.find((option) => option.name == defaultValue)?.text),
-					SAHYG.oldCreateElement(
-						"c-select-options",
-						{},
-						...options.map(({ name, text, icon }) =>
-							SAHYG.oldCreateElement(
-								"c-select-option",
-								{ "data-value": name },
-								SAHYG.oldCreateElement("c-select-option-icon", {}), //TODO
-								SAHYG.oldCreateElement("c-select-option-information", {}, SAHYG.oldCreateElement("c-select-option-title", {}, text))
-							)
-						)
-					)
-				);
-			},
-			boolean: async function ({ defaultValue, events }) {
-				return SAHYG.oldCreateElement(
-					"c-boolean",
-					{ events, value: String(Boolean(defaultValue)) },
-					SAHYG.oldCreateElement("c-boolean-circle")
-				);
-			},
-			list: async function ({ defaultValue, events }) {
-				// return SAHYG.oldCreateElement(
-				// 	"sahyg-input-list",
-				// 	{ on: events },
-				// 	SAHYG.oldCreateElement(
-				// 		"div",
-				// 		{ class: "sahyg-input-list-values" },
-				// 		defaultValue.map((value) =>
-				// 			SAHYG.oldCreateElement(
-				// 				"div",
-				// 				{ class: "sahyg-input-list-value" },
-				// 				SAHYG.oldCreateElement("div", { class: "sahyg-input-list-value-text" }, value),
-				// 				SAHYG.oldCreateElement("sahyg-input-list-value-remove")
-				// 			)
-				// 		)
-				// 	),
-				// 	SAHYG.oldCreateElement("div", { class: "sahyg-input-list-add" })
-				// );
-				let values = SAHYG.oldCreateElement("sahyg-input-list-values", {});
-
-				let newEntry = (value) => {
-					let valueElement = SAHYG.oldCreateElement(
-						"sahyg-input-list-value",
-						{},
-						SAHYG.oldCreateElement("sahyg-input-list-value-text", {}, value)
-					);
-					valueElement.append(SAHYG.oldCreateElement("sahyg-input-list-value-remove"));
-					values.append(valueElement);
-				};
-				defaultValue.forEach(newEntry);
-
-				return SAHYG.oldCreateElement("sahyg-input-list", { events }, values, SAHYG.oldCreateElement("sahyg-input-list-add"));
-			},
-			color: async function ({ defaultValue, on = {} } = {}) {
-				let input;
-
-				on.input = on?.input
-					? (function (inputHandler) {
-							return async function () {
-								input.attr("value", input.val());
-								return await inputHandler.call(this, ...arguments);
-							};
-					  })(on.input)
-					: function () {
-							input.attr("value", input.val());
-					  };
-
-				input = SAHYG.oldCreateElement("input", {
-					on,
-					type: "color",
-					value: defaultValue || "#000000",
-				});
-				return Object.assign(SAHYG.oldCreateElement("c-color-picker", {}, input), { input });
-			},
-			datetime: function ({ defaultValue } = {}) {
-				return SAHYG.oldCreateElement("sahyg-datetime", {}, SAHYG.oldCreateElement("input", { type: "datetime-local" }));
-			},
-		},
+		SAHYG.ackeeInstance = ackeeTracker.create(SAHYG.Constants.STATS_DOMAIN, options).record(SAHYG.Constants.STATS_TOKEN);
 	},
 	Utils: {
 		selection: {
@@ -1264,7 +384,7 @@ const SAHYG = {
 				return Object.fromEntries(
 					decodeURI(url)
 						.match(/(?<=\?|&)[^&=]+[^&]+/gm)
-						?.map((e) => (e.split("=").length == 1 ? [e, null] : e.split("="))) || []
+						?.map((e) => (e.split("=").length === 1 ? [e, null] : e.split("="))) || []
 				);
 			},
 			getStrParams(url = location.href) {
@@ -1281,7 +401,7 @@ const SAHYG = {
 			},
 			setParams(params, url = location.href) {
 				return decodeURI(url).replace(
-					/(?:\?|#).+/m,
+					/(?:\?|#|$).*$/m,
 					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries({
 						...this.getParams(url),
 						...params,
@@ -1293,7 +413,7 @@ const SAHYG = {
 			},
 			setParam(name, value, url = location.href) {
 				return decodeURI(url).replace(
-					/(?:\?|#).+/m,
+					/(?:\?|#|$).*$/m,
 					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries({
 						...this.getParams(url),
 						[name]: value,
@@ -1305,7 +425,7 @@ const SAHYG = {
 			},
 			removeParam(name, url = location.href) {
 				return decodeURI(url).replace(
-					/(?:\?|#).+/m,
+					/(?:\?|#|$).*$/m,
 					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries(this.getParams())
 						.filter(([paramName]) => name != paramName)
 						.map((e) => e.join("="))
@@ -1315,7 +435,7 @@ const SAHYG = {
 			},
 			removeParams(names, url = location.href) {
 				return decodeURI(url).replace(
-					/(?:\?|#).+/m,
+					/(?:\?|#|$).*$/m,
 					`${((a = this.getAnchor(url)), a ? "#" + a : "")}?${Object.entries(this.getParams())
 						.filter(([paramName]) => !names.includes(paramName))
 						.map((e) => e.join("="))
@@ -1324,14 +444,20 @@ const SAHYG = {
 				);
 			},
 			setLocationParams(params) {
-				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({ ...this.getParams(), ...params })
+				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({
+					...this.getParams(),
+					...params,
+				})
 					.map((e) => e.join("="))
 					.join("&")
 					.replace(/\s/gm, "%20")}`;
 				return history.pushState({}, "", url);
 			},
 			setLocationParam(name, value) {
-				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({ ...this.getParams(), [name]: value })
+				let url = `${((a = this.getAnchor()), a ? "#" + a : "")}?${Object.entries({
+					...this.getParams(),
+					[name]: value,
+				})
 					.map((e) => e.join("="))
 					.join("&")
 					.replace(/\s/gm, "%20")}`;
@@ -1381,86 +507,101 @@ const SAHYG = {
 				return true;
 			},
 			async consentPopup() {
-				let popup = new SAHYG.Components.popup.Popup();
-				popup
-					.title("🍪 " + (await SAHYG.translate("COOKIES")))
-					.content(
-						SAHYG.oldCreateElement(
-							"div",
-							{},
-							await SAHYG.translate("COOKIES_CONSENT"),
-							SAHYG.oldCreateElement("br"),
-							SAHYG.oldCreateElement(
-								"a",
-								{ href: "/about#cookies", on: { click: popup.close } },
-								await SAHYG.translate("MORE_INFORMATIONS")
-							)
-						)
-					)
-					.button("ok", {
-						text: await SAHYG.translate("OK"),
-						callback: (btn, event) => {
-							btn.close();
-							this.consent();
+				let dialog = SAHYG.createElement("sahyg-input-dialog", {
+					header: "🍪 " + (await SAHYG.translate("COOKIES")),
+					inputs: [
+						{
+							type: "staticText",
+							text: await SAHYG.translate("COOKIES_CONSENT"),
 						},
-					})
-					.show();
+						{
+							type: "switch",
+							id: "accept_detailed",
+							title: await SAHYG.translate("ACCEPT_DETAILED_STATS"),
+							description: await SAHYG.translate("ACCEPT_DETAILED_STATS_DESC"),
+							defaultValue: true,
+							singleLine: true,
+						},
+					],
+					noButtons: true,
+				});
+				dialog.addButtons([
+					{
+						text: await SAHYG.translate("OK"),
+						options: {
+							fullColor: true,
+						},
+						callback: dialog.submit.bind(dialog),
+					},
+					{
+						text: await SAHYG.translate("MORE_INFORMATIONS"),
+						callback: () => (location.href = "/about#cookies"),
+						closeOnClick: false,
+					},
+				]);
+				dialog.show();
+				dialog.toPromise().then((result) => {
+					localStorage.setItem("cookie_consent", "true");
+
+					if (!result?.data || result?.data?.accept_detailed) localStorage.setItem("accept_detailed_stats", "true");
+					else localStorage.setItem("accept_detailed_stats", "false");
+
+					SAHYG.createAkeeInstance();
+				});
 				return null;
-			},
-			consent() {
-				localStorage.setItem("cookie_consent", "true");
-				return true;
 			},
 		},
 		settings: {
 			theme: {
 				setDark(save = true) {
-					SAHYG.$0("html").setAttribute("theme", "dark");
+					document.documentElement.setAttribute("theme", "dark");
 					SAHYG.Utils.cookie.set("theme", "dark");
 					if (save) SAHYG.Utils.settings.theme.save();
 					return true;
 				},
 				setLight(save = true) {
-					SAHYG.$0("html").setAttribute("theme", "light");
+					document.documentElement.setAttribute("theme", "light");
 					SAHYG.Utils.cookie.set("theme", "light");
 					if (save) SAHYG.Utils.settings.theme.save();
 					return true;
 				},
 				set(theme, save = true) {
-					if (theme == "light") SAHYG.Utils.settings.theme.setLight(save);
-					else if (theme == "dark") SAHYG.Utils.settings.theme.setDark(save);
+					if (theme === "light") SAHYG.Utils.settings.theme.setLight(save);
+					else if (theme === "dark") SAHYG.Utils.settings.theme.setDark(save);
 					else return false;
 				},
 				current() {
-					return SAHYG.$0("html").getAttribute("theme");
+					return document.documentElement.getAttribute("theme");
 				},
 				async toggle() {
-					if (SAHYG.Utils.settings.theme.current() == "dark") return SAHYG.Utils.settings.theme.setLight(), "light";
+					if (SAHYG.Utils.settings.theme.current() === "dark") return SAHYG.Utils.settings.theme.setLight(), "light";
 					else return SAHYG.Utils.settings.theme.setDark(), "dark";
 				},
 				async save() {
-					if (SAHYG.Utils.user.isConnected())
-						SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("CLICK_TO_SAVE") })
-							.clicked(async function (event, btn) {
-								btn.remove();
-								SAHYG.Api.post("/settings", { theme: SAHYG.$0("html").getAttribute("theme") == "light" ? "light" : "dark" })
-									.then(async () => SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("SAVED") }).show())
-									.catch(async () =>
-										SAHYG.Components.toast.Toast.error({
-											message: await SAHYG.translate("ERROR_OCCURRED"),
-										}).show()
-									);
-							})
-							.show();
-					else return SAHYG.$0("html").getAttribute("theme");
+					if (SAHYG.Utils.user.isConnected()) {
+						let toast = SAHYG.createElement("sahyg-toast", {
+							content: await SAHYG.translate("CLICK_TO_SAVE"),
+						});
+						toast.on("click", async function (event) {
+							toast.close();
+							let response = await SAHYG.Api.post("/settings/set", {
+								theme: document.documentElement.getAttribute("theme") === "light" ? "light" : "dark",
+							});
+							if (response?.success)
+								SAHYG.createElement("sahyg-toast", {
+									content: await SAHYG.translate("SAVED"),
+								}).show();
+						});
+						toast.show();
+					} else return document.documentElement.getAttribute("theme");
 				},
 			},
 			locale: {
 				async set(locale, reload = true, saveIfPossible = true) {
 					SAHYG.Utils.cookie.set("locale", locale);
 					if (saveIfPossible && SAHYG.Utils.user.isConnected()) {
-						SAHYG.Api.post("/settings", { locale })
-							.then(() => (reload ? location.reload() : null))
+						SAHYG.Api.post("/settings/set", { locale })
+							.then((res) => res?.success && reload && location.reload())
 							.catch(console.error);
 					} else if (reload) location.reload();
 					return null;
@@ -1475,13 +616,16 @@ const SAHYG = {
 		},
 		user: {
 			isConnected() {
-				return SAHYG.$0("html").getAttribute("connected") == "";
+				return SAHYG.Constants.USERNAME !== "guest";
 			},
 			async logout(confirm = true) {
 				if (confirm)
-					SAHYG.Components.popup.Popup.confirm(await SAHYG.translate("LOGOUT_CONFIRM")).then((result) =>
-						result.confirm ? (window.location.href = "/logout") : null
-					);
+					SAHYG.createElement("sahyg-confirm-dialog", {
+						content: await SAHYG.translate("LOGOUT_CONFIRM"),
+					})
+						.show()
+						.toPromise()
+						.then((confirmed) => confirmed && (window.location.href = "/logout"));
 				else window.location.href = "/logout";
 				return false;
 			},
@@ -1491,7 +635,7 @@ const SAHYG = {
 		},
 		element: {
 			getDataAttribute(elem, name) {
-				if (typeof elem == "string") elem = SAHYG.$0(elem);
+				if (typeof elem === "string") elem = SAHYG.$0(elem);
 				return elem.getAttribute("data-" + name);
 			},
 			resizeTextarea(target) {
@@ -1508,7 +652,7 @@ const SAHYG = {
 
 				target.style.height = newHeight - bordersHeight + "px";
 
-				if (newHeight == maxHeight) target.style.overflowY = "scroll";
+				if (newHeight === maxHeight) target.style.overflowY = "scroll";
 				else target.style.overflowY = "hidden";
 			},
 			parseHtml(string) {
@@ -1530,190 +674,16 @@ const SAHYG = {
 				return `${(octets / int).toFixed(decimals)} ${str}`;
 			},
 		},
-		input: {
-			/**
-			 * Select file(s)
-			 * @param {String} type content type; Ex: 'image/jpeg' or '.png, .pdf'
-			 * @param {Boolean} multiple
-			 * @returns {Promise<File|File[]>}
-			 */
-			file(type, multiple) {
-				return new Promise((resolve) => {
-					SAHYG.oldCreateElement("input", {
-						type: "file",
-						multiple: multiple,
-						accept: type,
-						events: {
-							input: (e) => {
-								let files = Array.from(e.target.files);
-								e.target.remove();
-								if (multiple) resolve(files);
-								else resolve(files[0]);
-							},
-						},
-					})
-						.appendTo("hidden-content")
-						.trigger("click");
-				});
-			},
-			async text({ title, description, defaultValue, placeholder, largeText = false, validator = () => true } = {}) {
-				let id = Math.random().toString(36).substring(2);
-				return (
-					await SAHYG.Components.popup.Popup.input(
-						title,
-						[
-							{
-								name: id,
-								placeholder,
-								type: "text",
-								defaultValue,
-								description,
-								validator,
-							},
-						],
-						largeText
-					)
-				)?.[id];
-			},
-			icon(target) {
-				return new Promise(async (resolve) => {
-					await SAHYG.Utils.icons.getAll();
-
-					let eventsClick = [],
-						eventsHover = [],
-						eventTarget;
-
-					tippy(target, {
-						placement: "bottom",
-						trigger: "manual",
-						content: "",
-						appendTo: SAHYG.$0("menus"),
-						interactive: true,
-						maxWidth: "none",
-						onClickOutside(instance) {
-							resolve(null);
-						},
-						onHidden(instance) {
-							instance.destroy();
-							eventsClick.forEach((e) => SAHYG.oldOff("click", e));
-							eventsHover.forEach((e) => SAHYG.oldOff("mouseover", e));
-							SAHYG.oldOff("click", eventTarget);
-						},
-						async onCreate(instance) {
-							let body, nameContainer;
-							let timeout;
-
-							SAHYG.oldOnce("click", target, instance.hide);
-
-							instance.setContent(
-								SAHYG.oldCreateElement(
-									"icon-picker",
-									{},
-									SAHYG.oldCreateElement(
-										"div",
-										{ class: "header" },
-										SAHYG.oldCreateElement(
-											"div",
-											{ class: "search-bar" },
-											SAHYG.oldCreateElement("input", {
-												on: {
-													input: async ({ target }) => {
-														let search = async () => {
-															let query = target.value;
-															if (!query.length) body.children().removeClass("hidden");
-															SAHYG.Cache.icons.forEach((icon) => {
-																if (SAHYG.Utils.icons.check(icon, query))
-																	body.children(`[data-name="${icon.name}"]`).removeClass("hidden");
-																else body.children(`[data-name="${icon.name}"]`).addClass("hidden");
-															});
-														};
-
-														if (timeout) clearTimeout(timeout);
-														timeout = setTimeout(search, 500);
-													},
-												},
-												placeholder: await SAHYG.translate("SEARCH"),
-											})
-										)
-									),
-									(body = SAHYG.oldCreateElement(
-										"div",
-										{ class: "body" },
-										SAHYG.Cache.icons.map((icon) => {
-											let click = () => {
-												instance.hide();
-												resolve(icon);
-											};
-											let hover = () => nameContainer.text(icon.names[1] || icon.name);
-											eventsClick.push(click);
-											eventsHover.push(hover);
-											return SAHYG.oldCreateElement(
-												"span",
-												{
-													class: "icon " + icon.styles?.join(" "),
-													on: { click, mouseover: hover },
-													"data-name": icon.name,
-												},
-												`&#x${icon.unicode};`
-											);
-										})
-									)),
-									SAHYG.oldCreateElement(
-										"div",
-										{ class: "footer" },
-										(nameContainer = SAHYG.oldCreateElement("div", { class: "icon-name" }))
-									)
-								).get(0)
-							);
-						},
-					}).show();
-				});
-			},
-			color(target, defaultColor) {
-				return new Promise((resolve) => {
-					tippy(target, {
-						placement: "bottom",
-						trigger: "manual",
-						content: "",
-						appendTo: SAHYG.popupsContainer,
-						interactive: true,
-						maxWidth: "none",
-						showOnCreate: true,
-						onClickOutside(instance) {
-							resolve(null);
-						},
-						onHidden(instance) {
-							instance.destroy();
-						},
-						async onCreate(instance) {
-							let input;
-							SAHYG.once("click", target, instance.hide);
-
-							let picker = SAHYG.createElement(
-								"color-picker",
-								{},
-								(input = SAHYG.createElement("sahyg-color", { value: defaultColor })),
-								SAHYG.createElement("btn", { class: "btn-full" }, await SAHYG.translate("CONFIRM")).on("click", () => {
-									instance.hide();
-									resolve(input.value);
-								})
-							);
-							instance.setContent(picker);
-						},
-					});
-				});
-			},
-		},
 		icons: {
 			async getAll() {
 				if (SAHYG.Cache.icons.length) return true;
-				let icons = (await SAHYG.Api.getStatic("/line-awesome.json")) || [];
+				let icons = (await SAHYG.Api.get(location.origin + "/line-awesome.json")) || [];
 				if (!icons) return false;
 				SAHYG.Cache.icons = icons;
 				return true;
 			},
 			check(icon, queries, disabledQuery = ["name", "category", "categories", "styles", "unicode"]) {
-				if (typeof queries == "string" || queries instanceof Array)
+				if (typeof queries === "string" || queries instanceof Array)
 					queries = Object.fromEntries(
 						["name", "names", "category", "categories", "tags", "styles", "unicode"]
 							.filter((k) => !disabledQuery.includes(k))
@@ -1738,8 +708,8 @@ const SAHYG = {
 				let icons = SAHYG.Cache.icons;
 
 				let filteredIcons = icons.filter((icon) => SAHYG.Utils.icons.check(icon, query));
-				if (filteredIcons.length == 0) return null;
-				if (filteredIcons.length == 1) return filteredIcons[0];
+				if (filteredIcons.length === 0) return null;
+				if (filteredIcons.length === 1) return filteredIcons[0];
 				return filteredIcons;
 			},
 		},
@@ -1757,12 +727,12 @@ const SAHYG = {
 			objectToString(style) {
 				return Object.entries(style)
 					.map(([key, value]) => {
-						if (typeof value == "string") return `${key}{${value}}`;
+						if (typeof value === "string") return `${key}{${value}}`;
 						else if (value instanceof Array) return `${key}{${value.join("\n")}}`;
 						else
 							return `${key}{${Object.entries(value)
 								.map(([propertyName, propertyValue]) => {
-									if (typeof propertyValue == "string")
+									if (typeof propertyValue === "string" || typeof propertyValue === "number")
 										return `${SAHYG.Utils.style.replaceUpperCase(propertyName)}:${propertyValue};`;
 									else
 										return `${SAHYG.Utils.style.replaceUpperCase(propertyName)}{${Object.entries(propertyValue)
@@ -1793,65 +763,355 @@ const SAHYG = {
 				SAHYG.createElement("sahyg-dialog").setContent(content).show();
 			},
 		},
+		headerMenu: {
+			$menu: "header-menu",
+			$menuIcon: "menu-icon",
+			isOpened: function () {
+				return SAHYG.Utils.headerMenu.$menu.getAttribute("status") === "opened";
+			},
+			toggle: function () {
+				if (SAHYG.Utils.headerMenu.isOpened()) SAHYG.Utils.headerMenu.close();
+				else SAHYG.Utils.headerMenu.open();
+			},
+			close: function () {
+				SAHYG.Utils.headerMenu.$menu.setAttribute("status", "closed");
+				SAHYG.Utils.headerMenu.$menuIcon.setAttribute("status", "closed");
+			},
+			open: function () {
+				SAHYG.Utils.headerMenu.$menu.setAttribute("status", "opened");
+				SAHYG.Utils.headerMenu.$menuIcon.setAttribute("status", "opened");
+			},
+		},
+		headerAccount: {
+			$menu: "header .account .menu",
+			toggle: function (e) {
+				if (!SAHYG.Utils.headerAccount.$menu) return true;
+				if (e.target.closest("header .account .menu")) return true;
+
+				e?.stopPropagation();
+				if (SAHYG.Utils.headerAccount.isOpened()) return SAHYG.Utils.headerAccount.close(), false;
+				else return SAHYG.Utils.headerAccount.open(), false;
+			},
+			open: function () {
+				if (!SAHYG.Utils.headerAccount.$menu) return true;
+				SAHYG.Utils.headerAccount.$menu.setAttribute("status", "opened");
+				return false;
+			},
+			close: function () {
+				if (!SAHYG.Utils.headerAccount.$menu) return true;
+				SAHYG.Utils.headerAccount.$menu.setAttribute("status", "closed");
+				return false;
+			},
+			outsideClose: function (e) {
+				if (!SAHYG.Utils.headerAccount.$menu) return true;
+				if (SAHYG.Utils.headerAccount.isOpened()) {
+					if (e && (e.target.closest("header .account .menu") || e.target.closest("popups"))) return true;
+					e?.stopPropagation();
+					SAHYG.Utils.headerAccount.$menu.setAttribute("status", "closed");
+					return false;
+				}
+				return true;
+			},
+			isOpened: function () {
+				if (!SAHYG.Utils.headerAccount.$menu) return null;
+				return SAHYG.Utils.headerAccount.$menu.getAttribute("status") === "opened";
+			},
+		},
+		clearToast() {
+			SAHYG.$0("sahyg-toasts")?.children.forEach((child) => {
+				if (child instanceof SAHYG.Components.Toast) child.close();
+				else child.remove();
+			});
+		},
+		createRandomId() {
+			return Math.random().toString(32).substring(2, 10);
+		},
 	},
 	Api: {
-		_request(type, link, content = {}) {
-			return axios({
+		async request(type, path, content = {}) {
+			if (!path.startsWith("https")) path = SAHYG.Constants.API_DOMAIN + path;
+
+			let res = await axios({
 				method: type,
-				url: SAHYG.Api.domain + link,
+				url: path,
 				data: content,
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
-					Accept: "application/json",
+					Accept: "application.json",
 				},
 			});
+			// console.log("request", res);
+			return res?.data;
 		},
-		async login(login, password) {
-			return axios({
-				method: "POST",
-				url: SAHYG.Api.domain + "/login",
-				data: { login, password },
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-					Accept: "application/json",
-				},
-			});
+		async get(url, content = {}) {
+			return await SAHYG.Api.request("GET", url, content);
 		},
-		async status() {
-			let { content } = await SAHYG.Api._request("GET", "/status"); // TODO
+		async post(url, content = {}) {
+			return await SAHYG.Api.request("POST", url, content);
 		},
-		async post(url, content, full) {
-			let res = await SAHYG.Api._request("POST", url, content);
-			return full ? res?.data : res?.data?.content;
+		emptyData({ statusText, status, success, content, loggedWith } = {}) {
+			return {
+				success: success || false,
+				content: content || null,
+				statusText: statusText || "SERVER_ERROR",
+				loggedWith: loggedWith || null,
+				status: status || 500,
+			};
 		},
-		async get(url, content, full) {
-			let res = await SAHYG.Api._request("GET", url, content);
-			return full ? res?.data : res?.data?.content;
+		async translateError(name) {
+			let translation = await SAHYG.translate("AXIOS_" + name);
+			if (translation === "AXIOS_" + name) return undefined;
+			return translation;
 		},
-		async getStatic(url) {
-			return (await SAHYG.Api._request("GET", url))?.data;
-		},
-	},
-	RequestEvents: {
-		async request(response) {
-			if (response.data.success === false) {
-				await SAHYG.RequestEvents.error(response.data?.description);
-				return null;
+		async responseInterceptor(response) {
+			// console.log("response", response);
+			if (!response.data)
+				response.data = SAHYG.Api.emptyData({
+					status: response.status,
+					statusText: response.statusText,
+				});
+			else if (response.data && response.data.success === false) {
+				return await SAHYG.Api.errorInterceptor({ response });
 			}
+
 			return response;
 		},
-		async error(description) {
-			SAHYG.Components.toast.Toast.danger({
-				message: typeof description == "string" ? description : await SAHYG.translate("ERROR_OCCURRED"),
+		async errorInterceptor(error) {
+			console.log("error", error);
+			let description =
+				error.response?.data?.description ||
+				(await SAHYG.Api.translateError(error.code)) ||
+				error.message ||
+				(await SAHYG.translate("ERROR_OCCURRED"));
+
+			SAHYG.createElement("sahyg-toast", {
+				type: "error",
+				content: description,
 			}).show();
+
+			if (!error.response.data)
+				error.response.data = SAHYG.Api.emptyData({
+					status: error.response.status,
+					statusText: error.response.statusText,
+				});
+
+			return error;
 		},
 	},
-	CustomElements: {},
+	ask: {
+		colorByTooltip({ target, defaultColor, appendTo = document.body } = {}) {
+			return new Promise((resolve) => {
+				let input;
+				tippy(target, {
+					placement: "bottom",
+					trigger: "manual",
+					content: "",
+					appendTo,
+					interactive: true,
+					maxWidth: "none",
+					showOnCreate: true,
+					onClickOutside(instance) {
+						resolve(null);
+					},
+					onHidden(instance) {
+						instance.destroy();
+					},
+					async onCreate(instance) {
+						SAHYG.once("click", target, instance.hide);
+
+						let picker = SAHYG.createElement(
+							"color-picker",
+							{},
+							(input = SAHYG.createElement("sahyg-input-color", {
+								value: defaultColor || "#000000",
+							})),
+							SAHYG.createElement("sahyg-button", { fullColor: true, content: await SAHYG.translate("CONFIRM") }).on("click", () => {
+								instance.hide();
+								resolve(input.value);
+							})
+						);
+						instance.setContent(picker);
+					},
+				});
+			});
+		},
+		iconByTooltip({ target, appendTo = document.body } = {}) {
+			return new Promise(async (resolve) => {
+				typeof target === "string" && (target = SAHYG.$0(target));
+
+				await SAHYG.Utils.icons.getAll();
+
+				let eventsClick = [],
+					eventsHover = [],
+					eventTarget;
+
+				tippy(target, {
+					placement: "bottom",
+					trigger: "manual",
+					content: "",
+					appendTo,
+					interactive: true,
+					maxWidth: "none",
+					onClickOutside(instance) {
+						resolve(null);
+					},
+					onHidden(instance) {
+						instance.destroy();
+					},
+					async onCreate(instance) {
+						let body, nameContainer;
+						let timeout;
+
+						SAHYG.once("click", target, instance.hide);
+
+						instance.setContent(
+							SAHYG.createElement(
+								"icon-picker",
+								{},
+								SAHYG.createElement(
+									"div",
+									{ class: "header" },
+									SAHYG.createElement(
+										"div",
+										{ class: "search-bar" },
+										SAHYG.createElement("input", {
+											on: {
+												input: async ({ target }) => {
+													let search = async () => {
+														let query = target.value;
+														if (!query.length) body.children?.removeClass("hidden");
+														SAHYG.Cache.icons.forEach((icon) => {
+															if (SAHYG.Utils.icons.check(icon, query))
+																body.$(`[data-name="${icon.name}"]`)?.removeClass("hidden");
+															else body.$(`[data-name="${icon.name}"]`)?.addClass("hidden");
+														});
+													};
+
+													if (timeout) clearTimeout(timeout);
+													timeout = setTimeout(search, 500);
+												},
+											},
+											placeholder: await SAHYG.translate("SEARCH"),
+										})
+									)
+								),
+								(body = SAHYG.createElement(
+									"div",
+									{ class: "body" },
+									SAHYG.Cache.icons.map((icon) => {
+										let click = () => {
+											instance.hide();
+											resolve(icon);
+										};
+										let hover = () => nameContainer.text(icon.names[1] || icon.name);
+										eventsClick.push(click);
+										eventsHover.push(hover);
+										return SAHYG.createElement(
+											"span",
+											{
+												class: "icon " + icon.styles?.join(" "),
+												on: { click, mouseover: hover },
+												"data-name": icon.name,
+											},
+											String.fromCharCode(`0x${icon.unicode}`)
+										);
+									})
+								)),
+								SAHYG.createElement("div", { class: "footer" }, (nameContainer = SAHYG.createElement("div", { class: "icon-name" })))
+							)
+						);
+					},
+				}).show();
+			});
+		},
+	},
+	Components: {
+		tooltipMenu: function ({ target, items, options = {}, mainInstance, appendTo = document.body } = {}) {
+			return tippy(typeof target !== "string" ? target : SAHYG.$0(target), {
+				appendTo,
+				content: "",
+				trigger: "click",
+				interactive: true,
+				placement: "bottom",
+				duration: 200,
+				onCreate(instance) {
+					let menu = SAHYG.createElement("div", { class: "tooltip-menu" });
+					for (let item of items) {
+						switch (item.type) {
+							case "divider": {
+								menu.append(SAHYG.createElement("span", { class: "divider", ...(item.attributes || {}) }));
+								break;
+							}
+							case "button": {
+								menu.append(
+									SAHYG.createElement(
+										"div",
+										{
+											class: "item button",
+											on: {
+												click: function () {
+													if (!item.keepOpen) instance.hide(), mainInstance?.hide?.();
+													item.callback.call(this, instance, ...arguments);
+												},
+											},
+											...(item.options || item.attributes || {}),
+										},
+										SAHYG.createElement("span", { class: "icon lafs" }, item.icon || ""),
+										SAHYG.createElement("span", { class: "text" }, item.text)
+									)
+								);
+								break;
+							}
+							case "dropdown": {
+								let dropdownTarget;
+								menu.append(
+									(dropdownTarget = SAHYG.createElement(
+										"div",
+										{ class: "item dropdown", ...(item.attributes || {}) },
+										SAHYG.createElement("span", { class: "icon lafs" }, item.icon || ""),
+										SAHYG.createElement("span", { class: "text" }, item.text),
+										SAHYG.createElement("span", { class: "dropdown-icon lafs" }, String.fromCharCode(0xf105))
+									))
+								);
+								SAHYG.Components.tooltipMenu({
+									target: dropdownTarget,
+									items: item.dropdown,
+									options: {
+										trigger: "mouseenter focus",
+										placement: "right",
+										appendTo: "parent",
+										popperOptions: {
+											modifiers: [
+												{
+													name: "flip",
+													options: {
+														fallbackPlacements: ["right", , "left", "bottom", "top"],
+													},
+												},
+											],
+										},
+										interactiveBorder: 30,
+										interactiveDebounce: 1,
+									},
+									mainInstance: instance,
+								});
+								break;
+							}
+						}
+					}
+					instance.setContent(menu);
+				},
+				...options,
+			});
+		},
+	},
 };
 
-SAHYG.CustomElements.inputList = class InputList extends HTMLElement {
+SAHYG.Components.InputList = class InputList extends HTMLElement {
 	connectedCallback() {
-		this.defaultValues = JSON.parse(this.getAttribute("values")) || [];
+		this.openShadow();
+
+		this.defaultValues = JSON.parse(this.getAttribute("values") || this.getAttribute("default-values") || "[]");
 		this.values = [];
 
 		this.$values = SAHYG.createElement(
@@ -1860,7 +1120,7 @@ SAHYG.CustomElements.inputList = class InputList extends HTMLElement {
 				class: "values",
 			},
 			...this.defaultValues.map((value) => {
-				value = typeof value == "string" ? value : value.text || value.value;
+				value = typeof value === "string" ? value : value.text || value.value;
 				let id = value.id || Math.random().toString(32).substring(2, 10);
 				this.values.push({ id, value });
 
@@ -1868,28 +1128,103 @@ SAHYG.CustomElements.inputList = class InputList extends HTMLElement {
 					"div",
 					{ class: "value", id },
 					SAHYG.createElement("div", { class: "text" }, value),
-					SAHYG.createElement("div", { class: "remove", on: { click: this.removeValue.bind(this, id) } })
+					SAHYG.createElement("div", {
+						class: "remove",
+						on: { click: this.removeValue.bind(this, id) },
+					})
 				);
 			})
 		);
+		this.$addButton = SAHYG.createElement("div", {
+			class: "add",
+			on: { click: this.addValue.bind(this) },
+		});
 
-		Array.from(this.children).forEach((child) => child.remove());
-		this.append(this.$values, SAHYG.createElement("div", { class: "add", on: { click: this.addValue.bind(this) } }));
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$values, this.$addButton);
+
+		this.shadowRoot.setStyle({
+			".container": {
+				backgroundColor: "var(--background-tertiary-color)",
+				padding: "0.5rem",
+				borderRadius: "0.25rem",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+			},
+			".values": {
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				flexWrap: "wrap",
+				flex: "1",
+				gap: "0.5rem",
+			},
+			".value": {
+				padding: "0.2rem 0.5rem",
+				backgroundColor: "var(--background-secondary-color)",
+				borderRadius: "0.25rem",
+				display: "flex",
+				flexWrap: "nowrap",
+				flexDirection: "row",
+				alignItems: "center",
+				gap: "0.5rem",
+			},
+			".value .remove:before": {
+				transition: "var(--transition)",
+				fontFamily: '"Line Awesome Free Solid"',
+				content: '"\\f00d"',
+				cursor: "pointer",
+			},
+			".value .remove:hover:before": {
+				color: "var(--danger-color)",
+			},
+			".add:before": {
+				fontFamily: '"Line Awesome Free Solid"',
+				content: '"\\f067"',
+				cursor: "pointer",
+				padding: "0.5rem 0.5rem",
+				borderRadius: "0.25rem",
+			},
+			".add:hover:before": {
+				transition: "var(--transition)",
+				backgroundColor: "var(--background-secondary-color)",
+				color: "var(--success-color)",
+			},
+		});
+		this.shadowRoot.append(this.$container);
 
 		this.setAttribute("tabindex", "1");
 	}
 	removeValue(id) {
 		let removed = this.values.splice(
-			this.values.findIndex((value) => value.id == id),
+			this.values.findIndex((value) => value.id === id),
 			1
 		)?.[0];
 
-		this.querySelector(`.value[id="${id}"]`).remove();
+		this.$container.$0(`.value[id="${id}"]`).remove();
 
 		this.dispatch(removed, "remove");
 	}
 	async addValue() {
-		let value = await SAHYG.Utils.input.text({ title: await SAHYG.translate("ADD") });
+		let value = (
+			await SAHYG.createElement("sahyg-input-dialog", {
+				header: await SAHYG.translate("ADD"),
+				inputs: [
+					{
+						type: "text",
+						id: "value",
+						options: {
+							fullWidth: true,
+							borderBottom: true,
+							placeholder: await SAHYG.translate("VALUE"),
+						},
+					},
+				],
+			})
+				.show()
+				.toPromise()
+		)?.data?.value;
+
 		if (!value) return;
 		let id = Math.random().toString(32).substring(2, 10);
 
@@ -1902,7 +1237,10 @@ SAHYG.CustomElements.inputList = class InputList extends HTMLElement {
 				"div",
 				{ class: "value", id },
 				SAHYG.createElement("div", { class: "text" }, value),
-				SAHYG.createElement("div", { class: "remove", on: { click: this.removeValue.bind(this, id) } })
+				SAHYG.createElement("div", {
+					class: "remove",
+					on: { click: this.removeValue.bind(this, id) },
+				})
 			)
 		);
 
@@ -1911,20 +1249,23 @@ SAHYG.CustomElements.inputList = class InputList extends HTMLElement {
 	dispatch(change, type) {
 		let changeEvent = new Event("change");
 		let inputEvent = new Event("input");
-		changeEvent.removed = inputEvent.removed = type == "remove" ? change : null;
-		changeEvent.added = inputEvent.added = type == "add" ? change : null;
+		changeEvent.removed = inputEvent.removed = type === "remove" ? change : null;
+		changeEvent.added = inputEvent.added = type === "add" ? change : null;
 		changeEvent.values = inputEvent.values = this.values;
 		this.dispatchEvent(changeEvent);
 		this.dispatchEvent(inputEvent);
 	}
 };
-SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
+SAHYG.Components.InputArray = class InputArray extends HTMLElement {
 	async connectedCallback() {
+		this.openShadow(["url"]);
 		this.columns = JSON.parse(this.getAttribute("columns")) || [];
 		this.defaultValues = JSON.parse(this.getAttribute("values")) || [];
 		this.value = this.values = JSON.parse(JSON.stringify(this.defaultValues));
-		this.minWidth = this.getAttribute("min-width") || this.columns.length * 300 + "px";
-		if (typeof this.minWidth === "number") this.minWidth = this.minWidth + "px";
+		this.confirmClear = String(this.getAttribute("confirm-clear")) === "true";
+		this.minWidth = this.getAttribute("min-width");
+		// this.minWidth = this.getAttribute("min-width") || this.columns.length * 300 + "px";
+		// if (typeof this.minWidth === "number") this.minWidth = this.minWidth + "px";
 
 		if (!this.columns.length) {
 			this.clear();
@@ -1934,27 +1275,37 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 
 		for (let column of this.columns) {
 			column.name = await this.translate(column.name);
-			column.placeholder = await this.translate(column.placeholder);
+			column.placeholder = await this.translate(column.placeholder || "");
+
+			if (typeof column.width === "number") column.width = column.width + "%";
 		}
-		this.columnsFullWidth = this.columns.reduce((fullWidth, column) => fullWidth + (column.width || column.name.length), 0);
-		this.columns.forEach((column) => (column.width = ((column.width || column.name.length) / this.columnsFullWidth) * 100));
+
 		this.rows = this.values.map((value, index) => {
-			return { id: Math.random().toString(32).substring(2, 10), index, values: value };
+			return {
+				id: Math.random().toString(32).substring(2, 10),
+				index,
+				values: value,
+			};
 		});
 
 		this.$header = SAHYG.createElement("div", { class: "header" }, ...(await Promise.all(this.columns.map(this.columnHeader.bind(this)))));
-		this.$body = SAHYG.createElement("div", { class: "body", replacementText: await SAHYG.translate("NO_DATA_CLICK_TO_ADD") });
+		this.$body = SAHYG.createElement("div", {
+			class: "body",
+			replacementText: await SAHYG.translate("NO_DATA_CLICK_TO_ADD"),
+		});
 		this.$buttons = SAHYG.createElement(
 			"div",
 			{ class: "buttons" },
-			SAHYG.createElement("sahyg-button", { iconBefore: String.fromCharCode(0xf067), class: "add" }, await SAHYG.translate("ADD")).on(
-				"click",
-				this.addRow.bind(this)
-			),
-			SAHYG.createElement("sahyg-button", { iconBefore: String.fromCharCode(0xf2ed), class: "clear" }, await SAHYG.translate("CLEAR")).on(
-				"click",
-				this.clearRows.bind(this)
-			)
+			SAHYG.createElement("sahyg-button", {
+				icon: String.fromCharCode(0xf067),
+				class: "add",
+				content: await SAHYG.translate("ADD"),
+			}).on("click", this.addRow.bind(this, null)),
+			SAHYG.createElement("sahyg-button", {
+				icon: String.fromCharCode(0xf2ed),
+				class: "clear",
+				content: await SAHYG.translate("CLEAR"),
+			}).on("click", this.clearRows.bind(this))
 		);
 
 		for (let row of this.rows) {
@@ -1962,8 +1313,98 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 		}
 
 		this.$arrayContainer = SAHYG.createElement("div", { class: "array-container" }, this.$header, this.$body);
-		this.$body.style.minWidth = this.$header.style.minWidth = this.minWidth;
-		this.append(this.$arrayContainer, this.$buttons);
+		if (this.minWidth) this.$body.style.minWidth = this.$header.style.minWidth = this.minWidth;
+
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$arrayContainer, this.$buttons);
+
+		this.shadowRoot.setStyle({
+			".container": {
+				width: "100%",
+				display: "flex",
+				flexDirection: "column",
+				border: "solid var(--divider-color) 2px",
+				borderRadius: "0.5rem",
+				overflow: "hidden",
+			},
+			".array-container": {
+				overflowX: "scroll",
+			},
+			".header": {
+				display: "flex",
+				flexDirection: "row",
+				backgroundColor: "var(--background-secondary-color)",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				minWidth: "40rem",
+			},
+			".body": {
+				minWidth: "40rem",
+			},
+			".body[replacement-text]:empty": {
+				display: "flex",
+				padding: "0.5rem",
+			},
+			".body[replacement-text]:empty:before": {
+				content: '"\\f3bf"',
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "2rem",
+				display: "block",
+				transform: "rotate(-180deg)",
+				color: "var(--accent-color)",
+				height: "3rem",
+				marginRight: "0.5rem",
+			},
+			".body[replacement-text]:empty:after": {
+				content: "attr(replacement-text)",
+				display: "flex",
+				alignItems: "center",
+			},
+			".row": {
+				display: "flex",
+				flexDirection: "row",
+				borderBottom: "var(--divider-color) solid 2px",
+			},
+			".column-header": {
+				padding: "0.5rem 0.5rem",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "flex-start",
+			},
+			".cell": {
+				padding: "0.25rem 0.5rem",
+				minHeight: "2rem",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "flex-start",
+				overflowX: "scroll",
+			},
+			":is(.cell, .column-header):not(:first-child)": {
+				borderLeft: "var(--divider-color) solid 2px",
+			},
+			':is(.cell, .column-header)[align="right"]': {
+				textAlign: "right",
+				justifyContent: "flex-end",
+				// paddingRight: "1rem",
+			},
+			':is(.cell, .column-header)[align="center"]': {
+				textAlign: "center",
+				justifyContent: "center",
+			},
+			"sahyg-textarea": {
+				width: "100%",
+			},
+			".cell .buttons": {
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap",
+				// width: "100%",
+			},
+		});
+		this.shadowRoot.append(this.$container);
 	}
 	async cellValue(column, row) {
 		switch (column.type) {
@@ -1974,6 +1415,7 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 					placeholder: column.name,
 					defaultValue: row.values[column.id] || "",
 					borderBottom: false,
+					clearIcon: true,
 				}).on("input", this.textInputHandler.bind(this, column, row));
 
 				if (column.validator) {
@@ -1986,15 +1428,41 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 				}
 				return input;
 			}
+			case "url":
+			case "link": {
+				return SAHYG.createElement("a", { href: row.values[column.id], ...(column.options || {}) }, row.values[column.id]);
+			}
+			case "staticText": {
+				return SAHYG.createElement("span", { class: "static-text" }, row.values[column.id] || "");
+			}
+			case "buttons": {
+				return SAHYG.createElement(
+					"div",
+					{ class: "buttons" },
+					...(column.buttons?.map((button) =>
+						SAHYG.createElement(
+							"sahyg-tooltip-target",
+							{ content: button.tooltip },
+							SAHYG.createElement("sahyg-button", {
+								...(button || {}),
+							})
+						)
+					) || [])
+				);
+			}
 		}
 	}
 	async columnHeader(column) {
 		let columnHeader = SAHYG.createElement(
 			"div",
-			{ class: "column-header", columnId: column.id },
+			{
+				class: "column-header",
+				columnId: column.id,
+				align: column.align || "left",
+			},
 			SAHYG.createElement("span", { class: "column-name" }, column.name)
 		);
-		columnHeader.style.width = column.width + "%";
+		columnHeader.style.width = column.width;
 		return columnHeader;
 	}
 	async translate(text) {
@@ -2006,36 +1474,115 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 
 		row.values[column.id] = event.target.value;
 		this.values[row.index][column.id] = event.target.value;
-		this.dispatchInput({ columnId: column.id, rowId: row.id, value: event.value, action: "edit" });
+		this.dispatchInput({
+			columnId: column.id,
+			rowId: row.id,
+			value: event.value,
+			action: "edit",
+		});
 	}
 	async row(row) {
-		let $row = SAHYG.createElement("div", { class: "row" });
+		let $row = SAHYG.createElement("div", { class: "row", rowId: row.id });
 		for (let column of this.columns) {
-			let $cell = SAHYG.createElement("div", { class: "cell", columnId: column.id }, await this.cellValue(column, row));
-			$cell.style.width = column.width + "%";
+			let $cell = SAHYG.createElement(
+				"div",
+				{ class: "cell", columnId: column.id, align: column.align || "left" },
+				await this.cellValue(column, row)
+			);
+			$cell.style.width = column.width;
 			$row.append($cell);
 		}
+		row.$ = $row;
 		return $row;
 	}
-	async addRow() {
+	async addRow(values) {
 		let row = {
 			id: Math.random().toString(32).substring(2, 10),
 			index: this.rows.length,
-			values: Object.fromEntries(this.columns.map((column) => [column.id, this.emptyValue(column.type)])),
+			values: values || Object.fromEntries(this.columns.map((column) => [column.id, this.emptyValue(column.type)])),
 		};
+
 		this.rows.push(row);
 		this.values.push(row.values);
-		this.$body.append(await this.row(row));
+		this.$body.append((row.$ = await this.row(row)));
 		this.dispatchInput({ rowId: row.id, action: "add" });
+
+		return row;
 	}
-	async clearRows() {
-		this.rows = [];
-		this.$body.clear();
-		this.values = this.value = [];
-		this.dispatchInput({ action: "clear" });
+	async clearRows(forceClear = false) {
+		if (
+			forceClear ||
+			!this.confirmClear ||
+			(await SAHYG.createElement("sahyg-confirm-dialog", {
+				content: await SAHYG.translate("CONFIRM_CLEAR"),
+			})
+				.show()
+				.toPromise())
+		) {
+			this.rows = [];
+			this.$body.clear();
+			this.values = this.value = [];
+			this.dispatchInput({ action: "clear" });
+		}
+	}
+	async removeRow(id) {
+		let row = this.rows.splice(
+			this.rows.findIndex((row) => row.id === id),
+			1
+		)?.[0];
+		this.values.splice(row.index, 1);
+		this.values.splice(row.index, 1);
+		this.$body.$0(`[row-id="${id}"]`).remove();
+		this.updateIndex();
+		this.dispatchInput({ rowId: id, action: "remove" });
+	}
+	updateIndex() {
+		this.rows.sort((a, b) => a.index - b.index);
+		for (let i = 0; i < this.rows.length; i++) {
+			this.rows[i].index = i;
+		}
 	}
 	emptyValue(type) {
-		return type === "text" ? "" : type === "switch" ? false : type === "select" || type === "selectOne" ? [] : null;
+		switch (type) {
+			case "text":
+				return "";
+			case "switch":
+				return false;
+			case "select":
+			case "selectOne":
+				return [];
+			default:
+				return null;
+		}
+	}
+	updateCell(rowId, columnId, value) {
+		let column = this.columns.find((column) => column.id === columnId);
+		let row = typeof rowId === "number" ? this.rows.find((row) => row.index === rowId) : this.rows.find((row) => row.id === rowId);
+
+		if (!column || !row) return;
+		switch (column.type) {
+			case "text": {
+				let textarea = row.$.$0(`[column-id=${columnId}] sahyg-textarea`);
+				if (!textarea) break;
+
+				textarea.setAttribute("value", value);
+				this.values[row.index][columnId] = row.values[columnId] = value;
+				break;
+			}
+			case "staticText": {
+				let span = row.$.$0(`[column-id=${columnId}] .static-text`);
+				if (!span) break;
+
+				span.text(value);
+				this.values[row.index][columnId] = row.values[columnId] = value;
+				break;
+			}
+			case "url":
+			case "link": {
+				row.$.$0(`[column-id=${columnId}] a`).setAttribute("href", value).textContent = value;
+			}
+		}
+		return this;
 	}
 	dispatchInput({ columnId, rowId, value, action } = {}) {
 		let changeEvent = new Event("change");
@@ -2050,7 +1597,7 @@ SAHYG.CustomElements.inputArray = class InputArray extends HTMLElement {
 		this.dispatchEvent(inputEvent);
 	}
 };
-SAHYG.CustomElements.select = class Select extends HTMLElement {
+SAHYG.Components.Select = class Select extends HTMLElement {
 	static get observedAttributes() {
 		return ["multiple", "selected", "options", "min-width-to-show-selected", "placeholder"];
 	}
@@ -2080,7 +1627,10 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 						if (option?.name) option.id = option.name;
 						if (option?.text) option.value = option.text;
 						if (option?.id && option?.value) return option;
-						return { id: Math.random().toString(32).substring(2, 10), value: String(option) };
+						return {
+							id: Math.random().toString(32).substring(2, 10),
+							value: String(option),
+						};
 					});
 				else
 					this.options = Object.entries(this.options).map(([id, value]) => {
@@ -2106,14 +1656,30 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 			}
 		}
 	}
+	constructor() {
+		super();
+		this.addEventListener("input", (e) => {
+			if (this.$textarea?.contains(e.target)) return e.stopPropagation(), false;
+			return true;
+		});
+		this.addEventListener("change", (e) => {
+			if (this.$textarea?.contains(e.target)) return e.stopPropagation(), false;
+			return true;
+		});
+	}
 	async connectedCallback() {
+		this.openShadow(["tippy"]);
+
 		this.options = JSON.parse(this.getAttribute("options") || "[]");
 		if (this.options instanceof Array)
 			this.options = this.options.map((option) => {
 				if (option?.name) option.id = option.name;
 				if (option?.text) option.value = option.text;
 				if (option?.id && option?.value) return option;
-				return { id: Math.random().toString(32).substring(2, 10), value: String(option) };
+				return {
+					id: Math.random().toString(32).substring(2, 10),
+					value: String(option),
+				};
 			});
 		else
 			this.options = Object.entries(this.options).map(([id, value]) => {
@@ -2123,8 +1689,8 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 		this.selected = JSON.parse(this.getAttribute("selected")) || [];
 		if (typeof this.selected === "string") this.selected = [this.selected];
 
-		this.multiple = this.getAttribute("multiple") === "true";
-		this.search = this.getAttribute("search") === "true";
+		this.multiple = String(this.getAttribute("multiple")) === "true";
+		this.search = String(this.getAttribute("search")) === "true";
 		this.minWidthSelected = Number(this.getAttribute("min-width-to-show-selected"));
 		this.placeholder = this.getAttribute("placeholder") || (await SAHYG.translate("SELECT"));
 		this.label = this.getAttribute("label") || false;
@@ -2143,21 +1709,23 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 								option.value.toLowerCase().includes(value.toLowerCase()) || option.id.toLowerCase().includes(value.toLowerCase())
 						);
 						this.update$Options(options);
-						if (options.length == 0) return false;
+						if (options.length === 0) return false;
 						return true;
 				  }))
 				: null
 		);
 		if (this.label) this.$selected.setAttribute("data-label", this.label);
 
-		this.tippy = tippy(this, {
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$selected);
+
+		this.tippy = tippy(this.$container, {
 			content: "",
+			appendTo: this.$container,
 			trigger: "click",
 			interactive: true,
 			placement: "bottom",
 			arrow: false,
 			duration: 200,
-			appendTo: this,
 			hideOnClick: false,
 			allowHTML: true,
 			onClickOutside: (instance, event) => {
@@ -2182,16 +1750,113 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 		await this.update$Options();
 		await this.update$Selected();
 
-		this.append(this.$selected);
+		this.shadowRoot.setStyle({
+			".container": {
+				backgroundColor: "var(--background-tertiary-color)",
+				padding: "0.25rem 0.5rem",
+				borderRadius: "0.25rem",
+				cursor: "pointer",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				flexWrap: "nowrap",
+				minHeight: "33px",
+				minWidth: "10rem",
+			},
+			".selected": {
+				flexWrap: "wrap",
+				gap: "0.5rem",
+				flexDirection: "row",
+				width: "calc(100% - 16px - 0.5rem)",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "flex-start",
+				marginRight: "0.5rem",
+				height: "2rem",
+			},
+			".selected > div": {
+				padding: "0.25rem 0.5rem",
+				borderRadius: "0.25rem",
+				WebkitUserUelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				whiteSpace: "nowrap",
+				overflow: "hidden",
+				textOverflow: "ellipsis",
+			},
+			'.container[multiple="true"] .selected > div': {
+				backgroundColor: "var(--background-secondary-color)",
+			},
+			".selected:empty:before": {
+				content: "attr(data-placeholder)",
+				color: "var(--color-secondary-text)",
+			},
+			".selected-hidden .selected:after": {
+				content: "attr(data-placeholder)",
+			},
+			".selected[data-label]:before": {
+				content: 'attr(data-label) " :"',
+			},
+			".selected-hidden .selected > div": {
+				display: "none",
+			},
+			".container:after": {
+				fontFamily: "var(--font-icon-solid)",
+				content: '"\\f105"',
+				marginLeft: "auto",
+			},
+			'[aria-expanded="true"]:after': {
+				transform: "rotate(90deg)",
+			},
+			"[data-tippy-root] .tippy-box": {
+				width: "100vw",
+			},
+			".tippy-content": {
+				padding: "0",
+			},
+			".options": {
+				display: "flex",
+				flexDirection: "column",
+				maxHeight: "25vh",
+				overflowY: "auto",
+			},
+			".option": {
+				padding: "0.5rem 1rem",
+				cursor: "pointer",
+				display: "flex",
+				flexDirection: "row",
+			},
+			".option:hover": {
+				backgroundColor: "var(--background-secondary-color)",
+			},
+			".option .select-icon:before": {
+				content: '" "',
+				color: "var(--divider-color)",
+				fontSize: "1.2rem",
+				marginRight: "0.5rem",
+				width: "1.5rem",
+				height: "1.5rem",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+			},
+			'.option[selected="true"] .select-icon:before': {
+				color: "var(--accent-color)",
+				content: '"\\f00c"',
+				fontFamily: "var(--font-icon-solid)",
+			},
+			".option .text": {
+				whiteSpace: "nowrap",
+				color: "var(--color-primary-text)",
+			},
+			"sahyg-textarea": {
+				minWidth: "10rem",
+				flex: "1",
+			},
+		});
+		this.shadowRoot.append(this.$container);
 
-		this.addEventListener("input", (e) => {
-			if (this.$textarea?.contains(e.target)) return e.stopPropagation(), false;
-			return true;
-		});
-		this.addEventListener("change", (e) => {
-			if (this.$textarea?.contains(e.target)) return e.stopPropagation(), false;
-			return true;
-		});
 		window.addEventListener("resize", (e) => {
 			if (!this.minWidthSelected) return;
 			if (document.body.clientWidth < this.minWidthSelected) this.classList.add("selected-hidden");
@@ -2206,9 +1871,12 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 		this.setAttribute("tabindex", "1");
 	}
 	async open({ target }) {
-		if (target.closest("sahyg-textarea") && this.getAttribute("aria-expanded") == "true") return;
+		if (target.closest("sahyg-textarea") && String(this.getAttribute("aria-expanded")) === "true") return;
 		await this.update$Options();
-		this.tippy.setProps({ maxWidth: this.clientWidth });
+		this.tippy.setProps({
+			maxWidth: this.$container.clientWidth || this.$container.offsetWidth,
+			hideOnClick: !this.multiple,
+		});
 	}
 	async update$Options(options) {
 		this.$options = SAHYG.createElement(
@@ -2233,7 +1901,7 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 		this.tippy.setContent(this.$options);
 	}
 	async select(id) {
-		let option = this.options.find((option) => option.id == id);
+		let option = this.options.find((option) => option.id === id);
 		if (!option) return;
 
 		if (!this.multiple) {
@@ -2241,16 +1909,17 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 			else this.selected = [id];
 		} else if (this.selected.includes(id))
 			this.selected.splice(
-				this.selected.findIndex((optionId) => optionId == id),
+				this.selected.findIndex((optionId) => optionId === id),
 				1
 			);
 		else this.selected.push(id);
 
 		if (!this.multiple)
-			Array.from(this.querySelectorAll(`[data-tippy-root] .option:not([id="${id}"])`)).forEach((elem) =>
+			Array.from(this.shadowRoot.querySelectorAll(`[data-tippy-root] .option:not([id="${id}"])`)).forEach((elem) =>
 				elem.setAttribute("selected", "false")
 			);
-		this.querySelector(`[data-tippy-root] .option[id="${id}"]`)?.setAttribute("selected", String(this.selected.includes(id)));
+
+		this.shadowRoot.querySelector(`[data-tippy-root] .option[id="${id}"]`)?.setAttribute("selected", String(this.selected.includes(id)));
 		await this.update$Selected();
 
 		this.dispatch(id, this.selected.includes(id) ? "add" : "remove");
@@ -2259,20 +1928,20 @@ SAHYG.CustomElements.select = class Select extends HTMLElement {
 		Array.from(this.$selected.children).forEach((child) => (child.nodeName != "SAHYG-TEXTAREA" ? child.remove() : null));
 
 		this.$selected.prepend(
-			...this.selected.map((id) => SAHYG.createElement("div", { id }, this.options.find((option) => option.id == id)?.value))
+			...this.selected.map((id) => SAHYG.createElement("div", { id }, this.options.find((option) => option.id === id)?.value))
 		);
 	}
 	dispatch(change, type) {
 		let changeEvent = new Event("change");
 		let inputEvent = new Event("input");
-		changeEvent.removed = inputEvent.removed = type == "remove" ? change : null;
-		changeEvent.added = inputEvent.added = type == "add" ? change : null;
+		changeEvent.removed = inputEvent.removed = type === "remove" ? change : null;
+		changeEvent.added = inputEvent.added = type === "add" ? change : null;
 		changeEvent.selected = inputEvent.selected = this.selected;
 		this.dispatchEvent(changeEvent);
 		this.dispatchEvent(inputEvent);
 	}
 };
-SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
+SAHYG.Components.Textarea = class Textarea extends HTMLElement {
 	validator = () => true;
 	value = null;
 	static get observedAttributes() {
@@ -2284,47 +1953,87 @@ SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
 			"character-counter",
 			"placeholder",
 			"default-value",
+			"value",
 			"max-height",
 			"min-height",
 			"border-bottom",
 			"resize",
+			"outline",
+			"rounded",
+			"icon",
+			"validator",
 		];
 	}
 	attributeChangedCallback(name, oldValue, newValue) {
+		if (!this.displayed) return;
 		this.updateAttributes();
 
 		if (!this.$textarea) return;
 
-		if (name == "placeholder") this.$textarea.setAttribute("placeholder", newValue);
-		else if (name == "default-value" && (oldValue == this.$textarea.value || this.$textarea.value == "")) {
-			this.$textarea.innerText = newValue;
-			this.$counterValue.innerText == newValue.length;
-		} else if (name == "min-height") this.$textarea.style.minHeight = newValue;
-		else if (name == "max-height") this.$textarea.style.maxHeight = newValue;
-		else if (name == "resize") this.$textarea.style.resize = newValue;
+		if (name === "placeholder") this.$textarea.setAttribute("placeholder", newValue);
+		else if (name === "default-value" && (oldValue === this.$textarea.value || this.$textarea.value === "")) {
+			if (newValue === true) newValue = "";
+			if (this.useInput) this.$textarea.setAttribute("value", newValue);
+			else this.$textarea.innerText = newValue;
+			this.$textarea.value = this.value = newValue;
+			if (this.$counterValue) this.$counterValue.innerText = newValue.length;
+		} else if (name === "value" && (oldValue === this.$textarea.value || this.$textarea.value === "")) {
+			if (newValue === true) newValue = "";
+			if (this.useInput) this.$textarea.setAttribute("value", newValue);
+			else this.$textarea.innerText = newValue;
+			this.$textarea.value = this.value = newValue;
+			if (this.$counterValue) this.$counterValue.innerText = newValue.length;
+		} else if (name === "min-height") this.$textarea.style.minHeight = newValue;
+		else if (name === "max-height") this.$textarea.style.maxHeight = newValue;
+		else if (name === "resize") this.$textarea.style.resize = newValue;
+		else if (name === "icon") this.$icon.text(newValue);
+		else if (name === "validator") this.setValidator(newValue);
 	}
 	updateAttributes() {
-		this.multiline = this.getAttribute("multiline") === "true";
-		this.dynamicHeight = this.getAttribute("dynamic-height") === "true";
-		this.showCharacterCounter = this.getAttribute("character-counter") === "true";
+		this.multiline = String(this.getAttribute("multiline")) === "true";
+		this.dynamicHeight = String(this.getAttribute("dynamic-height")) === "true";
+		this.showCharacterCounter = String(this.getAttribute("character-counter")) === "true";
 		this.maxLength = Number(this.getAttribute("max-length")) || null;
 		this.minLength = Number(this.getAttribute("min-length")) || null;
 		this.placeholder = this.getAttribute("placeholder") || "";
-		this.defaultValue = this.getAttribute("default-value") || "";
+		this.defaultValue = this.getAttribute("default-value") || this.getAttribute("value") || "";
+		if (this.defaultValue === true) this.defaultValue = "";
 		this.maxHeight = this.getAttribute("max-height");
 		this.minHeight = this.getAttribute("min-height");
-		this.borderBottom = this.getAttribute("border-bottom") === "true";
-		this.clearIcon = this.getAttribute("clear-icon") === "true";
+		this.borderBottom = String(this.getAttribute("border-bottom")) === "true";
+		this.clearIcon = String(this.getAttribute("clear-icon")) === "true";
 		this.resize = this.getAttribute("resize") || "none";
-	}
-	connectedCallback() {
-		if (!this.id) this.id = Math.random().toString(32).substring(2, 10);
+		this.outline = String(this.getAttribute("outline")) === "true";
+		this.rounded = String(this.getAttribute("rounded")) === "true";
+		this.options = JSON.parse(this.getAttribute("options") || "{}");
+		this.useInput = this.getAttribute("use-input");
+		this.type = this.getAttribute("type");
+		this.icon = this.getAttribute("icon");
 
-		this.updateAttributes();
+		// Apply the validator if it is available as a regular expression in the attributes
+		let validator = this.getAttribute("validator");
+		if (validator) this.setValidator(validator);
+
+		if (this.defaultValue === "true") this.defaultValue = "";
+
+		if (!this.displayed) return;
+		this.$container.setAttribute("multiline", this.multiline);
+		this.$container.setAttribute("character-counter", this.showCharacterCounter);
+		this.$container.setAttribute("border-bottom", this.borderBottom);
+		if (this.outline) this.$container.addClass("outline");
+		else this.$container.removeClass("outline");
+		if (this.rounded) this.$container.addClass("rounded");
+		else this.$container.removeClass("rounded");
+	}
+	constructor() {
+		super();
 
 		this.addEventListener("keydown", (e) => {
-			if (e.key == "Enter" && !this.multiline) {
+			if (e.key === "Enter" && !this.multiline) {
 				e.preventDefault();
+
+				let form = this.closest("form");
+				if (form) form.dispatchEvent(new SubmitEvent("submit"));
 			}
 			return false;
 		});
@@ -2333,21 +2042,21 @@ SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
 
 			this.value = this.$textarea.value;
 
-			if (typeof this.validator == "function") {
+			if (typeof this.validator === "function") {
 				if (
 					this.validator(this.$textarea.value) &&
-					(typeof this.maxLength == "number" ? this.maxLength >= this.$textarea.value.length : true) &&
-					(typeof this.minLength == "number" ? this.minLength <= this.$textarea.value.length : true)
+					(typeof this.maxLength === "number" ? this.maxLength >= this.$textarea.value.length : true) &&
+					(typeof this.minLength === "number" ? this.minLength <= this.$textarea.value.length : true)
 				) {
-					this.classList.remove("invalid");
+					this.$container.removeClass("invalid");
 				} else {
-					this.classList.add("invalid");
+					this.$container.addClass("invalid");
 				}
-			} else if (typeof this.maxLength == "number") {
+			} else if (typeof this.maxLength === "number") {
 				if (this.maxLength < this.$textarea.value.length) {
-					this.classList.add("invalid");
+					this.$container.removeClass("invalid");
 				} else {
-					this.classList.remove("invalid");
+					this.$container.addClass("invalid");
 				}
 			}
 
@@ -2359,51 +2068,228 @@ SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
 			e.preventDefault();
 			this.$textarea.focus();
 		});
+	}
+	connectedCallback() {
+		this.openShadow();
 
-		this.append(
-			SAHYG.createElement(
+		if (!this.id) this.id = Math.random().toString(32).substring(2, 10);
+
+		this.updateAttributes();
+
+		this.value = this.defaultValue;
+
+		// Use of an `input` element for different types like password or username.
+		if (this.type) this.useInput = this.useInput ? this.useInput === "true" : true;
+
+		if (this.useInput)
+			this.$textarea = SAHYG.createElement("input", {
+				type: this.type || "text",
+				placeholder: this.placeholder,
+				...this.options,
+				value: this.defaultValue,
+			});
+		else this.$textarea = SAHYG.createElement("textarea", { placeholder: this.placeholder, ...this.options }, this.defaultValue);
+
+		// If no icon has been provided, try to determine the icon from the input type.
+		if (!this.icon)
+			switch (this.type) {
+				case "email": {
+					this.icon = String.fromCharCode(0xf1fa);
+					break;
+				}
+				case "lastname":
+				case "firstname":
+				case "username": {
+					this.icon = String.fromCharCode(0xf007);
+					break;
+				}
+				case "password": {
+					this.icon = String.fromCharCode(0xf084);
+					break;
+				}
+			}
+		if (this.icon) this.$icon = SAHYG.createElement("span", { class: "icon" }, this.icon);
+		if (this.clearIcon)
+			this.$clearIcon = SAHYG.createElement("div", {
+				class: "clear-icon",
+				on: { click: this.clear.bind(this) },
+			});
+		if (this.type === "password")
+			this.$showPassword = SAHYG.createElement("div", {
+				class: "show-icon",
+				on: { click: this.togglePassword.bind(this) },
+			});
+		if (typeof this.maxLength === "string" || this.showCharacterCounter === true || this.borderBottom)
+			this.$bottomContainer = SAHYG.createElement(
 				"div",
-				{ class: "textarea-container" },
-				(this.$textarea = SAHYG.createElement("textarea", { placeholder: this.placeholder }, this.defaultValue)),
-				this.clearIcon ? SAHYG.createElement("div", { class: "clear-icon", on: { click: this.clear.bind(this) } }) : null
-			)
+				{ class: "bottom" },
+				this.borderBottom
+					? (this.$borderBottom = SAHYG.createElement("span", {
+							class: "border-bottom",
+					  }))
+					: null,
+				this.showCharacterCounter === true
+					? SAHYG.createElement(
+							"span",
+							{ class: "character-counter" },
+							(this.$counterValue = SAHYG.createElement(
+								"span",
+								{ class: "character-counter-value" },
+								this.defaultValue?.length || "0"
+							)),
+							typeof this.maxLength === "number" ? " / " : null,
+							typeof this.maxLength === "number"
+								? SAHYG.createElement("span", { class: "character-counter-max" }, this.maxLength)
+								: null
+					  )
+					: null
+			);
+		this.$textareaContainer = SAHYG.createElement(
+			"div",
+			{ class: "textarea-container" },
+			this.$icon,
+			this.$textarea,
+			this.$clearIcon,
+			this.$showPassword
 		);
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$textareaContainer, this.$bottomContainer);
+
 		if (this.maxHeight) this.$textarea.style.maxHeight = typeof Number(this.maxHeight) ? this.maxHeight + "px" : this.maxHeight;
 		if (this.minHeight) this.$textarea.style.minHeight = typeof Number(this.minHeight) ? this.minHeight + "px" : this.minHeight;
 		if (this.resize) this.$textarea.style.resize = this.resize;
 
-		if (typeof this.maxLength == "string" || this.showCharacterCounter === true || this.borderBottom)
-			this.append(
-				SAHYG.createElement(
-					"div",
-					{ class: "bottom" },
-					this.borderBottom ? (this.$borderBottom = SAHYG.createElement("span", { class: "border-bottom" })) : null,
-					this.showCharacterCounter === true
-						? SAHYG.createElement(
-								"span",
-								{ class: "character-counter" },
-								(this.$counterValue = SAHYG.createElement(
-									"span",
-									{ class: "character-counter-value" },
-									this.defaultValue?.length || "0"
-								)),
-								typeof this.maxLength == "number" ? " / " : null,
-								typeof this.maxLength == "number"
-									? SAHYG.createElement("span", { class: "character-counter-max" }, this.maxLength)
-									: null
-						  )
-						: null
-				)
-			);
-
 		this.setAttribute("tabindex", "1");
+
+		this.shadowRoot.setStyle({
+			".container": {
+				width: "100%",
+			},
+			".container.outline": {
+				border: "solid var(--divider-color) 2px",
+			},
+			".container.rounded": {
+				borderRadius: "0.5rem",
+				padding: "0.25rem",
+				display: "flex",
+				flexDirection: "column",
+			},
+			".container.outline.invalid": {
+				borderColor: "var(--danger-color)",
+			},
+			".textarea-container": {
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+			},
+			":is(textarea, input)": {
+				width: "100%",
+				backgroundColor: "unset",
+				border: "none",
+				padding: "0.25rem 0.5rem",
+				resize: "none",
+				maxHeight: "300px",
+				minHeight: "1.5rem",
+				overflow: "hidden",
+				height: "1.5rem",
+				color: "var(--color-primary-text)",
+			},
+			'[multiline="true"] :is(textarea, input)': {
+				overflowY: "scroll",
+				minHeight: "10rem",
+			},
+			'[character-counter="true"] :is(textarea, input)': {
+				paddingBottom: "0",
+			},
+			":is(textarea, input):focus-visible": {
+				outline: "none",
+			},
+			'.invalid:not(:is([border-bottom="true"], .outline)) :is(textarea, input)': {
+				borderBottom: "var(--danger-color) 2px solid",
+			},
+			'[character-counter="true"] .bottom': {
+				display: "flex",
+				flexDirection: "row",
+				gap: "0.5rem",
+				alignItems: "center",
+				color: "var(--color-secondary-text)",
+			},
+			'[character-counter="true"] .character-counter': {
+				whiteSpace: "nowrap",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+			},
+			'[border-bottom="true"] .border-bottom': {
+				width: "100%",
+				display: "block",
+				backgroundColor: "var(--divider-color)",
+				height: "2px",
+				transition: "var(--transition)",
+				marginTop: "0.25rem",
+			},
+			'[border-bottom="true"].invalid .border-bottom': {
+				backgroundColor: "var(--danger-color)",
+			},
+			':is([border-bottom="true"], [character-counter="true"]) .bottom': {
+				display: "flex",
+				flexDirection: "row",
+			},
+			":not(.invalid) textarea:focus ~ .bottom .border-bottom": {
+				backgroundColor: "var(--accent-color)",
+			},
+			".clear-icon:before": {
+				content: '"\\f00d"',
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.2rem",
+				padding: "0 0.25rem",
+				height: "100%",
+				display: "block",
+				color: "var(--divider-color)",
+				cursor: "pointer",
+			},
+			'input[type="password"] ~ .show-icon:before': {
+				content: '"\\f06e"',
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.2rem",
+				padding: "0 0.25rem",
+				height: "100%",
+				display: "block",
+				color: "var(--divider-color)",
+				cursor: "pointer",
+			},
+			'input:not([type="password"]) ~ .show-icon:before': {
+				content: '"\\f070"',
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.2rem",
+				padding: "0 0.25rem",
+				height: "100%",
+				display: "block",
+				color: "var(--divider-color)",
+				cursor: "pointer",
+			},
+			".icon": {
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.5rem",
+				padding: "0.25rem",
+			},
+		});
+		this.shadowRoot.append(this.$container);
+
+		this.displayed = true;
+		this.updateAttributes();
 	}
 	setValidator(validator) {
 		if (!validator) return this;
 
-		if (validator instanceof RegExp) validator = ((validator, val) => validator.test(val)).bind(null, validator);
+		if (typeof validator === "string") {
+			let { exp, flags } = /^(?:\/)(?<exp>.+)(?:\/)(?<flags>g?m?i?y?u?s?d?)$/g.exec(validator)?.groups || {};
+			if (!exp) return this;
+			validator = new RegExp(exp, flags);
+		}
 
-		if (typeof validator !== "function") return this;
+		if (validator instanceof RegExp) validator = RegExp.prototype.test.bind(validator);
+		else if (typeof validator !== "function") return this;
 
 		this.validator = validator;
 		return this;
@@ -2413,6 +2299,10 @@ SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
 		this.dispatch();
 		if (focus) this.$textarea.focus();
 	}
+	togglePassword() {
+		if (this.$textarea.getAttribute("type") === "password") this.$textarea.setAttribute("type", "text");
+		else this.$textarea.setAttribute("type", "password");
+	}
 	dispatch() {
 		let changeEvent = new Event("change");
 		let inputEvent = new Event("input");
@@ -2421,7 +2311,7 @@ SAHYG.CustomElements.textarea = class Textarea extends HTMLElement {
 		this.dispatchEvent(inputEvent);
 	}
 };
-SAHYG.CustomElements.loader = class Loader extends HTMLElement {
+SAHYG.Components.Loader = class Loader extends HTMLElement {
 	static get observedAttributes() {
 		return ["loader-height", "loader-width"];
 	}
@@ -2523,21 +2413,47 @@ SAHYG.CustomElements.loader = class Loader extends HTMLElement {
 					'<svg class="svg-loader" viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg"><circle cx="170" cy="170" r="160" stroke="currentcolor"></circle><circle cx="170" cy="170" r="135" stroke="var(--color-primary-text)"></circle><circle cx="170" cy="170" r="110" stroke="currentcolor"></circle><circle cx="170" cy="170" r="85" stroke="var(--color-primary-text)"></circle></svg>'
 				)
 			),
-			this.getAttribute("loading-text") === "true" ? SAHYG.createElement("div", { class: "status" }, await SAHYG.translate("LOADING")) : null
+			String(this.getAttribute("loading-text")) === "true"
+				? SAHYG.createElement("div", { class: "status" }, await SAHYG.translate("LOADING"))
+				: null
 		);
 	}
+	static center() {
+		let loader = SAHYG.createElement("sahyg-loader");
+		document.body.append(loader);
+		loader.shadowRoot.prepend(SAHYG.createElement("sahyg-backdrop"));
+		loader.shadowRoot.setStyle({
+			".svg-container": {
+				position: "fixed",
+				top: "50%",
+				left: "50%",
+			},
+			"sahyg-backdrop": {
+				position: "fixed",
+				width: "100%",
+				height: "100%",
+				top: "0",
+				left: "0",
+				backgroundColor: " var(--backdrop-color)",
+			},
+		});
+		return loader;
+	}
 };
-SAHYG.CustomElements.color = class Color extends HTMLElement {
+SAHYG.Components.InputColor = class InputColor extends HTMLElement {
 	connectedCallback() {
 		this.openShadow();
 
 		this.$input = SAHYG.createElement("input", {
 			type: "color",
-			value: this.getAttribute("value") || this.getAttribute("defaultValue"),
+			value: this.getAttribute("value") || this.getAttribute("default-value"),
 		}).on("input", () => {
 			this.value = this.$input.value;
 			this.setAttribute("value", this.$input.value);
+			this.$input.setAttribute("value", this.$input.value);
 		});
+
+		this.$input.setAttribute("value", this.$input.getAttribute("value"));
 
 		this.shadowRoot.setStyle(
 			(this.style = {
@@ -2582,7 +2498,7 @@ SAHYG.CustomElements.color = class Color extends HTMLElement {
 		this.shadowRoot.append(this.$input);
 	}
 };
-SAHYG.CustomElements.tabs = class Tabs extends HTMLElement {
+SAHYG.Components.Tabs = class Tabs extends HTMLElement {
 	connectedCallback() {
 		this.tabs = JSON.parse(this.getAttribute("tabs")) || [];
 		this.default = this.getAttribute("default");
@@ -2596,14 +2512,18 @@ SAHYG.CustomElements.tabs = class Tabs extends HTMLElement {
 				"div",
 				{ class: "tabs" },
 				this.tabs.map((tab) =>
-					SAHYG.createElement("div", { class: "tab" + (this.currentOpened == tab.id ? " opened" : ""), "tab-id": tab.id }, tab.text).on(
-						"click",
-						this.open.bind(this, tab.id)
-					)
+					SAHYG.createElement(
+						"div",
+						{
+							class: "tab" + (this.currentOpened === tab.id ? " opened" : ""),
+							"tab-id": tab.id,
+						},
+						tab.text
+					).on("click", this.open.bind(this, tab.id))
 				)
 			)
 		);
-		this.waitLoaded('[sahyg-tab="' + this.currentOpened + '"]').then((target) => target.addClass("opened"));
+		this.waitLoaded(':scope > [sahyg-tab="' + this.currentOpened + '"]').then((target) => target.addClass("opened"));
 
 		this.append(this.$tabsIcon, this.$tabs);
 	}
@@ -2618,13 +2538,13 @@ SAHYG.CustomElements.tabs = class Tabs extends HTMLElement {
 		this.addClass("opened");
 	}
 	open(id) {
-		if (this.currentOpened == id) return;
+		if (this.currentOpened === id) return;
 
-		this.$tabs.$("[tab-id].opened").removeClass("opened");
-		this.$tabs.$0(`[tab-id="${id}"]`)?.addClass("opened");
+		this.$tabs.$(":scope > .tabs > [tab-id].opened").removeClass("opened");
+		this.$tabs.$0(`:scope > .tabs > [tab-id="${id}"]`)?.addClass("opened");
 
-		this.$("[sahyg-tab]").removeClass("opened");
-		this.$0(`[sahyg-tab="${id}"]`)?.addClass("opened");
+		this.$(":scope > [sahyg-tab]").removeClass("opened");
+		this.$0(`:scope > [sahyg-tab="${id}"]`)?.addClass("opened");
 
 		this.currentOpened = id;
 		if (this.id) SAHYG.Utils.url.setLocationParam(this.id, id);
@@ -2632,7 +2552,7 @@ SAHYG.CustomElements.tabs = class Tabs extends HTMLElement {
 		this.closeMenu();
 	}
 };
-SAHYG.CustomElements.cropper = class Cropper extends HTMLElement {
+SAHYG.Components.Cropper = class Cropper extends HTMLElement {
 	connectedCallback() {
 		this.openShadow();
 
@@ -2642,13 +2562,21 @@ SAHYG.CustomElements.cropper = class Cropper extends HTMLElement {
 		this.$overlay = SAHYG.createElement(
 			"div",
 			{ class: "overlay" },
-			(this.$overlayImage = SAHYG.createElement("img", { src: this.url, draggable: false, crossorigin: "anonymous" }))
+			(this.$overlayImage = SAHYG.createElement("img", {
+				src: this.url,
+				draggable: false,
+				crossorigin: "anonymous",
+			}))
 		)
 			.on("mousedown", this.startMove.bind(this))
 			.on("mouseup", () => (this.onPinch = this.onDrag = false))
 			.on("touchstart", this.startMove.bind(this))
 			.on("touchend", () => (this.onPinch = this.onDrag = false));
-		this.$image = SAHYG.createElement("img", { src: this.url, draggable: false, crossorigin: "anonymous" });
+		this.$image = SAHYG.createElement("img", {
+			src: this.url,
+			draggable: false,
+			crossorigin: "anonymous",
+		});
 
 		this.shadowRoot.setStyle({
 			".overlay": {
@@ -2812,7 +2740,10 @@ SAHYG.CustomElements.cropper = class Cropper extends HTMLElement {
 		this.$overlayImage.style.top = -(this.startMovePosition.overlayTop + moveTop) + "px";
 	}
 	crop() {
-		let canvas = SAHYG.createElement("canvas", { width: this.$overlay.clientWidth, height: this.$overlay.clientHeight });
+		let canvas = SAHYG.createElement("canvas", {
+			width: this.$overlay.clientWidth,
+			height: this.$overlay.clientHeight,
+		});
 		let ctx = canvas.getContext("2d");
 		ctx.drawImage(
 			this.$overlayImage,
@@ -2832,7 +2763,7 @@ SAHYG.CustomElements.cropper = class Cropper extends HTMLElement {
 		document.body.off("keypress", this.keyHandler.bind(this));
 	}
 };
-SAHYG.CustomElements.dialog = class Dialog extends HTMLElement {
+SAHYG.Components.Dialog = class Dialog extends HTMLElement {
 	buttons = [];
 	constructor() {
 		super();
@@ -2845,19 +2776,89 @@ SAHYG.CustomElements.dialog = class Dialog extends HTMLElement {
 			(this.$body = SAHYG.createElement("div", { class: "body" })),
 			(this.$footer = SAHYG.createElement("div", { class: "footer" }))
 		);
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$backdrop, this.$dialog);
 	}
 	async connectedCallback() {
-		this.content = this.getAttribute("content");
-
+		this.openShadow();
+		this.shadowRoot.setStyle({
+			".container": {
+				"--dialog-header-height": "4rem",
+				"--dialog-footer-height": "4rem",
+				"--dialog-header-background": "var(--background-tertiary-color)",
+				"--dialog-body-background": "var(--background-color)",
+				"--dialog-footer-background": "var(--background-secondary-color)",
+				"--dialog-min-height": "15rem",
+				"--dialog-min-width": "25rem",
+				"--dialog-max-width": "50rem",
+				"--dialog-max-height": "40rem",
+				"--dialog-header-font-size": "2rem",
+				position: "fixed",
+				top: "0",
+				left: "0",
+				height: "100%",
+				width: "100%",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+			},
+			".dialog": {
+				minHeight: "min(var(--dialog-min-height), 100%)",
+				minWidth: "min(var(--dialog-min-width), 100%)",
+				maxHeight: "min(var(--dialog-max-height), 100%)",
+				maxWidth: "min(var(--dialog-max-width), 100%)",
+				backgroundColor: "var(--dialog-body-background)",
+				// borderRadius: "0.5rem",
+				// overflow: "hidden",
+				display: "flex",
+				flexDirection: "column",
+				boxShadow: "0px 0px 5px 0px var(--background-color)",
+				animation: "dialog-scale 200ms ease-in-out normal forwards",
+				zIndex: "100",
+				borderRadius: "0.5rem",
+			},
+			".header": {
+				width: "100%",
+				minHeight: "var(--dialog-header-height)",
+				backgroundColor: "var(--dialog-header-background)",
+				padding: "1.5rem 1.5rem 1rem 1.5rem",
+				fontSize: "1.3rem",
+				fontWeight: "bold",
+				borderRadius: "0.5rem 0.5rem 0 0",
+			},
+			":not([body-borderless]) > .dialog > .body": {
+				padding: "1rem",
+				overflowY: "scroll",
+			},
+			".body": {
+				flex: "1",
+			},
+			".footer": {
+				backgroundColor: "var(--dialog-footer-background)",
+				height: "var(--dialog-footer-height)",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "flex-end",
+				padding: "0.5rem 1rem 0.5rem 1rem",
+				borderRadius: "0 0 0.5rem 0.5rem",
+			},
+			"@keyframes dialog-scale": {
+				"0%": {
+					transform: "scale(0.9)",
+				},
+				"100%": {
+					transform: "scale(1)",
+				},
+			},
+		});
 		await this.preConnectedCallback();
 
 		if (!this.displayed) return void this.remove();
 
 		if (!this.buttons.length) await this.generateDefaultButtons();
 		if (!this.content) this.$body.text((this.content = this.getAttribute("content") || ""));
-		if (!this.title) this.$header.text((this.title = this.getAttribute("title") || (await SAHYG.translate("INFORMATION"))));
+		if (!this.header) this.$header.text((this.header = this.getAttribute("header") || (await SAHYG.translate("INFORMATION"))));
 
-		this.append(this.$backdrop, this.$dialog);
+		this.shadowRoot.append(this.$container);
 	}
 	async preConnectedCallback() {}
 	async generateDefaultButtons() {
@@ -2882,9 +2883,14 @@ SAHYG.CustomElements.dialog = class Dialog extends HTMLElement {
 		this.$body.append(content);
 		return this;
 	}
-	setTitle(title) {
-		this.title = title;
-		this.$header.text(title);
+	setTitle(header) {
+		this.header = header;
+		this.$header.text(header);
+		return this;
+	}
+	setHeader(header) {
+		this.header = header;
+		this.$header.text(header);
 		return this;
 	}
 	show() {
@@ -2895,27 +2901,34 @@ SAHYG.CustomElements.dialog = class Dialog extends HTMLElement {
 	close() {
 		this.remove();
 		this.displayed = false;
+
+		let closedEvent = new Event("closed");
+		this.dispatchEvent(closedEvent);
+
 		return this;
 	}
-	addButton({ text, style = "", callback = () => {}, position, closeOnClick = true }) {
+	addButton({ text, options = {}, callback = () => {}, position, closeOnClick = true }) {
 		let boundCallback = async function (event) {
 			await callback.call(null, event);
 			if (closeOnClick) this.close();
 		}.bind(this);
 
 		let button = {
-			style,
 			text,
 			callback: boundCallback,
 			position,
 			closeOnClick,
-			$: SAHYG.createElement("input", { type: "button", value: text, class: style }).on("click", boundCallback),
+			$: SAHYG.createElement("sahyg-button", { value: text, ...options }).on("click", boundCallback),
 		};
 		if (position instanceof Number) this.buttons.splice(position, 0, button);
 		else this.buttons.push(button);
 
 		this.updateButton();
 
+		return this;
+	}
+	addButtons(buttons) {
+		buttons.forEach((button) => this.addButton(button));
 		return this;
 	}
 	updateButton() {
@@ -2928,7 +2941,7 @@ SAHYG.CustomElements.dialog = class Dialog extends HTMLElement {
 		return this;
 	}
 };
-SAHYG.CustomElements.confirmDialog = class ConfirmDialog extends SAHYG.CustomElements.dialog {
+SAHYG.Components.ConfirmDialog = class ConfirmDialog extends SAHYG.Components.Dialog {
 	extends = "sahyg-dialog";
 	constructor() {
 		super();
@@ -2937,7 +2950,9 @@ SAHYG.CustomElements.confirmDialog = class ConfirmDialog extends SAHYG.CustomEle
 		this.setTitle(await SAHYG.translate("CONFIRM"));
 		this.addButton({
 			text: await SAHYG.translate("CONFIRM"),
-			style: "full",
+			options: {
+				fullColor: true,
+			},
 			callback: this.confirm.bind(this),
 		}).addButton({
 			text: await SAHYG.translate("CANCEL"),
@@ -2962,7 +2977,16 @@ SAHYG.CustomElements.confirmDialog = class ConfirmDialog extends SAHYG.CustomEle
 		return this;
 	}
 };
-SAHYG.CustomElements.cropperDialog = class CropperDialog extends SAHYG.CustomElements.dialog {
+SAHYG.Components.AlertDialog = class AlertDialog extends SAHYG.Components.Dialog {
+	extends = "sahyg-dialog";
+	constructor() {
+		super();
+	}
+	async preConnectedCallback() {
+		this.setTitle("⚠️ " + (await SAHYG.translate("ALERT")));
+	}
+};
+SAHYG.Components.CropperDialog = class CropperDialog extends SAHYG.Components.Dialog {
 	extends = "sahyg-dialog";
 	constructor() {
 		super();
@@ -2973,10 +2997,17 @@ SAHYG.CustomElements.cropperDialog = class CropperDialog extends SAHYG.CustomEle
 
 		if (!this.imgURL) throw new Error("Image URL not specified");
 
-		this.cropper = SAHYG.createElement("sahyg-cropper", { url: this.imgURL, ratio: this.ratio });
+		this.cropper = SAHYG.createElement("sahyg-cropper", {
+			url: this.imgURL,
+			ratio: this.ratio,
+		});
 
 		this.setTitle(await SAHYG.translate("CROP"))
-			.addButton({ text: await SAHYG.translate("SUBMIT"), style: "full", callback: this.valid.bind(this) })
+			.addButton({
+				text: await SAHYG.translate("SUBMIT"),
+				style: "full",
+				callback: this.valid.bind(this),
+			})
 			.addButton({
 				text: await SAHYG.translate("CANCEL"),
 				callback: this.cancel.bind(this),
@@ -3004,12 +3035,1285 @@ SAHYG.CustomElements.cropperDialog = class CropperDialog extends SAHYG.CustomEle
 		return this;
 	}
 };
+SAHYG.Components.InputDialog = class InputDialog extends SAHYG.Components.Dialog {
+	extends = "sahyg-dialog";
+	constructor() {
+		super();
+	}
+	async preConnectedCallback() {
+		this.inputs = JSON.parse(this.getAttribute("inputs"));
 
-SAHYG.Api.domain = SAHYG.Constants.api_domain;
-axios.interceptors.response.use(SAHYG.RequestEvents.request, SAHYG.RequestEvents.error);
-Object.entries(SAHYG.CustomElements).forEach(([name, element]) =>
-	customElements.define("sahyg-" + SAHYG.Utils.text.camelToKebab(name), element, { extends: element.extends })
+		if (!this.inputs instanceof Array) this.inputs = [this.inputs];
+
+		this.$bodyContainer = SAHYG.createElement("div", {
+			class: "body-container",
+		});
+		for (let input of this.inputs) {
+			input.value = input.defaultValue;
+			input.$informations = SAHYG.createElement(
+				"div",
+				{ class: "informations" },
+				(input.$title = SAHYG.createElement("span", { class: "title" }, input.label || input.title)),
+				(input.$description = SAHYG.createElement("span", { class: "description" }, input.description))
+			).on("click", () => input.$input?.focus());
+
+			switch (input.type) {
+				case "text":
+				case "email":
+				case "url": {
+					switch (input.type) {
+						case "url": {
+							input.icon = String.fromCharCode(0xf0c1);
+							break;
+						}
+						case "email": {
+							input.icon = String.fromCharCode(0xf1fa);
+							break;
+						}
+					}
+
+					input.$input = SAHYG.createElement("sahyg-textarea", {
+						multiline: false,
+						defaultValue: input.value,
+						id: input.id,
+						icon: input.icon,
+						...input.options,
+					}).on("input", (event) => (input.value = event.target.value));
+					break;
+				}
+				case "textarea": {
+					input.$input = SAHYG.createElement("sahyg-textarea", {
+						multiline: true,
+						defaultValue: input.value,
+						id: input.id,
+						...input.options,
+					}).on("input", (event) => (input.value = event.target.value));
+					break;
+				}
+				case "selectOne":
+				case "select": {
+					input.$input = SAHYG.createElement("sahyg-select", {
+						selected: input.defaultValue,
+						...(input.options || {}),
+					}).on("input", (event) => (input.value = input.$input.selected));
+					break;
+				}
+				case "switch":
+				case "boolean": {
+					input.$input = SAHYG.createElement("sahyg-switch", {
+						value: input.defaultValue,
+						...(input.options || {}),
+					}).on("input", (event) => (input.value = input.$input.value));
+					break;
+				}
+				case "list": {
+					input.$input = SAHYG.createElement("sahyg-input-list", {
+						values: input.defaultValue,
+						...(input.options || {}),
+					}).on("input", (event) => (input.value = input.$input.values?.map((val) => val.value) || []));
+					break;
+				}
+				case "array": {
+					input.$input = SAHYG.createElement("sahyg-input-array", {
+						values: input.defaultValue,
+						columns: input.columns,
+						...(input.options || {}),
+					});
+					break;
+				}
+				case "staticText": {
+					if (!(input.label || input.title || input.description)) input.$description.text(input.text);
+					input.value = input.defaultValue = null;
+					input.id = Math.random().toString(32).substring(2, 10);
+					break;
+				}
+			}
+
+			input.$ = SAHYG.createElement(
+				"div",
+				{
+					class: "input",
+					inline: input.inline || "false",
+					singleLine: input.singleLine || "false",
+				},
+				input.$informations,
+				(input.$inputContainer = SAHYG.createElement("div", { class: "input-container" }, input.$input))
+			);
+			this.$bodyContainer.append(input.$);
+		}
+
+		this.setContent(this.$bodyContainer);
+		if (this.getAttribute("no-buttons") !== "true")
+			this.addButtons([
+				{
+					text: await SAHYG.translate("OK"),
+					callback: this.submit.bind(this),
+					options: { fullColor: true },
+				},
+				{
+					text: await SAHYG.translate("CANCEL"),
+					callback: this.close.bind(this),
+				},
+			]);
+
+		this.shadowRoot.setStyle({
+			".body-container": {
+				display: "flex",
+				flexDirection: "row",
+				flexWrap: "wrap",
+				gap: "1rem",
+			},
+			'.input[inline]:not([inline="false"])': {
+				flexGrow: "1",
+			},
+			'.input:is([inline="false"], :not([inline]))': {
+				width: "100%",
+			},
+			'.input[single-line="true"]': {
+				display: "flex",
+				flexDirection: "row",
+			},
+			'.input[single-line="true"] .input-container': {
+				flexGrow: "1",
+				display: "flex",
+				flexDirection: "row",
+				justifyContent: "flex-end",
+			},
+			".informations": {
+				display: "flex",
+				flexDirection: "column",
+				marginBottom: "0.5rem",
+			},
+			".informations .title": {
+				fontWeight: "bold",
+			},
+		});
+	}
+	toPromise() {
+		return new Promise(
+			(resolve) =>
+				(this.promise = {
+					resolve: function () {
+						resolve(...arguments);
+						this.promise = null;
+					},
+				})
+		);
+	}
+	submit() {
+		let changed = this.inputs.map((input) => [input.id, input.value != input.defaultValue]);
+
+		if (changed.some((input) => input[1])) {
+			if (this.promise)
+				this.promise.resolve({
+					changed: Object.fromEntries(changed),
+					data: Object.fromEntries(this.inputs.map((input) => [input.id, input.value])),
+				});
+			return;
+		}
+		this.close();
+	}
+	close() {
+		this.remove();
+		this.displayed = false;
+
+		let closedEvent = new Event("closed");
+		this.dispatchEvent(closedEvent);
+
+		if (this.promise) this.promise.resolve(null);
+
+		return this;
+	}
+};
+SAHYG.Components.Toast = class Toast extends HTMLElement {
+	static get observedAttributes() {
+		return ["content", "timeout", "icon", "type", "color", "show"];
+	}
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (name === "show" && newValue) return this.show();
+		else if (!this.displayed) return;
+
+		switch (name) {
+			case "content": {
+				this.setContent(newValue);
+				break;
+			}
+			case "timeout": {
+				this.setTimeout(newValue);
+				break;
+			}
+			case "icon": {
+				this.setIcon(newValue);
+				break;
+			}
+			case "type": {
+				this.setType(newValue);
+				break;
+			}
+			case "color": {
+				this.setColor(newValue);
+			}
+		}
+	}
+	connectedCallback() {
+		this.openShadow();
+
+		this.$icon = SAHYG.createElement("div", { class: "icon" });
+		this.$body = SAHYG.createElement("div", { class: "body" });
+		this.$close = SAHYG.createElement("div", { class: "close" }, String.fromCharCode(0xf00d)).on("click", this.close.bind(this));
+		this.$toastContent = SAHYG.createElement("div", { class: "toast-content" }, this.$icon, this.$body, this.$close);
+		this.$progressBar = SAHYG.createElement("div", { class: "progress-bar" });
+		this.$progressBarContainer = SAHYG.createElement("div", { class: "progress-bar-container" }, this.$progressBar);
+		this.$toast = SAHYG.createElement("div", { class: "toast" }, this.$toastContent, this.$progressBarContainer)
+			.on("mouseenter", this.pauseTimeout.bind(this))
+			.on("mouseleave", this.resumeTimeout.bind(this));
+
+		this.shadowRoot.append(this.$toast);
+		this.shadowRoot.setStyle({
+			".toast": {
+				display: "flex",
+				flexDirection: "column",
+				background: "var(--background-tertiary-color)",
+				borderRadius: "0.5rem",
+				overflow: "hidden",
+				animation: "toast-slide-in 100ms",
+			},
+			".toast.close": {
+				transition: "transform 100ms linear",
+				transform: "translateY(-100%)",
+			},
+			".toast-content": {
+				display: "flex",
+				flexDirection: "row",
+				padding: "1rem 1rem calc(1rem - 3px) 1rem",
+				alignItems: "center",
+				columnGap: "0.75rem",
+			},
+			".icon": {
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "1.5rem",
+				padding: "0.5rem",
+				borderRadius: "100%",
+				backgroundColor: "#0055b9",
+				// width: "1.5rem",
+				// height: "1.5rem",
+				userSelect: "none",
+			},
+			".body": {
+				flex: "1",
+				textOverflow: "ellipsis",
+				overflow: "hidden",
+			},
+			".close": {
+				fontFamily: "var(--font-icon-solid)",
+				cursor: "pointer",
+				userSelect: "none",
+			},
+			".progress-bar": {
+				width: "100%",
+				height: "3px",
+				animationName: "toast-progress-bar",
+				animationDirection: "normal",
+				animationFillMode: "forwards",
+				animationIterationCount: "1",
+				animationTimingFunction: "linear",
+				backgroundColor: "var(--accent-color)",
+			},
+			"@keyframes toast-progress-bar": {
+				"0%": {
+					width: "0%",
+				},
+				"100%": {
+					width: "100%",
+				},
+			},
+			"@keyframes toast-slide-in": {
+				"0%": {
+					transform: "translateX(100%)",
+				},
+				"100%": {
+					transform: "translateX(0%)",
+				},
+			},
+		});
+
+		this.setTimeout(this.getAttribute("timeout"));
+		this.setContent(this.getAttribute("content"));
+
+		let type = this.getAttribute("type"),
+			icon = this.getAttribute("icon"),
+			color = this.getAttribute("color");
+		if (type) this.setType(type);
+		if (icon) this.setIcon(icon);
+		else this.updateIcon();
+		if (color) this.setColor(color);
+		else this.updateColor();
+
+		this.displayed = true;
+
+		this.lastPause = Date.now();
+		this.timeRemain = this.timeout;
+		this.timeoutId = setTimeout(this.close.bind(this), this.timeout);
+	}
+	updateContent() {
+		this.$body.text(this.content);
+		return this;
+	}
+	updateTimeout() {
+		if (!this.displayed) {
+			this.$progressBar.style.animationDuration = this.timeout + "ms";
+			return this;
+		}
+
+		let now = Date.now();
+		this.timeRemain = this.timeout - (now - this.lastPause);
+		this.lastPause = now;
+
+		let currentState = (1 - this.timeRemain / this.timeout).toFixed(2);
+
+		if (currentState >= 1) {
+			this.close();
+			return this;
+		}
+
+		this.$progressBar.style.animationDuration = this.timeout + "ms";
+		this.$progressBar.style.animationDelay = `-${this.timeout * currentState}ms`;
+
+		clearTimeout(this.timeoutId);
+		this.timeoutId = setTimeout(this.close.bind(this), this.timeRemain);
+		return this;
+	}
+	pauseTimeout() {
+		this.$progressBar.style.animationPlayState = "paused";
+
+		this.timeRemain = this.timeRemain - (Date.now() - this.lastPause);
+
+		clearTimeout(this.timeoutId);
+		return this;
+	}
+	resumeTimeout() {
+		this.$progressBar.style.animationPlayState = "running";
+
+		this.lastPause = Date.now();
+
+		this.timeoutId = setTimeout(this.close.bind(this), this.timeRemain);
+		return this;
+	}
+	updateIcon() {
+		if (!this.icon) return this.setIcon();
+		this.$icon.text(this.icon);
+		return this;
+	}
+	updateColor() {
+		if (!this.color) return this.setColor();
+		this.$icon.style.backgroundColor = this.color;
+		this.$icon.style.boxShadow = "0 0 3px 0 " + this.color;
+		return this;
+	}
+	setContent(content) {
+		this.content = content || "";
+		this.updateContent();
+		return this;
+	}
+	setTimeout(timeout) {
+		this.timeout = Number(timeout) || 5000;
+		this.updateTimeout();
+		return this;
+	}
+	setIcon(icon) {
+		if (!icon) icon = "information";
+		switch (icon) {
+			case "information":
+			case "info": {
+				this.icon = String.fromCharCode(0xf129);
+				break;
+			}
+			case "warn":
+			case "warning": {
+				this.icon = String.fromCharCode(0xf071);
+				break;
+			}
+			case "error":
+			case "danger": {
+				this.icon = String.fromCharCode(0xf12a);
+				break;
+			}
+			case "ok":
+			case "success": {
+				this.icon = String.fromCharCode(0xf00c);
+				break;
+			}
+			default: {
+				if (/^&#xf[0-9a-z]{3};$/.test(icon)) this.icon = String.fromCharCode(parseInt(icon.match(/(?<=^&#x)f[0-9a-z]{3}(?=;$)/)));
+				else {
+					let code = icon.charCodeAt(0);
+					if (0xf000 >= code && code <= 0xffff) this.icon = String.fromCharCode(icon);
+				}
+				break;
+			}
+		}
+		this.updateIcon();
+		return this;
+	}
+	setColor(color) {
+		if (!color) color = "information";
+		switch (color) {
+			case "info":
+			case "information": {
+				this.color = "var(--accent-color)";
+				break;
+			}
+			case "warn":
+			case "warning": {
+				this.color = "var(--warning-color)";
+				break;
+			}
+			case "error":
+			case "danger": {
+				this.color = "var(--danger-color)";
+				break;
+			}
+			case "ok":
+			case "success": {
+				this.color = "var(--success-color)";
+				break;
+			}
+			default: {
+				this.color = "var(--accent-color)";
+				break;
+			}
+		}
+		this.updateColor();
+		return this;
+	}
+	setType(type) {
+		if (!type) type = "information";
+		this.type = type;
+		this.setIcon(type);
+		this.setColor(type);
+		return this;
+	}
+	show() {
+		let toastsContainer = SAHYG.$0("sahyg-toasts");
+		if (!toastsContainer) {
+			toastsContainer = SAHYG.createElement("sahyg-toasts");
+			document.body.append(toastsContainer);
+		}
+		toastsContainer.append(this);
+
+		return this;
+	}
+	close() {
+		this.$toast.addClass("close");
+		if (this.timeoutId) clearTimeout(this.timeoutId);
+		setTimeout(() => {
+			this.displayed = false;
+			this.remove();
+			if (this.promise) this.promise.resolve();
+		}, 100);
+		return this;
+	}
+	toPromise() {
+		return new Promise((resolve, reject) => (this.promise = { resolve, reject }));
+	}
+};
+SAHYG.Components.UserTooltip = class UserTooltip extends HTMLElement {
+	async connectedCallback() {
+		this.openShadow();
+
+		this.avatar = this.getAttribute("avatar");
+		this.username = this.getAttribute("username");
+		this.certified = this.getAttribute("certified");
+		this.group = this.getAttribute("group");
+
+		this.$avatar = this.avatar
+			? SAHYG.createElement("img", { class: "avatar", src: this.avatar })
+			: SAHYG.createElement("span", { class: "avatar" }, String.fromCharCode(0xf007));
+		this.$username = SAHYG.createElement("span", { class: "username" }, this.username);
+		this.$certified = this.certified && SAHYG.createElement("span", { class: "certified" }, String.fromCharCode(0xf0a3));
+		this.$group =
+			["owner", "administrator", "vip"].includes(this.group) &&
+			SAHYG.createElement(
+				"span",
+				{ class: "group " + this.group },
+				String.fromCharCode(this.group === "owner" ? 0xf521 : this.group === "administrator" ? 0xf7d9 : 0xf005)
+			);
+		this.$badges = SAHYG.createElement("div", { class: "badges" }, this.$certified, this.$group);
+		this.$informations = SAHYG.createElement("div", { class: "informations" }, this.$username, this.$badges);
+
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$avatar, this.$informations);
+
+		this.shadowRoot.append(this.$container);
+		this.shadowRoot.setStyle({
+			".container": {
+				display: "flex",
+				MsFlexDirection: "row",
+				flexDirection: "row",
+				alignItems: "center",
+				columnGap: "1rem",
+				padding: "0.5rem",
+			},
+			".avatar": {
+				height: "4rem",
+				width: "4rem",
+				borderRadius: "50%",
+			},
+			".avatar:after": {
+				content: "\f007",
+				position: "absolute",
+				top: "0",
+				left: "0",
+				bottom: "0",
+				right: "0",
+				backgroundColor: "var(--tooltip-background-color)",
+				color: "var(--tooltip-text-color)",
+				display: "flex",
+				width: "2rem",
+				height: "2rem",
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "2rem",
+				alignItems: "center",
+				justifyContent: "center",
+			},
+			".username": {
+				fontSize: "1.5rem",
+			},
+			".badges": {
+				display: "flex",
+				alignItems: "center",
+			},
+			".badges span": {
+				fontSize: "1.2rem",
+				fontFamily: "var(--font-icon-solid)",
+			},
+			".certified": {
+				color: "var(--green-700)",
+			},
+			".group.owner": {
+				color: "var(--yellow-600)",
+			},
+			".group.administrator": {
+				color: "var(--red-600)",
+			},
+			".group.vip": {
+				color: "var(--blue-600)",
+			},
+		});
+	}
+};
+SAHYG.Components.Button = class Button extends HTMLElement {
+	constructor() {
+		super();
+
+		this.on(
+			"click",
+			function () {
+				if (this.getAttribute("type") === "submit" && this.isConnected) {
+					let form = this.closest("form");
+					if (form) form.dispatchEvent(new Event("submit"));
+				}
+			}.bind(this)
+		);
+	}
+	static get observedAttributes() {
+		return ["icon", "content", "full-color", "disabled", "full-width", "underline"];
+	}
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (!this.displayed) return;
+		switch (name) {
+			case "icon": {
+				this.setIcon(newValue);
+				break;
+			}
+			case "content": {
+				this.setContent(newValue);
+				break;
+			}
+			case "disabled": {
+				this.updateState();
+				break;
+			}
+			case "outline":
+			case "rounded":
+			case "underline":
+			case "full-color":
+			case "full-width": {
+				this.updateClasses();
+				break;
+			}
+			case "icon-min-width":
+			case "content-min-width": {
+				this.updateCssRules();
+			}
+		}
+	}
+	connectedCallback() {
+		this.openShadow();
+
+		this.shadowRoot.setStyle({
+			".button": {
+				alignItems: "center",
+				backgroundColor: "transparent",
+				borderRadius: "0.375rem",
+				cursor: "pointer",
+				display: "inline-flex",
+				fontSize: "0.875rem",
+				fontWeight: "600",
+				height: "2.375rem",
+				justifyContent: "center",
+				lineHeight: "2.375rem",
+				margin: "0",
+				padding: "0 0.75rem",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				whiteSpace: "nowrap",
+				color: "inherit",
+				fontFamily: "inherit",
+				textTransform: "none",
+			},
+			".button.rounded": {
+				border: "1px solid var(--accent-color)",
+				borderRadius: "0.375rem",
+			},
+			".button.full-color": {
+				backgroundColor: "var(--accent-color)",
+				color: "var(--background-color)",
+			},
+			".button.full-width": {
+				width: "100%",
+			},
+			".button:is(.underline, .un)": {
+				border: "none",
+				borderBottom: "1px solid var(--accent-color)",
+				borderRadius: "0",
+			},
+			".button.disabled": {
+				backgroundColor: "var(--disabled-button-color)",
+				cursor: "not-allowed",
+			},
+			".icon:not(:empty)": {
+				fontFamily: "var(--font-icon-solid)",
+				marginRight: "0.25rem",
+				fontSize: "1.2rem",
+			},
+			".content:empty": {
+				display: "none",
+			},
+			".icon:has( ~ .content:empty)": {
+				marginRight: 0,
+			},
+		});
+
+		this.$icon = SAHYG.createElement("div", { class: "icon" });
+		this.$content = SAHYG.createElement("div", { class: "content" });
+		this.$button = SAHYG.createElement("div", { class: "button" }, this.$icon, this.$content);
+
+		this.setContent(this.getAttribute("content") || this.getAttribute("value"));
+		this.setIcon(this.getAttribute("icon"));
+
+		this.updateState();
+		this.updateClasses();
+		this.updateCssRules();
+
+		this.shadowRoot.append(this.$button);
+		this.displayed = true;
+	}
+	updateState() {
+		this.disabled = this.getAttribute("disabled");
+		if (this.disabled && this.disabled !== "false") this.disable();
+		else this.enable();
+	}
+	updateClasses() {
+		this.fullColor = String(this.getAttribute("full-color"));
+		this.fullWidth = String(this.getAttribute("full-width"));
+		this.underline = String(this.getAttribute("underline"));
+		this.rounded = String(this.getAttribute("rounded"));
+		this.outline = String(this.getAttribute("outline"));
+		if (this.fullColor === "true") this.$button.addClass("full-color");
+		if (this.fullWidth === "true") this.$button.addClass("full-width");
+		if (this.underline === "true") this.$button.addClass("underline");
+		if (this.rounded === "true") this.$button.addClass("rounded");
+		if (this.outline === "true") this.$button.addClass("outline");
+	}
+	updateCssRules() {
+		if (this.cssRules) this.cssRules.remove();
+
+		this.iconMinWidth = this.getAttribute("icon-min-width");
+		this.contentMinWidth = this.getAttribute("content-min-width");
+		if (Number(this.iconMinWidth)) this.iconMinWidth = this.iconMinWidth + "px";
+		if (Number(this.contentMinWidth)) this.contentMinWidth = this.contentMinWidth + "px";
+
+		let css = {};
+		if (this.iconMinWidth)
+			css[`@media screen and (max-width: ${this.iconMinWidth})`] = {
+				".icon": {
+					display: "none",
+				},
+			};
+		if (this.contentMinWidth)
+			css[`@media screen and (max-width: ${this.contentMinWidth})`] = {
+				".content": {
+					display: "none",
+				},
+			};
+
+		this.cssRules = this.shadowRoot.setStyle(css);
+	}
+	setContent(content) {
+		if (!content) return this;
+		this.content = content;
+		this.$content.clear();
+		this.$content.append(content);
+		return this;
+	}
+	setIcon(icon) {
+		if (!icon) return this;
+		this.icon = icon;
+		this.$icon.text(icon);
+		return this;
+	}
+	disable() {
+		this.$button.addClass("disabled");
+	}
+	enable() {
+		this.$button.removeClass("disabled");
+	}
+};
+SAHYG.Components.Backdrop = class Backdrop extends HTMLElement {
+	connectedCallback() {
+		this.openShadow();
+
+		this.shadowRoot.setStyle({
+			".backdrop": {
+				position: "fixed",
+				width: "100%",
+				height: "100%",
+				top: 0,
+				left: 0,
+				backgroundColor: "#000000",
+				zIndex: 99,
+				opacity: this.getAttribute("opacity") || 0.25,
+			},
+		});
+
+		this.shadowRoot.append(SAHYG.createElement("div", { class: "backdrop" }));
+	}
+};
+SAHYG.Components.Viewer = class Viewer extends HTMLElement {
+	maxNameLength = 15;
+	async connectedCallback() {
+		this.openShadow();
+
+		this.src = this.getAttribute("src");
+		this.name = this.width = this.height = this.extension = this.fileSize = null;
+
+		this.$backdrop = SAHYG.createElement("sahyg-backdrop", {
+			opacity: 0.75,
+		}).on("click", this.close.bind(this));
+		this.$name = SAHYG.createElement("span", { class: "name" });
+		this.$imageSize = SAHYG.createElement("span", { class: "image-size" });
+		this.$fileSize = SAHYG.createElement("span", { class: "file-size" });
+		this.$extension = SAHYG.createElement("span", { class: "extension" });
+		this.$open = SAHYG.createElement("a", { href: this.src, target: "_blank" });
+		this.$informations = SAHYG.createElement(
+			"div",
+			{ class: "informations" },
+			this.$name,
+			this.$imageSize,
+			this.$fileSize,
+			this.$extension,
+			this.$open
+		);
+		this.$imageContainer = SAHYG.createElement("div", { class: "image-container" }, SAHYG.createElement("sahyg-loader"));
+		this.$closeButton = SAHYG.createElement("div", { class: "close" }, String.fromCharCode(0xf00d)).on("click", this.close.bind(this));
+		this.$container = SAHYG.createElement("div", { class: "container" }, this.$backdrop, this.$imageContainer, this.$closeButton);
+
+		this.shadowRoot.setStyle({
+			".container": {
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				position: "fixed",
+				top: "0",
+				left: "0",
+				width: "100vw",
+				height: "100vh",
+				justifyContent: "center",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				zIndex: "98",
+			},
+			".image-container": {
+				zIndex: "100",
+				width: "min(80vw, 80vh)",
+				height: "min(80vw, 80vh)",
+				display: "flex",
+				flexDirection: "column",
+			},
+			img: {
+				width: "min(80vw, 80vh)",
+				height: "auto",
+				margin: "auto",
+				cursor: "zoom-in",
+			},
+			"img.large": {
+				cursor: "zoom-out",
+			},
+			".informations > :is(span, a):empty": {
+				display: "none",
+			},
+			".informations > span:not(:last-child):after": {
+				content: '"|"',
+				margin: "0 0.5rem",
+			},
+			".informations :is(a, a:visited)": {
+				color: "var(--color-primary-text)",
+			},
+			".close": {
+				position: "fixed",
+				top: "1rem",
+				right: "1rem",
+				fontSize: "2rem",
+				fontFamily: "var(--font-icon-solid)",
+				zIndex: 100,
+				cursor: "pointer",
+				padding: "0.5rem",
+				borderRadius: "100%",
+				transition: "var(--transition)",
+			},
+			".close:hover": {
+				backgroundColor: "var(--accent-color)",
+			},
+		});
+		this.shadowRoot.append(this.$container);
+
+		this.blob = await (await fetch(this.src)).blob();
+		if (this.blob.size === 0) this.$image = await SAHYG.translate("IMAGE_NOT_LOADED");
+		else {
+			this.$image = new Image();
+			this.$image.src = URL.createObjectURL(this.blob);
+			await this.$image.decode();
+			this.$image.style.width = this.$image.width + "px";
+
+			this.width = this.$image.width;
+			this.height = this.$image.height;
+			this.name = this.getAttribute("name") || decodeURI(this.src).split("/").pop();
+			this.fileSize = SAHYG.Utils.units.formatOctets(this.blob.size);
+			this.extension = this.name.match(/(?<=\.)\w+$/)?.[0]?.toLowerCase() || this.blob.type.split("/").pop().toUpperCase();
+			if (this.name.length > this.maxNameLength) {
+				if (this.extension) this.name = this.name.substring(0, this.maxNameLength - 3 - this.extension.length) + "..." + this.extension;
+				else this.name = this.name.substring(0, this.maxNameLength - 3) + "...";
+			}
+
+			this.$imageContainer.clear();
+			this.$imageContainer.append(this.$image, this.$informations);
+			this.$name.text(this.name);
+			this.width && this.height && this.$imageSize.text(`${this.width}x${this.height}`);
+			this.$fileSize.text(this.fileSize);
+			this.$extension.text(this.extension);
+			this.$open.text = await SAHYG.translate("OPEN_ORIGINAL");
+
+			this.$image.on("click", this.toggleZoom.bind(this));
+		}
+	}
+	toggleZoom() {
+		if (!this.$image.hasClass("large")) {
+			this.$image.style.width = this.width + "px";
+			this.$image.addClass("large");
+		} else {
+			this.$image.style.width = "";
+			this.$image.removeClass("large");
+		}
+	}
+	show() {
+		document.body.append(this);
+	}
+	close() {
+		this.remove();
+	}
+};
+SAHYG.Components.Switch = class Switch extends HTMLElement {
+	connectedCallback() {
+		this.value = String(this.getAttribute("value")) === "true";
+
+		this.openShadow();
+		this.shadowRoot.setStyle({
+			".switch": {
+				width: "3.5rem",
+				height: "2rem",
+				backgroundColor: "var(--background-tertiary-color)",
+				borderRadius: "1rem",
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "flex-start",
+				padding: "0.25rem",
+				cursor: "pointer",
+				position: "relative",
+			},
+			".circle": {
+				width: "1.5rem",
+				height: "1.5rem",
+				backgroundColor: "var(--accent-color)",
+				borderRadius: "100%",
+				position: "relative",
+				transition: "var(--transition)",
+				left: "0rem",
+			},
+			'.switch[value="true"] .circle': {
+				left: "1.5rem",
+			},
+		});
+
+		this.$circle = SAHYG.createElement("div", { class: "circle" });
+		this.$switch = SAHYG.createElement("div", { class: "switch", value: JSON.stringify(this.value) }, this.$circle);
+		this.shadowRoot.append(this.$switch);
+
+		this.on("click", this.clickHandler.bind(this));
+
+		this.loaded = true;
+	}
+	clickHandler(event) {
+		if (this.value) this.switchOff();
+		else this.switchOn();
+	}
+	switchOff() {
+		this.setAttribute("value", "false");
+		this.$switch.setAttribute("value", "false");
+		this.value = false;
+
+		this.dispatchInputEvent();
+	}
+	switchOn() {
+		this.setAttribute("value", "true");
+		this.$switch.setAttribute("value", "true");
+		this.value = true;
+
+		this.dispatchInputEvent();
+	}
+	dispatchInputEvent() {
+		let inputEvent = new Event("input"),
+			changeEvent = new Event("change");
+
+		this.dispatchEvent(inputEvent);
+		this.dispatchEvent(changeEvent);
+	}
+};
+SAHYG.Components.Menu = class Menu extends HTMLElement {
+	static get observedAttributes() {
+		return ["title", "content", "footer", "target", "position", "trigger"];
+	}
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (oldValue === newValue) return;
+		switch (name) {
+			case "title": {
+				this.setTitle(newValue);
+				break;
+			}
+			case "content": {
+				this.setContent(newValue);
+				break;
+			}
+			case "footer": {
+				this.setFooter(newValue);
+				break;
+			}
+			case "target": {
+				this.setTarget(newValue);
+				break;
+			}
+			case "position": {
+				this.setPosition(newValue);
+				break;
+			}
+			case "trigger": {
+				this.setTrigger(newValue);
+				break;
+			}
+		}
+	}
+	updateOptions() {
+		let title = this.getAttribute("title");
+		if (title) this.setTitle(title);
+
+		let content = this.getAttribute("content");
+		if (content) this.setContent(content);
+
+		let footer = this.getAttribute("footer");
+		if (footer) this.setFooter(footer);
+
+		let target = this.getAttribute("target");
+		if (target) this.setTarget(target);
+
+		let position = this.getAttribute("position");
+		if (position) this.setPosition(position);
+
+		let trigger = this.getAttribute("trigger");
+		if (trigger) this.setTrigger(trigger);
+	}
+	constructor() {
+		super();
+
+		this.updateOptions();
+		this.openShadow();
+
+		this.$closeButton = SAHYG.createElement("div", { class: "close" }, String.fromCharCode(0xf00d)).on("click", this.close.bind(this));
+		this.$title = SAHYG.createElement("div", { class: "title" }, this.title);
+		this.$header = SAHYG.createElement("div", { class: "header" }, this.$closeButton, this.$title);
+		this.$footer = SAHYG.createElement("div", { class: "footer" }, this.footer);
+		this.$content = SAHYG.createElement("div", { class: "content" }, this.content);
+		this.$body = SAHYG.createElement("div", { class: "body" }, this.$content, this.$footer);
+		this.$menu = SAHYG.createElement("div", { class: "menu" }, this.$header, this.$body);
+		this.$backdrop = SAHYG.createElement("sahyg-backdrop").on("click", this.close.bind(this)).on("click", this.close.bind(this));
+		this.$container = SAHYG.createElement("div", { class: "container over" }, this.$backdrop, this.$menu);
+	}
+	connectedCallback() {
+		this.shadowRoot.setStyle({
+			".container:not(.opened)": {
+				animation: "normal forwards var(--transition-duration) menu-slide-out-right",
+			},
+			":is(.container, .container.over):not(.opened)": {
+				width: "0",
+			},
+			":is(.container, .container.over):not(.opened) sahyg-backdrop": {
+				display: "none",
+			},
+			".container": {
+				display: "flex",
+				height: "calc(100vh - var(--header-height))",
+				flexDirection: "row-reverse",
+				animation: "normal forwards var(--transition-duration) menu-slide-in-right",
+				transition: "width var(--transition)",
+				"--menu-header-height": "4rem",
+				overflowX: "hidden",
+			},
+			".container.over": {
+				position: "absolute",
+				bottom: "0",
+				right: "0",
+				width: "100vw",
+				// backgroundColor: "var(--backdrop-color)",
+				zIndex: "100",
+				height: "100%",
+			},
+			".container.left": {
+				flexDirection: "row",
+			},
+			".menu": {
+				zIndex: "100",
+				backgroundColor: "var(--background-tertiary-color)",
+				resize: "horizontal",
+				overflow: "hidden",
+				direction: "rtl",
+				minWidth: "min(25rem, calc(100vw - var(--scrollbar-width)))",
+				height: "100%",
+			},
+			".container.left .menu": {
+				direction: "ltr",
+			},
+			".container .header": {
+				display: "flex",
+				width: "100%",
+				alignItems: "center",
+				direction: "ltr",
+				WebkitUserSelect: "none",
+				MozUserSelect: "none",
+				MsUserSelect: "none",
+				userSelect: "none",
+				height: "var(--menu-header-height)",
+			},
+			".container.left .header": {
+				direction: "rtl",
+			},
+			".container .close": {
+				fontFamily: "var(--font-icon-solid)",
+				fontSize: "2rem",
+				padding: "1rem",
+				cursor: "pointer",
+			},
+			".container .title": {
+				fontSize: "1.2rem",
+				flexGrow: "1",
+				padding: "0 1rem 0 0",
+				overflow: "hidden",
+				textOverflow: "ellipsis",
+				direction: "ltr",
+			},
+			".container.left .title": {
+				padding: "0 0 0 1rem",
+			},
+			".container .body": {
+				overflowY: "scroll",
+				direction: "ltr",
+				maxHeight: "calc(100% - var(--menu-header-height))",
+				minHeight: "calc(100% - var(--menu-header-height))",
+				width: "100%",
+			},
+			"@keyframes menu-slide-in-right": {
+				"0%": {
+					display: "flex",
+					right: "-100vw",
+				},
+				"100%": {
+					right: "0",
+				},
+			},
+			"@keyframes menu-slide-out-right": {
+				"0%": {
+					right: "0",
+				},
+				"100%": {
+					right: "-100vw",
+					pointerEvents: "none",
+					WebkitTouchCallout: "none",
+					WebkitUserSelect: "none",
+					MozUserSelect: "none",
+					MsUserSelect: "none",
+					userSelect: "none",
+				},
+			},
+		});
+		this.shadowRoot.append(this.$container);
+	}
+	open() {
+		if (!this.isConnected) this.mount();
+
+		this.$container.addClass("opened");
+		return this;
+	}
+	close() {
+		this.$container.removeClass("opened");
+		return this;
+	}
+	toggle() {
+		if (this.isOpened()) this.close();
+		else this.open();
+		return this;
+	}
+	isOpened() {
+		return this.$container.hasClass("opened");
+	}
+	mount() {
+		this.target?.append(this);
+		return this;
+	}
+	unmount() {
+		this.target?.removeChild(this);
+		return this;
+	}
+	setContent(content) {
+		this.content = content;
+
+		this.$content.clear();
+		if (content instanceof Array) this.$content.append(...content);
+		else this.$content.append(content);
+
+		return this;
+	}
+	setFooter(footer) {
+		this.footer = footer;
+
+		this.$footer.clear();
+		if (footer instanceof Array) this.$footer.append(...footer);
+		else this.$footer.append(footer);
+
+		return this;
+	}
+	setTitle(title) {
+		this.title = title;
+		this.$title.clear();
+		this.$title.append(title);
+		return this;
+	}
+	setTarget(target) {
+		if (typeof target === "string") this.target = SAHYG.$0(target);
+		else this.target = target || document.body;
+		return this;
+	}
+	setPosition(position) {
+		this.position = ["left", "right"].includes(position) ? position : "left";
+		this.$container.setAttribute("position", position);
+		return this;
+	}
+	setTrigger(trigger) {
+		if (typeof trigger === "string") this.trigger = SAHYG.$0(trigger);
+		else this.trigger = trigger;
+
+		this.offTrigger?.();
+		this.offTrigger = SAHYG.on("click", this.trigger, this.open.bind(this))?.off;
+		return this;
+	}
+};
+SAHYG.Components.TooltipTarget = class TooltipTarget extends HTMLElement {
+	connectedCallback() {
+		this.tippy = tippy(this, { content: this.getAttribute("content") });
+	}
+};
+SAHYG.Components.Collapsable = class Collapsable extends HTMLElement {
+	static get observedAttributes() {
+		return ["name", "description", "opened"];
+	}
+	attributeChangedCallback(name, oldValue, newValue) {
+		switch (name) {
+			case "name": {
+				this.name = newValue;
+				break;
+			}
+			case "description": {
+				this.description = newValue;
+				break;
+			}
+			case "opened": {
+				if (newValue === "true" || newValue === true) this.$(":scope > :not(.collapsable-header)").slideShow(200);
+				else this.$(":scope > :not(.collapsable-header)").slideHide(200);
+				break;
+			}
+		}
+	}
+	connectedCallback() {
+		if (!this.getAttribute("opened")) this.setAttribute("opened", "true");
+
+		this.name = this.getAttribute("name");
+		this.description = this.getAttribute("description");
+
+		this.$title = SAHYG.createElement("div", { class: "collapsable-name" }, this.name);
+		this.$description = SAHYG.createElement("div", { class: "collapsable-description" }, this.description);
+		this.$container = SAHYG.createElement("div", { class: "collapsable-header" }, this.$title, this.$description);
+
+		this.$container.on("click", this.toggle.bind(this));
+
+		this.prepend(this.$container);
+	}
+	collapse() {
+		this.setAttribute("opened", "false");
+	}
+	expand() {
+		this.setAttribute("opened", "true");
+	}
+	isOpened() {
+		let opened = this.getAttribute("opened");
+		return opened === "true" || opened === true;
+	}
+	toggle() {
+		if (this.isOpened()) this.collapse();
+		else this.expand();
+	}
+};
+
+axios.interceptors.response.use(SAHYG.Api.responseInterceptor, SAHYG.Api.errorInterceptor);
+
+Object.entries(SAHYG.Components).forEach(
+	([name, element]) =>
+		/[A-Z]/i.test(name) &&
+		customElements.define("sahyg-" + SAHYG.Utils.text.camelToKebab(name).toLowerCase(), element, {
+			extends: element.extends,
+		})
 );
+if (localStorage.getItem("cookie_consent") === "true" || location.pathname.includes("about")) SAHYG.createAkeeInstance();
 
 HTMLElement.prototype.on = function () {
 	SAHYG.onThis.call(this, ...arguments);
@@ -3078,7 +4382,7 @@ HTMLElement.prototype.slideShow = function (duration = 0) {
 	return this;
 };
 HTMLElement.prototype.slideToggle = function () {
-	if (this.style.display == "none") this.slideShow(...arguments);
+	if (this.style.display === "none") this.slideShow(...arguments);
 	else this.slideHide(...arguments);
 	return this;
 };
@@ -3091,7 +4395,7 @@ HTMLElement.prototype.hide = function () {
 	return this;
 };
 HTMLElement.prototype.toggle = function () {
-	if (this.style.display == "none") this.show(...arguments);
+	if (this.style.display === "none") this.show(...arguments);
 	else this.hide(...arguments);
 	return this;
 };
@@ -3145,8 +4449,159 @@ HTMLElement.prototype.setStyle = function (name, value) {
 	}
 	this.style[name] = value;
 };
-HTMLElement.prototype.openShadow = function () {
-	return this.attachShadow({ mode: "open" });
+HTMLElement.prototype.openShadow = function (options = []) {
+	if (!this.shadowRoot) {
+		this.attachShadow({ mode: "open" });
+		let style = [
+			{
+				"*": {
+					boxSizing: "border-box",
+					fontFamily: "var(--font-main)",
+				},
+				"::-webkit-scrollbar": {
+					height: "8px",
+					width: "8px",
+				},
+				"::-webkit-scrollbar-thumb": {
+					background: "rgba(26, 129, 250, 0.5)",
+					borderRadius: "5px",
+				},
+				"::-webkit-scrollbar-thumb:hover": {
+					background: "rgba(26, 129, 250, 0.7)",
+				},
+				"::selection": {
+					backgroundColor: "var(--text-selection-background)",
+					color: "var(--text-selection-text)",
+				},
+			},
+		];
+		if (options.includes("tippy"))
+			style.push({
+				'.tippy-box[data-animation="fade"][data-state="hidden"]': {
+					opacity: "0",
+				},
+				".tippy-box": {
+					position: "relative",
+					backgroundColor: "var(--tooltip-background-primary-color)",
+					borderRadius: "0.25rem",
+					fontSize: "14px",
+					lineHeight: "1.4",
+					whiteSpace: "normal",
+					outline: "0",
+					transitionProperty: "transform, visibility, opacity",
+					border: "1px solid var(--tooltip-border-color)",
+					minWidth: "min-content",
+					color: "var(--tooltip-text-color)",
+				},
+				'.tippy-box[data-placement^="top"] > .tippy-arrow': {
+					bottom: "0",
+				},
+				'.tippy-box[data-placement^="top"] > .tippy-arrow:before': {
+					bottom: "-8px",
+					left: "0",
+					borderWidth: "8px 8px 0",
+					borderTopColor: "initial",
+					transformOrigin: "center top",
+				},
+				'.tippy-box[data-placement^="bottom"] > .tippy-arrow': {
+					top: "0",
+				},
+				'.tippy-box[data-placement^="bottom"] > .tippy-arrow:before': {
+					top: "-8px",
+					left: "0",
+					borderWidth: "0 8px 8px",
+					borderBottomColor: "initial",
+					transformOrigin: "center bottom",
+				},
+				'.tippy-box[data-placement^="left"] > .tippy-arrow': {
+					right: "0",
+				},
+				'.tippy-box[data-placement^="left"] > .tippy-arrow:before': {
+					borderWidth: "8px 0 8px 8px",
+					borderLeftColor: "initial",
+					right: "-8px",
+					transformOrigin: "center left",
+				},
+				'.tippy-box[data-placement^="right"] > .tippy-arrow': {
+					left: "0",
+				},
+				'.tippy-box[data-placement^="right"] > .tippy-arrow:before': {
+					left: "-8px",
+					borderWidth: "8px 8px 8px 0",
+					borderRightColor: "initial",
+					transformOrigin: "center right",
+				},
+				'.tippy-box[data-inertia][data-state="visible"]': {
+					transitionTimingFunction: "cubic-bezier(0.54, 1.5, 0.38, 1.11)",
+				},
+				".tippy-arrow": {
+					width: "16px",
+					height: "16px",
+					color: "var(--tooltip-border-color)",
+					/* color: 'var(--tooltip-background-primary-color)', */
+				},
+				".tippy-arrow:before": {
+					content: '""',
+					position: "absolute",
+					borderColor: "transparent",
+					borderStyle: "solid",
+				},
+				".tippy-content": {
+					position: "relative",
+					padding: "5px 9px",
+					zIndex: "1",
+				},
+				".tippy-content .tooltip-menu": {
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "flex-start",
+					padding: "0.5rem 0",
+				},
+				".tippy-content .tooltip-menu .divider": {
+					margin: "0.25rem auto",
+				},
+				".tippy-content .tooltip-menu .item": {
+					padding: "0.3rem 1rem",
+					/* borderRadius: '0.3rem', */
+				},
+				".tippy-content .tooltip-menu .item:hover": {
+					backgroundColor: "var(--tooltip-background-secondary-color)",
+				},
+				".tippy-content .tooltip-menu .item": {
+					display: "flex",
+					flexDirection: "row",
+					gap: "0.5rem",
+					alignItems: "center",
+					cursor: "pointer",
+					width: "100%",
+					flex: "1",
+				},
+				".tippy-content .tooltip-menu .item .icon": {
+					fontSize: "1.2rem",
+				},
+				".tippy-content .tooltip-menu .item .text": {
+					marginRight: "auto",
+				},
+			});
+		if (options.includes("link") || options.includes("url"))
+			style.push({
+				':is([target="_blank"], [href*="mailto:"]):before': {
+					content: '"\\f35d"',
+					fontFamily: "Line Awesome Free Solid",
+					marginRight: "0.2rem",
+				},
+				"a:hover": {
+					color: "var(--color-text-hover)",
+				},
+				a: {
+					textDecoration: "none",
+					color: "var(--link-color)",
+					cursor: "pointer",
+				},
+			});
+		this.shadowRoot.setStyle(style);
+	}
+	return this.shadowRoot;
 };
 HTMLElement.prototype.setContent = function () {
 	this.clear();
@@ -3166,10 +4621,11 @@ HTMLElement.prototype.text = function () {
 HTMLElement.prototype.$ = HTMLElement.prototype.querySelectorAll;
 HTMLElement.prototype.$0 = HTMLElement.prototype.querySelector;
 HTMLElement.prototype.waitLoaded = function (selector, options = {}) {
-	return new Promise((resolve) =>
+	return new Promise((resolve) => {
+		if (this.$0(selector)) resolve(this.$0(selector));
 		new MutationObserver((mutations, observer) => {
 			for (let mutation of mutations) {
-				if (mutation.type == "childList" && mutation.addedNodes) {
+				if (mutation.type === "childList" && mutation.addedNodes) {
 					let target = this.$0(selector);
 					if (target) {
 						observer.disconnect();
@@ -3182,8 +4638,8 @@ HTMLElement.prototype.waitLoaded = function (selector, options = {}) {
 			childList: true,
 			attributes: false,
 			...options,
-		})
-	);
+		});
+	});
 };
 HTMLElement.prototype.querySelectorAll = ((querySelectorAll) =>
 	function () {
@@ -3191,7 +4647,7 @@ HTMLElement.prototype.querySelectorAll = ((querySelectorAll) =>
 	})(HTMLElement.prototype.querySelectorAll);
 HTMLElement.prototype.contains = ((contains) =>
 	function () {
-		if (typeof arguments[0] == "string")
+		if (typeof arguments[0] === "string")
 			return SAHYG.$(arguments[0]).every((elem) => {
 				arguments[0] = elem;
 				return contains.call(this, ...arguments);
@@ -3203,6 +4659,12 @@ HTMLElement.prototype.setAttribute = ((setAttribute) =>
 		setAttribute.call(this, ...arguments);
 		return this;
 	})(HTMLElement.prototype.setAttribute);
+HTMLElement.prototype.getAttribute = ((getAttribute) =>
+	function () {
+		let attrVal = getAttribute.call(this, ...arguments);
+		if (attrVal === "") return true;
+		else return attrVal;
+	})(HTMLElement.prototype.getAttribute);
 HTMLElement.prototype.append = ((append) =>
 	function () {
 		args = [...arguments].filter((arg) => arg != undefined && arg != null && arg != NaN);
@@ -3217,14 +4679,15 @@ Object.defineProperty(HTMLElement.prototype, "children", {
 });
 
 ShadowRoot.prototype.setStyle = function (style) {
-	if (typeof style == "string") {
-		this.append(SAHYG.createElement("style", {}, style));
-		return this;
-	} else if (style instanceof Array) {
-		style.forEach((css) => this.setStyle(css));
-	} else {
-		this.append(SAHYG.createElement("style", {}, SAHYG.Utils.style.objectToString(style)));
-	}
+	if (typeof style === "string") {
+		let $style = SAHYG.createElement("style", {}, style);
+		this.append($style);
+		return $style;
+	} else if (style instanceof Array) return style.map((css) => this.setStyle(css));
+
+	let $style = SAHYG.createElement("style", {}, SAHYG.Utils.style.objectToString(style));
+	this.append($style);
+	return $style;
 };
 ShadowRoot.prototype.append = ((append) =>
 	function () {
@@ -3309,54 +4772,58 @@ NodeList.prototype.text = function () {
 NodeList.prototype.last = function () {
 	return this[this.length - 1];
 };
+NodeList.prototype.slideHide = function () {
+	this.forEach((elem) => elem.slideHide(...arguments));
+	return this;
+};
+NodeList.prototype.slideShow = function () {
+	this.forEach((elem) => elem.slideShow(...arguments));
+	return this;
+};
 
 SAHYG.onload(async function () {
 	(bind = (obj) => {
 		Object.entries(obj).forEach(([k, v]) => {
 			if (v.toString?.().startsWith("class")) obj[k] = v;
-			else if (typeof v == "function") obj[k] = v; // v.bind(obj) (to replace this with current parent object);
-			else if (!(v instanceof Array) && typeof v == "object") bind(obj[k]);
+			else if (typeof v === "function") obj[k] = v; // v.bind(obj) (to replace this with current parent object);
+			else if (!(v instanceof Array) && typeof v === "object") bind(obj[k]);
 			else if (k.startsWith("$")) obj[k] = SAHYG.$0(v);
 		});
 	}),
-		(bind(SAHYG.Utils), bind(SAHYG.Components));
+		bind(SAHYG.Utils);
 
 	if (SAHYG.Utils.url.getAnchor()) SAHYG.Utils.scroll.to(SAHYG.Utils.url.getAnchor());
 
-	if (!SAHYG.$0("html").getAttribute("theme"))
-		SAHYG.$0("html").setAttribute("theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-	SAHYG.Utils.cookie.set("locale", SAHYG.$0("html").getAttribute("lang"));
-	SAHYG.Utils.cookie.set("theme", SAHYG.$0("html").getAttribute("theme"));
+	if (!document.documentElement.getAttribute("theme"))
+		document.documentElement.setAttribute("theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+	SAHYG.Utils.cookie.set("locale", document.documentElement.getAttribute("lang"));
+	SAHYG.Utils.cookie.set("theme", document.documentElement.getAttribute("theme"));
 
 	// remove useless tippy stylesheet
 	SAHYG.$0("[data-tippy-stylesheet]").remove();
 
-	//close header  expandable menu
-	SAHYG.$("header-menu .expandable .menu").forEach((elem) => (elem.style.display = "none"));
-
 	//Cookies consent
 	if (!localStorage.getItem("cookie_consent") && location.pathname != "/about") SAHYG.Utils.cookie.consentPopup();
 
-	SAHYG.eventsList =
-		"input blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error";
-	SAHYG.Events = Object.fromEntries(SAHYG.eventsList.split(" ").map((e) => [e, []]));
-
 	// ANCHOR Add redirect to /login links
-	SAHYG.dynamicOn("click", 'a[href="/login"]', function (event) {
+	SAHYG.dynamicOn("click", 'a[href="/login"], ::shadow a[href="/login"]', function (event) {
 		event.preventDefault();
 		if (!/login/.test(document.location.href)) document.location.href = "/login?redirect=" + document.location.pathname;
 		else document.location.href = "/login";
 	});
-	SAHYG.dynamicOn("click", ".return-top", SAHYG.Utils.scroll.top);
-	SAHYG.dynamicOn("click", "[data-viewer]", (e) =>
-		e.target.getAttribute("src") ? new SAHYG.Components.popup.Viewer({ img: e.target.src }).show() : null
+	SAHYG.dynamicOn("click", ".return-top, ::shadow .return-top", SAHYG.Utils.scroll.top);
+	SAHYG.dynamicOn(
+		"click",
+		"[data-viewer], ::shadow [data-viewer]",
+		(e) => e.target.src && SAHYG.createElement("sahyg-viewer", { src: e.target.src }).show()
 	);
-	SAHYG.dynamicOn("click", 'a[href^="#"]:not([href="#"])', (event) => {
+	SAHYG.dynamicOn("click", 'a[href^="#"]:not([href="#"]), ::shadow a[href^="#"]:not([href="#"])', (event) => {
 		event.preventDefault();
 		SAHYG.Utils.scroll.to(event.target.getAttribute("href").substring(1));
 	});
 	// Show / hide menu
-	SAHYG.on("click", "menu-icon icon", SAHYG.Components.headerMenu.toggle);
+	SAHYG.on("click", "menu-icon icon", SAHYG.Utils.headerMenu.toggle);
 	// change language when locale flag was clicked
 	SAHYG.on("click", "header-menu .commands .locale dropdown > *", function () {
 		SAHYG.Utils.settings.locale.set(this.id);
@@ -3371,73 +4838,93 @@ SAHYG.onload(async function () {
 	);
 	// ANCHOR Open / close menu
 	SAHYG.on("click", "header-menu", function (e) {
-		if (e.target.isSameNode(SAHYG.$0("header-menu"))) SAHYG.Components.headerMenu.close();
+		if (e.target.isSameNode(SAHYG.$0("header-menu"))) SAHYG.Utils.headerMenu.close();
 	});
 	// ANCHOR Account logout
 	SAHYG.on("click", "header .account .menu .logout", SAHYG.Utils.user.logout);
 	// ANCHOR Account menu
-	SAHYG.on("click", "header .account", SAHYG.Components.headerAccount.toggle);
+	SAHYG.on("click", "header .account", SAHYG.Utils.headerAccount.toggle);
 	// ANCHOR Easter egg: heart
-	SAHYG.on("click", "heart", async () => SAHYG.Components.toast.Toast.success({ message: await SAHYG.translate("MADE_WITH_HEART") }).show());
-	// ANCHOR Close account menu
-	SAHYG.on("click", "html", SAHYG.Components.headerAccount.outsideClose);
-
-	SAHYG.on("mouseover", "header-menu .expandable", (e) =>
-		window.innerWidth > 1024 ? e.target.addClass("expanded").querySelector(".menu")?.show(0) : null
+	SAHYG.on("click", "heart", async () =>
+		SAHYG.createElement("sahyg-toast", {
+			content: await SAHYG.translate("MADE_WITH_HEART"),
+		}).show()
 	);
+	// ANCHOR Close account menu
+	SAHYG.on("click", "html", SAHYG.Utils.headerAccount.outsideClose);
 
-	SAHYG.dynamicOn("mouseover", "[data-tooltip]", function () {
-		if (!this._tippy)
-			tippy(this, {
-				appendTo: SAHYG.Components.tooltip.$container[0],
-				content: this.getAttribute("data-tooltip"),
-			});
+	// SAHYG.on("mouseover", "header-menu .expandable", (e) =>
+	// 	window.innerWidth > 1024 ? e.target.addClass("expanded").querySelector(".menu")?.show(0) : null
+	// );
+
+	SAHYG.on("mouseover", "header-menu .menus .expandable", function (e) {
+		if (SAHYG.headerMenuTippy) {
+			window.innerWidth > 1024 && SAHYG.headerMenuTippy.enable();
+			return;
+		}
+
+		let target = e.target.closest(".expandable");
+		let parent = target.closest(".menus");
+		SAHYG.headerMenuTippy = tippy.createSingleton(
+			parent.children.map((child) =>
+				tippy(child, {
+					delay: 0,
+					content: child.$0(".menu").cloneNode(true),
+					appendTo: child,
+					allowHTML: true,
+				})
+			),
+			{
+				// moveTransition: "transform 0.2s ease-in-out",
+				appendTo: parent,
+				interactive: true,
+				delay: 0,
+				onTrigger: (instance) => window.innerWidth < 1024 && instance.disable(),
+			}
+		);
 	});
+
 	/**
 	 * Display a popup with information about the user when the mouse hovers over the link to the user's profile.
 	 */
-	SAHYG.dynamicOn("mouseover", 'a[href*="/user/"]', function () {
-		if (this.getAttribute("data-no-tooltip")) return;
+	SAHYG.dynamicOn("mouseover", 'a[href*="/user/"], ::shadow a[href*="/user/"]', function () {
+		if (this.getAttribute("no-tooltip")) return;
 		if (!this._tippy)
 			tippy(this, {
 				delay: [500, 0],
-				appendTo: document.querySelector("tooltips"),
 				allowHTML: true,
 				content: SAHYG.createElement("sahyg-loader"),
 				onMount: async function (instance, event) {
 					let username = this.getAttribute("href")?.match(/(?<=\/user\/)[a-z0-9_]{3,10}/)?.[0];
 					if (SAHYG.Cache.users[username]) {
-						instance.setContent(SAHYG.Components.tooltip.userTooltip(SAHYG.Cache.users[username]));
+						instance.setContent(
+							SAHYG.createElement("sahyg-user-tooltip", {
+								username,
+								avatar: SAHYG.Cache.users[username].avatarUrl,
+								group: SAHYG.Cache.users[username].group?.name,
+								certified: SAHYG.Cache.users[username].certified,
+							})
+						);
 					} else {
-						let data = await SAHYG.Api.get("/resources/user/" + username);
+						let data = (await SAHYG.Api.get("/resources/user/" + username))?.content;
 						let element;
 						if (!data) element = await SAHYG.translate("UNKNOWN_USER");
 						else {
 							SAHYG.Cache.users[username] = data;
-							element = SAHYG.Components.tooltip.userTooltip(data);
+							element = SAHYG.createElement("sahyg-user-tooltip", {
+								username,
+								avatar: data.avatarUrl,
+								group: data.group?.name,
+								certified: data.certified,
+							});
 						}
 						instance.setContent(element);
 					}
 				}.bind(this),
 			});
 	});
-
-	// Bind all event
-	$(window).bind(Object.keys(SAHYG.Events).join(" "), async function (event, ...datas) {
-		for (eventInformations of SAHYG.Events[event.type]) {
-			if (event.target instanceof window.constructor && eventInformations.element instanceof window.constructor) {
-				let result = await eventInformations.callback.call(window, event, ...datas);
-				// console.log({ eventType: event.type, result: result, target: eventInformations.element });
-				if (result != true) return false;
-			} else {
-				let target = $(event.target).closest(eventInformations.element);
-				if (target.length) {
-					let result = await eventInformations.callback.call(target[0], event, ...datas);
-					// console.log({ eventType: event.type, result: result, target: eventInformations.element });
-					if (result != true) return false;
-				}
-			}
-		}
-		return;
+	SAHYG.dynamicOn("mouseover", "[tooltip], ::shadow [tooltip]", function ({ target }) {
+		if (target._tippy) target._tippy.setContent(target.getAttribute("tooltip"));
+		else tippy(target, { content: target.getAttribute("tooltip"), aria: { expanded: true } });
 	});
 });

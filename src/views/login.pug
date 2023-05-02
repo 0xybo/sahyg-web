@@ -13,13 +13,23 @@ block BODY
 	div.title !{i18n('LOGIN')}
 	form(action="/login" method="post") 
 		label(for="login") !{i18n("IDENTIFIER")}
-		div.ta.ta-login
-			input#login(type="text" name="login" placeholder=i18n("IDENTIFIER") autofocus autocomplete="username" )
+		sahyg-textarea#login(
+			options={spellcheck:"false", autocorrect:"off", autocapitalize:"off", autofocus: true, autocomplete:"username"}, 
+			rounded=true, 
+			outline=true, 
+			icon= String.fromCharCode(0xf007),
+			placeholder=i18n("IDENTIFIER")
+		)
 		label(for="password") !{i18n("PASSWORD")}
-		div.ta.ta-password
-			input#password(type="password" name="password" placeholder=i18n("PASSWORD") spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="current-password")
-			sahyg-button.show(status="off")
-		sahyg-button.full.submit !{i18n("SUBMIT")}
+		sahyg-textarea#password(
+			options={spellcheck:"false", autocorrect:"off", autocapitalize:"off", autocomplete:"current-password"}, 
+			rounded=true, 
+			outline=true, 
+			type="password"
+			icon= String.fromCharCode(0xf084),
+			placeholder=i18n("PASSWORD")
+		)
+		sahyg-button.submit(full-color=true, full-width=true, content=i18n("SUBMIT"))
 		input(type="submit")
 	div.links
 		a.forget-password(href="/reset_password") !{i18n("FORGET_PASSWORD")}

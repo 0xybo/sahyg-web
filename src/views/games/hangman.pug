@@ -1,5 +1,4 @@
 extends ../main.pug
-include ../components/navigation.pug
 
 append HEAD
 	+meta(i18n("HANGMAN"), i18n("HANGMAN_DESCRIPTION"))
@@ -11,7 +10,7 @@ append HEAD
 	title !{i18n("HANGMAN")} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_pageTitle("i18n:HANGMAN")
+	sahyg-page-title !{i18n("HANGMAN")}
 	flex-container
 		div#hangman
 			svg(xmlns='http://www.w3.org/2000/svg' viewbox='0 0 103.1764 169.4348')
@@ -35,8 +34,8 @@ block BODY
 		div#word
 			div.hidden-word
 			div.commands
-				btn.btn-full#new-game !{i18n("NEW_GAME")}
-				btn.btn-full#abandon !{i18n("ABANDON")}
+				sahyg-button#new-game(full-color, full-width, content=i18n("NEW_GAME"))
+				sahyg-button#abandon(full-color, full-width, content=i18n("ABANDON"))
 		div#keyboard
 			each i in ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 				div.letter(letter=i) !{i.toUpperCase()}

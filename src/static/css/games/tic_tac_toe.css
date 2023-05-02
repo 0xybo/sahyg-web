@@ -17,6 +17,7 @@ app {
 	flex-direction: row;
 	justify-content: center;
 	gap: 3rem;
+	flex-wrap: wrap;
 }
 app[status="pending"]:before {
 	content: attr("data-pending-text");
@@ -24,12 +25,16 @@ app[status="pending"]:before {
 app .grid {
 	display: -ms-grid;
 	display: grid;
-	width: 30rem;
-	height: 30rem;
-	-ms-grid-columns: repeat(3, 10rem);
+	/* width: 30rem; */
+	/* height: 30rem; */
+	/* -ms-grid-columns: repeat(3, 10rem);
 	grid-template-columns: repeat(3, 10rem);
 	-ms-grid-rows: repeat(3, 10rem);
-	grid-template-rows: repeat(3, 10rem);
+	grid-template-rows: repeat(3, 10rem); */
+	width: min(100%, 30rem);
+	aspect-ratio: 1/1;
+	grid-template-columns: repeat(3, calc(min(100%, 30rem) / 3));
+	grid-template-rows: repeat(3, calc(min(100%, 30rem) / 3));
 }
 app .grid .cell {
 	border-left: 1px solid var(--divider-color);
@@ -86,11 +91,11 @@ app .interactive-panel .commands .buttons-container {
 	gap: 1rem;
 	display: flex;
 	flex-direction: column;
-	max-width: 18rem;
+	/* max-width: 18rem; */
 	width: 100%;
 }
-app .interactive-panel .commands btn {
-	max-width: 18rem;
+app .interactive-panel .commands sahyg-button {
+	/* max-width: 18rem; */
 }
 app .interactive-panel .commands .buttons-container > div {
 	display: flex;
@@ -131,10 +136,10 @@ app .interactive-panel > div {
 	gap: 1rem;
 	flex-direction: column;
 }
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1100px) {
 	app {
-		flex-direction: column;
-		align-items: center;
+		/* flex-direction: column; */
+		/* align-items: center; */
 	}
 	app .interactive-panel {
 		width: 100%;
@@ -148,12 +153,12 @@ app .interactive-panel > div {
 }
 @media screen and (max-width: 34rem) {
 	app .grid {
-		width: calc(100vw - 64px);
-		height: calc(100vw - 64px);
-		-ms-grid-columns: repeat(3, calc((100vw - 64px) / 3));
-		grid-template-columns: repeat(3, calc((100vw - 64px) / 3));
-		-ms-grid-rows: repeat(3, calc((100vw - 64px) / 3));
-		grid-template-rows: repeat(3, calc((100vw - 64px) / 3));
+		width: calc(100vw - 100px);
+		height: calc(100vw - 100px);
+		-ms-grid-columns: repeat(3, calc((100vw - 100px) / 3));
+		grid-template-columns: repeat(3, calc((100vw - 100px) / 3));
+		-ms-grid-rows: repeat(3, calc((100vw - 100px) / 3));
+		grid-template-rows: repeat(3, calc((100vw - 100px) / 3));
 	}
 	app .grid .cell:before {
 		font-size: calc((100vw - 64px) / 3);
@@ -163,7 +168,7 @@ app .interactive-panel > div {
 	overflow-x: scroll;
 	display: flex;
 	flex-direction: column;
-	max-width: 40rem;
+	max-width: 50rem;
 	align-self: center;
 	width: 100%;
 }
@@ -336,7 +341,12 @@ sahyg-tictactoe-history-row .cell.moves .grid[data-move="8"] .cell:before {
 sahyg-tictactoe-history-row .cell.moves .commands {
 	display: flex;
 	column-gap: 0.75rem;
+	margin-top: 0.5rem;
 }
 sahyg-tictactoe-history-row .cell.moves .commands btn {
 	padding: 0;
+	display: flex;
+	cursor: pointer;
+	gap: 0.25rem;
+	align-items: center;
 }

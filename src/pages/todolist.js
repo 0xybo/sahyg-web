@@ -69,6 +69,8 @@ class TodoList extends Page {
 		if (!target) return;
 
 		let name = req.body.name;
+		if (!name) return res.WebResponse.error("MISSING_PARAMETER");
+
 		if (name.length > this.maxListNameLength) return res.WebResponse.error("NAME_TOO_LONG");
 		if (name.length < this.minListNameLength) return res.WebResponse.error("NAME_TOO_SHORT");
 

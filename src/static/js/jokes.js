@@ -6,10 +6,10 @@ SAHYG.Classes.Jokes = class Jokes {
 
 	constructor(jokes) {
 		this.jokes = jokes;
-		this.$container.querySelector("app-content[data-horizontal-tabs-id=about] .total").textContent = this.jokes.length;
+		this.$container.querySelector('app-content[sahyg-tab="about"] .total').textContent = this.jokes.length;
 		this.$container.addClass("visible");
 
-		SAHYG.on("click", "app-content[data-horizontal-tabs-id=random] btn.new-joke", this.random.bind(this));
+		SAHYG.on("click", 'app-content[sahyg-tab="random"] .new-joke', this.random.bind(this));
 
 		this.random();
 	}
@@ -22,7 +22,7 @@ SAHYG.Classes.Jokes = class Jokes {
 
 	random() {
 		this.timeout.forEach(clearTimeout);
-		let container = this.$container.querySelector('app-content[data-horizontal-tabs-id="random"] .joke');
+		let container = this.$container.querySelector('app-content[sahyg-tab="random"] .joke');
 		container.children.remove();
 		let joke = this.jokes[Math.floor(Math.random() * this.jokes.length)];
 
@@ -32,15 +32,12 @@ SAHYG.Classes.Jokes = class Jokes {
 				setTimeout(
 					async () =>
 						container.append(
-							SAHYG.createElement(
-								"btn",
-								{
-									class: "btn btn-underline",
-								},
-								await SAHYG.translate("I_DONT_KNOW")
-							).on("click", (e) => {
-								if (e.target.hasClass("disabled")) return;
-								e.target.addClass("disabled");
+							SAHYG.createElement("sahyg-button", {
+								underline: true,
+								content: await SAHYG.translate("I_DONT_KNOW"),
+							}).on("click", (e) => {
+								if (e.target.hasAttribute("disabled")) return;
+								e.target.setAttribute("disabled", true);
 								container.append(SAHYG.createElement("span", {}, joke.answer));
 							})
 						),
@@ -62,8 +59,8 @@ SAHYG.Classes.Jokes = class Jokes {
 };
 
 SAHYG.onload(async () => {
-	let loader = SAHYG.Components.loader.center(true);
-	let jokes = await SAHYG.Api.post("/jokes").catch(console.error);
+	let loader = SAHYG.Components.Loader.center();
+	let jokes = (await SAHYG.Api.post("/jokes").catch(console.error))?.content;
 	loader.remove();
 	if (!jokes || jokes.length == 0)
 		SAHYG.$0(".loading").innerHTML = SAHYG.createElement("span", {}, "⚠️ " + (await SAHYG.translate("NO_JOKES"))).outerHTML;

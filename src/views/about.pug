@@ -1,5 +1,4 @@
 extends main.pug
-include components/navigation.pug
 
 mixin renderLine(line)
 	- let str = typeof line == "string"
@@ -39,7 +38,6 @@ mixin renderSection(element)
 	- name = conditionalI18n(element.name)
 	div.section
 		span.title(id=element.id) !{name}
-			span(class="lafs return-top" data-tooltip=i18n("RETURN_TOP")) &#xf0aa;
 		div.content
 			each line in element.content 
 				+renderLine(line)
@@ -53,7 +51,9 @@ append HEAD
 	title !{i18n("ABOUT")} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_pageTitle(i18n("ABOUT"))
+	sahyg-page-title !{i18n("ABOUT")}
+	span(class="lafs return-top") 
+		sahyg-tooltip-target(content=i18n("RETURN_TOP")) &#xf0aa;
 	each element in content 
 		if element.type == "section"
 			+renderSection(element)

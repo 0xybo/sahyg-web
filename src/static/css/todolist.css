@@ -112,9 +112,6 @@ container .menu .add {
 	margin-right: 1rem;
 	margin-bottom: 1rem;
 }
-container .menu .add:hover {
-	background-color: var(--accent-color);
-}
 
 container .tasks {
 	display: flex;
@@ -432,71 +429,4 @@ container .panel .body {
 		opacity: 0;
 		transform: translate(-100%);
 	}
-}
-
-container menu .container {
-	display: flex;
-	gap: 1rem;
-	flex-direction: column;
-	padding: 0 0.5rem 1rem 0.5rem;
-	height: 100%;
-}
-container menu .card {
-	background-color: var(--background-secondary-color);
-	border-radius: 0.25rem;
-	padding: 0.5rem;
-	display: flex;
-	flex-direction: column;
-}
-container menu .card-title {
-	font-weight: bold;
-	font-size: 1.1rem;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	margin-bottom: 0.5rem;
-}
-container menu .text-and-subtasks sahyg-textarea {
-	margin-left: 0.5rem;
-}
-container menu .complete:before,
-container menu .subtask-complete:before {
-	content: "\f111";
-	font-family: var(--font-icon-solid);
-	font-size: 1.5rem;
-	cursor: pointer;
-}
-container menu .complete.completed:before,
-container menu .subtask-complete.completed:before {
-	content: "\f058";
-}
-container menu .text {
-	display: flex;
-	align-items: center;
-}
-container menu .subtasks {
-	padding-left: 2rem;
-}
-container menu .subtask-text {
-	display: flex;
-	align-items: center;
-}
-container menu .add-subtask {
-	display: flex;
-	align-items: center;
-}
-container menu .add-subtask-icon {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	cursor: pointer;
-}
-container menu .subtask-delete {
-	font-size: 1.2rem;
-}
-container menu .subtask-delete:hover {
-	color: var(--danger-color);
-	transition: var(--transition);
 }

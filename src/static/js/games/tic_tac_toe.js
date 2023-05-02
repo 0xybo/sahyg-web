@@ -1,13 +1,13 @@
 SAHYG.Classes.TicTacToe = class TicTacToe {
 	constructor(element) {
-		this.appElement = element;
+		this.$appElement = element;
 		this.$gridElement = element.$0(".grid");
-		this.currentPlayerElement = element.$0(".interactive-panel .current");
+		this.$currentPlayerElement = element.$0(".interactive-panel .current");
 		this.$newGameButton = element.$0("#new-game");
 		this.$editOpponentButton = element.$0("#edit-opponent");
 		this.$changeOpponentSelect = element.$0("#change-opponent");
 		this.$firstPlayerSelect = element.$0("#first-player");
-		this.historyBodyElement = SAHYG.$0(".history .body");
+		this.$historyBodyElement = SAHYG.$0(".history .body");
 		this.games = [];
 		this.onPlay = false;
 
@@ -26,7 +26,7 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 					let history = JSON.parse(localStorage.tic_tac_toe_history);
 					if (history instanceof Array) history.forEach(this.addHistoryEntry.bind(this));
 				} catch (e) {
-					SAHYG.Components.toast.Toast.warning({ message: await SAHYG.translate("HISTORY_IMPORTATION_ERROR") }).show();
+					SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("HISTORY_IMPORTATION_ERROR"), type: "error" }).show();
 				}
 			}
 		}
@@ -60,7 +60,7 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 
 		this.$editOpponentButton.removeClass("disabled");
 
-		this.appElement.getAttribute("status", "playing");
+		this.$appElement.setAttribute("status", "playing");
 		this.onPlay = true;
 
 		if (this.firstPlayer == "0") this.currentPlayer = 0;
@@ -69,8 +69,10 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 		if (this.opponent == "computer" && this.currentPlayer == 1) this.compute();
 	}
 	clickCell(cell, event) {
+		console.log(this.onPlay, event.target.getAttribute("data-player"));
 		if (!this.onPlay) return;
-		if (!event.target.getAttribute("data-player")) {
+		let player = event.target.getAttribute("data-player");
+		if (player === true || !player) {
 			this.place(cell);
 		}
 		if (this.$gridElement.$(`[data-player="0"], [data-player="1"]`)) {
@@ -80,10 +82,10 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 	async reset() {
 		this.onPlay = false;
 		this.initGame();
-		SAHYG.Components.toast.Toast.info({ message: await SAHYG.translate("NEW_GAME_STARTED") }).show();
+		SAHYG.createElement("sahyg-toast", { content: await SAHYG.translate("NEW_GAME_STARTED") }).show();
 	}
 	updateInformations() {
-		this.currentPlayerElement.innerText = this.currentPlayer == 0 ? this.player0 : this.player1;
+		this.$currentPlayerElement.innerText = this.currentPlayer == 0 ? this.player0 : this.player1;
 	}
 	async checkWin() {
 		let player;
@@ -92,27 +94,26 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 
 		if (player == undefined) {
 			if (this.$gridElement.$(`[data-player="0"], [data-player="1"]`)?.length == 9) {
-				new SAHYG.Components.popup.Popup()
-					.title(await SAHYG.translate("INFORMATION"))
-					.content(await SAHYG.translate("GAME_DRAW", { player: player }))
-					.button("reset", {
-						callback: (popup, event) => {
-							popup.close();
+				SAHYG.createElement("sahyg-dialog", {
+					title: await SAHYG.translate("INFORMATION"),
+					content: await SAHYG.translate("GAME_DRAW", { player: player }),
+				})
+					.addButton({
+						callback: () => {
+							this.$appElement.setAttribute("status", "stoped");
+							this.onPlay = false;
+						},
+						text: await SAHYG.translate("OK"),
+						options: { fullColor: true },
+					})
+					.addButton({
+						callback: () => {
 							this.reset();
 						},
 						text: await SAHYG.translate("PLAY_AGAIN"),
 					})
-					.button("ok", {
-						callback: (popup, event) => {
-							popup.close();
-							this.appElement.setAttribute("status", "stoped");
-							this.onPlay = false;
-						},
-						text: await SAHYG.translate("OK"),
-						style: "fullColor",
-					})
-					.closed((popup, event) => {
-						this.appElement.setAttribute("status", "stoped");
+					.on("closed", () => {
+						this.$appElement.setAttribute("status", "stoped");
 						this.onPlay = false;
 					})
 					.show();
@@ -120,33 +121,32 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 			} else return false;
 		} else {
 			this.winner = player;
-			this.appElement.setAttribute("status", "pending");
-			new SAHYG.Components.popup.Popup()
-				.title(await SAHYG.translate("INFORMATION"))
-				.content(await SAHYG.translate("PLAYER_WIN", { player: player }))
-				.button("reset", {
-					callback: async (popup, event) => {
-						await popup.close();
+			this.$appElement.setAttribute("status", "pending");
+			SAHYG.createElement("sahyg-dialog", {
+				title: await SAHYG.translate("INFORMATION"),
+				content: await SAHYG.translate("PLAYER_WIN", { player: player }),
+			})
+				.addButton({
+					callback: () => {
+						this.$appElement.setAttribute("status", "stoped");
+						this.onPlay = false;
+					},
+					text: await SAHYG.translate("OK"),
+					options: { fullColor: true },
+				})
+				.addButton({
+					callback: async () => {
 						this.reset();
 					},
 					text: await SAHYG.translate("PLAY_AGAIN"),
 				})
-				.button("ok", {
-					callback: (popup, event) => {
-						popup.close();
-						this.appElement.setAttribute("status", "stoped");
-						this.onPlay = false;
-					},
-					text: await SAHYG.translate("OK"),
-					style: "fullColor",
-				})
-				.closed((popup, event) => {
-					this.appElement.setAttribute("status", "stoped");
+				.on("closed", () => {
+					this.$appElement.setAttribute("status", "stoped");
 					this.onPlay = false;
 				})
 				.show();
 		}
-		if (SAHYG.$0("html").getAttribute("connected") == "") this.saveParty();
+		if (document.documentElement.getAttribute("connected") == "") this.saveParty();
 		else {
 			let history;
 			try {
@@ -183,8 +183,8 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 			winner,
 		});
 
-		if (!this.historyBodyElement.children) this.historyBodyElement.append(row);
-		else this.historyBodyElement.prepend(row);
+		if (!this.$historyBodyElement.children) this.$historyBodyElement.append(row);
+		else this.$historyBodyElement.prepend(row);
 	}
 	checkGrid(player) {
 		return (
@@ -199,17 +199,20 @@ SAHYG.Classes.TicTacToe = class TicTacToe {
 		);
 	}
 	async editOpponent() {
-		SAHYG.Components.popup.Popup.input(await SAHYG.translate("EDIT_OPPONENT"), [
-			{
-				name: "name",
-				label: `${await SAHYG.translate("NAME")} (${await SAHYG.translate("MAX_LETTERS", { max: 15 })})`,
-				placeholder: await SAHYG.translate("NAME"),
-				type: "text",
-				defaultValue: this.player1,
-			},
-		]).then((data) => {
-			if (data) this.player1 = data.name?.substring(0, 15);
-		});
+		let data = await SAHYG.createElement("sahyg-input-dialog", {
+			inputs: [
+				{
+					id: "name",
+					title: `${await SAHYG.translate("NAME")} (${await SAHYG.translate("MAX_LETTERS", { max: 15 })})`,
+					options: { placeholder: await SAHYG.translate("NAME"), clearIcon: true, borderBottom: true },
+					type: "text",
+					defaultValue: this.player1,
+				},
+			],
+		})
+			.show()
+			.toPromise();
+		if (data) this.player1 = data.name?.substring(0, 15);
 	}
 	async saveParty() {
 		SAHYG.Api.post("/tic_tac_toe", {

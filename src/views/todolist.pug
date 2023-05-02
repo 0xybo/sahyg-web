@@ -1,5 +1,4 @@
 extends main.pug 
-include components/navigation.pug
 
 append CONSTANTS
 	meta(name="sahyg-todolist-max-lists-per-user" content=maxListsPerUser type="number")
@@ -34,7 +33,7 @@ append BODY
 						span.text !{i18n("ALL_TASKS")}
 						span.count 0/0
 					div.divider
-				btn.btn-rounded.add !{i18n("ADD")}
+				sahyg-button.add(content=i18n("ADD") rounded full-width)
 		div.tasks
 			div.header
 				div.title

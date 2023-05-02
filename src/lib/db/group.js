@@ -4,7 +4,10 @@ function applyFunctions(model) {
 			model._permissions ||
 			(model._permissions =
 				((_ = async (model) => {
-					return [...Array.from(model.permissions), ...(model.parent ? await _(await this.Group({ _id: model.parent }, true)) : [])];
+					return [
+						...Array.from(model.permissions),
+						...(model.parent ? await _(await this.Group({ _id: model.parent }, true)) : []),
+					];
 				}),
 				_(model)))
 		);
@@ -39,7 +42,7 @@ async function Group(query, { create = false, multiple = false } = {}) {
 			model = this.models.Groups();
 			model.name = query.name;
 			model.parent = query.parent;
-			model.permissions = query.permissions;
+			model.permissions = query.permissions || [];
 		}
 
 		if (multiple) model.forEach(applyFunctions.bind(this));

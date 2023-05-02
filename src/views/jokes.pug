@@ -1,5 +1,4 @@
 extends main.pug 
-include components/navigation.pug
 
 append HEAD 
 	+meta("Jokes", "🤣")
@@ -13,12 +12,16 @@ append HEAD
 
 block BODY 
 	app
-		+c_horizontalTabs("tab", [{id: "random", title: i18n("RANDOM")}, {id: "about", title: i18n("ABOUT")}], "random")
-			app-content(data-horizontal-tabs-id="random")
+		sahyg-tabs#tab(
+			orientation="horizontal",
+			default="random"
+			tabs=[{"text": i18n("RANDOM"),"id": "random"},{"text": i18n("ABOUT"),"id": "about"}]
+		)
+			app-content(sahyg-tab="random")
 				div.commands
-					btn.btn-full.new-joke !{i18n("NEW_JOKE")}
+					sahyg-button.new-joke(full-color=true, content=i18n("NEW_JOKE"))
 				div.joke
-			app-content(data-horizontal-tabs-id="about")
+			app-content(sahyg-tab="about")
 				div.stats
 					div.row
 						span !{i18n("TOTAL_JOKES")}

@@ -3,17 +3,15 @@ SAHYG.Classes.Flora = class Flora {
 	constructor() {
 		this.$previousButton = SAHYG.$0("app .actions .previous");
 		this.$searchField = SAHYG.$0("#flora-search");
-		this.$searchConfirmButton = SAHYG.$0("app [data-horizontal-tabs-id=search] .search-bar .confirm");
-		this.$searchResultsContainer = SAHYG.$0("app [data-horizontal-tabs-id=search] .results");
-		this.$searchCounter = SAHYG.$0("app [data-horizontal-tabs-id=search] .counter .value");
-		this.$identificationTab = SAHYG.$0('app [data-horizontal-tabs-id="identification"]');
-		this.$searchTab = SAHYG.$0('app [data-horizontal-tabs-id="search"]');
-		this.$glossaryTab = SAHYG.$0('app [data-horizontal-tabs-id="glossary"]');
+		this.$searchConfirmButton = SAHYG.$0("app [sahyg-tab=search] .search-bar .confirm");
+		this.$searchResultsContainer = SAHYG.$0("app [sahyg-tab=search] .results");
+		this.$searchCounter = SAHYG.$0("app [sahyg-tab=search] .counter .value");
+		this.$identificationTab = SAHYG.$0('app [sahyg-tab="identification"]');
+		this.$searchTab = SAHYG.$0('app [sahyg-tab="search"]');
+		this.$glossaryTab = SAHYG.$0('app [sahyg-tab="glossary"]');
 
-		SAHYG.Events.click.push(
-			{ element: 'app [data-horizontal-tabs-id="identification"] .possibility', callback: this.click.bind(this) },
-			{ element: 'app [data-horizontal-tabs-id="identification"] .actions .start', callback: this.start.bind(this) }
-		); // TODO replace event click
+		SAHYG.dynamicOn("click", 'app [sahyg-tab="identification"] .possibility', this.click.bind(this));
+		SAHYG.dynamicOn("click", 'app [sahyg-tab="identification"] .actions .start', this.start.bind(this));
 
 		this.$searchField.on("keydown", (e) => ((e.which || e.keyCode) == 13 ? this.searchEvent(e) : null));
 		this.$previousButton.on("click", this.previous.bind(this));
@@ -23,7 +21,7 @@ SAHYG.Classes.Flora = class Flora {
 		if (id) this.load(id).then(() => this.choice(id));
 		let flora_search = SAHYG.Utils.url.getParams().flora_search;
 		if (flora_search) {
-			this.$searchField.value = flora_search;
+			this.$searchField.setAttribute("default-value", flora_search);
 			// this.searchConfirmButton.trigger("click");
 		}
 	}
@@ -33,8 +31,8 @@ SAHYG.Classes.Flora = class Flora {
 		SAHYG.Utils.url.setLocationParams({ identification: target });
 		if (Number(target) < Number(this.history[this.history.length - 1]) || this.history.length == 0) this.history = [target];
 		else this.history.push(target);
-		if (Number(target) <= 1) this.$previousButton.addClass("disabled");
-		else this.$previousButton.removeClass("disabled");
+		if (Number(target) <= 1) this.$previousButton.setAttribute("disabled", true);
+		else this.$previousButton.removeAttribute("disabled");
 		SAHYG.Utils.selection.clear();
 	}
 	async click(event) {
@@ -43,7 +41,7 @@ SAHYG.Classes.Flora = class Flora {
 		this.choice(id);
 	}
 	async previous() {
-		if (this.$previousButton.hasClass("disabled")) return;
+		if (this.$previousButton.hasAttribute("disabled")) return;
 		if (this.history.length > 1) {
 			this.history.pop();
 			this.choice(this.history.pop() || "1");
@@ -58,7 +56,7 @@ SAHYG.Classes.Flora = class Flora {
 	start() {
 		this.history = [];
 		this.choice("1");
-		this.$previousButton.addClass("disabled");
+		this.$previousButton.setAttribute("disabled", true);
 	}
 	async append(id, data) {
 		if (SAHYG.$0(`app .possibilities[id="${id}"]`)) return;
@@ -174,11 +172,10 @@ SAHYG.Classes.Flora = class Flora {
 	load(id) {
 		return new Promise((resolve, reject) => {
 			this.getData(id)
-				.then(async (data) => (await this.append(id, data), resolve()))
-				.catch(async () => {
-					SAHYG.Components.toast.Toast.danger({
-						message: await SAHYG.translate("ERROR_OCCURRED"),
-					}).show();
+				.then(async (data) => (await this.append(id, data.content), resolve()))
+				.catch(async (e) => {
+					console.error(e)
+					SAHYG.createElement("sahyg-toast", { type: "error", content: await SAHYG.translate("ERROR_OCCURRED") }).show();
 				});
 		});
 	}
@@ -212,7 +209,7 @@ SAHYG.Classes.Flora = class Flora {
 										).on("click", async (e) => {
 											await this.load(possibility.target);
 											this.choice(possibility.target);
-											SAHYG.Components.navigation.openHorizontalTab("tab", "identification");
+											SAHYG.$0("#tab")?.open("identification");
 										})
 									)
 								)
@@ -282,11 +279,14 @@ SAHYG.Classes.Flora = class Flora {
 					SAHYG.createElement(
 						"div",
 						{ class: "position" },
-						SAHYG.createElement("btn", { class: "goto btn-full" }, await SAHYG.translate("GO_TO")).on("click", async () => {
-							await this.load(id);
-							this.choice(id);
-							SAHYG.Components.navigation.openHorizontalTab("tab", "identification");
-						}),
+						SAHYG.createElement("sahyg-button", { class: "goto", fullColor: true, content: await SAHYG.translate("GO_TO") }).on(
+							"click",
+							async () => {
+								await this.load(id);
+								this.choice(id);
+								SAHYG.$0("#tab")?.open("identification");
+							}
+						),
 						properties.parents && !(properties.parents.length == 1 && properties.parents.includes(0))
 							? SAHYG.createElement(
 									"div",
@@ -294,14 +294,16 @@ SAHYG.Classes.Flora = class Flora {
 									SAHYG.createElement("span", { class: "title" }, await SAHYG.translate("PARENTS")),
 									...properties.parents.map((parent) =>
 										parent
-											? SAHYG.createElement("btn", { class: "btn-un parent", "data-target": parent }, parent).on(
-													"click",
-													async () => {
-														await this.load(parent);
-														this.choice(parent);
-														SAHYG.Components.navigation.openHorizontalTab("tab", "identification");
-													}
-											  )
+											? SAHYG.createElement("sahyg-button", {
+													class: "parent",
+													underline: true,
+													content: parent,
+													"data-target": parent,
+											  }).on("click", async () => {
+													await this.load(parent);
+													this.choice(parent);
+													SAHYG.$0("#tab")?.open("identification");
+											  })
 											: null
 									)
 							  )

@@ -19,8 +19,8 @@ SAHYG.Classes.Connect4 = class Connect4 {
 	constructor() {
 		if (SAHYG.Utils.user.isConnected()) this.player[0] = SAHYG.Utils.user.username();
 
-		SAHYG.$("container .grid [column]").on("mouseenter", this.showPreview.bind(this))
-		SAHYG.$("container .grid [column]").on("click", this.playerClick.bind(this))
+		SAHYG.$("container .grid [column]").on("mouseenter", this.showPreview.bind(this));
+		SAHYG.$("container .grid [column]").on("click", this.playerClick.bind(this));
 
 		this.$grid.on("mouseleave", this.hidePreview.bind(this));
 		this.$new.on("click", this.init.bind(this));
@@ -45,9 +45,9 @@ SAHYG.Classes.Connect4 = class Connect4 {
 		this.$rules.on(
 			"click",
 			async function () {
-				new SAHYG.Components.popup.Popup({
-					title: await SAHYG.translate("RULES"),
+				SAHYG.createElement("sahyg-dialog", {
 					content: await SAHYG.translate("CONNECT4_RULES"),
+					header: await SAHYG.translate("RULES"),
 				}).show();
 			}.bind(this)
 		);
@@ -101,10 +101,10 @@ SAHYG.Classes.Connect4 = class Connect4 {
 	}
 	async checkDraw() {
 		if (!this.board.flat().includes(null)) {
-			new SAHYG.Components.popup.Popup()
-				.title(await SAHYG.translate("GAME_DRAW"))
-				.content(await SAHYG.translate("GAME_DRAW"))
-				.show();
+			SAHYG.createElement("sahyg-dialog", {
+				content: await SAHYG.translate("GAME_DRAW"),
+				header: await SAHYG.translate("GAME_DRAW"),
+			}).show();
 			this.previewEnabled = false;
 			this.playing = false;
 			this.canPlace = false;
@@ -120,10 +120,10 @@ SAHYG.Classes.Connect4 = class Connect4 {
 
 		let winLines = this.checkWin();
 		if (winLines) {
-			new SAHYG.Components.popup.Popup()
-				.title(await SAHYG.translate("WIN"))
-				.content(await SAHYG.translate("CONNECT4_WIN", { player: this.player[this.currentPlayer] }))
-				.show();
+			SAHYG.createElement("sahyg-dialog", {
+				content: await SAHYG.translate("CONNECT4_WIN", { player: this.player[this.currentPlayer] }),
+				header: await SAHYG.translate("WIN"),
+			}).show();
 			winLines.forEach((winLine) => {
 				winLine.forEach((cell) => SAHYG.$0(`container .grid [column="${cell.x}"] [row="${cell.y}"]`).addClass("animated"));
 			});
@@ -152,7 +152,7 @@ SAHYG.Classes.Connect4 = class Connect4 {
 
 		await this.wait(200);
 
-		this.$preview.removeClass("animated").setStyle("transform", "")
+		this.$preview.removeClass("animated").setStyle("transform", "");
 		this.showPreview({ target: SAHYG.$0(`container .grid [column="${x}"]`) }, true);
 		this.$grid.$0(`[column="${x}"] [row="${y}"]`).setAttribute("content", currentPlayer);
 

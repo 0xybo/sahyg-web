@@ -71,9 +71,8 @@ class WebResponse {
 				for (let linkDropdown of link.dropdown) {
 					if (linkDropdown.type == "app") {
 						let app = this.Web.config.get("apps").find((app) => app.name == linkDropdown.name);
-						if (app && await this.WebRequest.user.checkPermissions(app.displayPermissions)) dropdown.push(app);
-					}
-					else if (await this.WebRequest.user.checkPermissions(linkDropdown.permissions)) dropdown.push(linkDropdown);
+						if (app && (await this.WebRequest.user.checkPermissions(app.displayPermissions))) dropdown.push(app);
+					} else if (await this.WebRequest.user.checkPermissions(linkDropdown.permissions)) dropdown.push(linkDropdown);
 				}
 				if (dropdown.length)
 					headerLinks.push({
@@ -109,7 +108,7 @@ class WebResponse {
 		this.statusName = statusName;
 		this.statusCode = status.code;
 		this.success = status.success;
-		this.description = status.description ? this.res.__(status.description) : false;
+		this.description = (status.description && this.res.__(status.description)) || this.description;
 		return this;
 	}
 	setContent(content) {
@@ -128,8 +127,8 @@ class WebResponse {
 	send() {
 		this.res.send({
 			success: this.success,
-			status: this.statusName,
-			statusCode: this.statusCode,
+			statusText: this.statusName,
+			status: this.statusCode,
 			description: this.description,
 			details: this.details,
 			content: this.content,

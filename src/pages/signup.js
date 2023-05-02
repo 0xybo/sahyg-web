@@ -101,7 +101,7 @@ class Signup extends Page {
 		if (!user) return res.WebResponse.renderError("NOT_FOUND");
 
 		user.confirmed = true;
-		user.group = await this.Web.db.Group({ name: "confirmed" })._id;
+		user.group = (await this.Web.db.Group({ name: "USER" }))._id;
 		mail.data = {
 			...mail.data,
 			confirmed: true,

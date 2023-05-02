@@ -1,5 +1,4 @@
 extends ../main.pug
-include ../components/navigation.pug
 
 append HEAD
 	+meta("Tic Tac Toe", "Tic Tac Toe game")
@@ -11,9 +10,26 @@ append HEAD
 	title !{i18n("TIC_TAC_TOE")} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_pageTitle("i18n:TIC_TAC_TOE")
-	+c_horizontalTabs("tab", [{id: "tic_tac_toe", title: i18n("TIC_TAC_TOE")}, {id: "history", title: i18n("HISTORY")}], "tic_tac_toe")
-		app(status="pending" data-horizontal-tabs-id="tic_tac_toe")
+	sahyg-page-title !{i18n("TIC_TAC_TOE")}
+	sahyg-tabs#tab(
+		orientation="horizontal",
+		default="game"
+		tabs=[
+			{
+				"text": i18n("GAME"),
+				"id": "game",
+			},
+			{
+				"text": i18n("HISTORY"),
+				"id": "history",
+			}
+		]
+	)
+		//- {
+		//- 	"text": i18n("STATISTICS"),
+		//- 	"id": "statistics",
+		//- },
+		app(status="pending" sahyg-tab="game")
 			div.grid
 				each position in [[0,0], [0,1], [0,2], [1,0], [1,1], [1,2], [2,0], [2,1], [2,2]]
 					div.cell(data-row=position[0], data-column=position[1] data-player="")
@@ -21,9 +37,9 @@ block BODY
 				div.commands
 					div.title !{i18n("COMMANDS")}
 					div.buttons-container 
-						btn.btn-full#new-game !{i18n("NEW_GAME")}
+						sahyg-button#new-game(content=i18n("NEW_GAME"), full-color)
 						if WebRequest.userExists
-							btn.btn-full#edit-opponent !{i18n("EDIT_OPPONENT")}
+							sahyg-button#edit-opponent(content=i18n("EDIT_OPPONENT"), full-color)
 						div.change-opponent
 							span.label !{i18n("PLAY_AGAINST")}
 							sahyg-select#change-opponent(
@@ -49,7 +65,7 @@ block BODY
 					div.title !{i18n("INFORMATIONS")}
 					div.player !{i18n("PLAYER_TURN")} :
 						span.current /
-		div.history(data-horizontal-tabs-id="history")
+		div.history(sahyg-tab="history")
 			span !{i18n("HISTORY_LAST_GAMES", {count: 20})}
 			div.container
 				div.header
@@ -67,7 +83,7 @@ block BODY
 								winner=winner
 								opponent=party.opponent
 							)
-		div.statistics(data-horizontal-tabs-id="statistics")
+		div.statistics(sahyg-tab="statistics")
 			| work in progress
 
 

@@ -1,227 +1,210 @@
 SAHYG.Classes.Shortener = class Shortener {
-	$search = SAHYG.$0("container #search");
-	$body = SAHYG.$0("container .body");
-	$refresh = SAHYG.$0("container .refresh");
-	$count = SAHYG.$0("container .count .current");
-	$countMax = SAHYG.$0("container .count .total");
-	$new = SAHYG.$0("container .new");
+	$array = SAHYG.$0("container sahyg-input-array");
 	constructor() {
-		this.loader = SAHYG.Components.loader.center();
-
 		this.asyncConstructor();
 	}
 	async asyncConstructor() {
-		this.shortcuts = await SAHYG.Api.get("/shortener/list");
+		await this.loadShortcuts();
+
+		this.$refresh = SAHYG.createElement("sahyg-button", {
+			content: await SAHYG.translate("REFRESH"),
+			icon: String.fromCharCode(0xf2f9),
+		}).on("click", this.refresh.bind(this));
+		SAHYG.$0(".container > .buttons", this.$array.shadowRoot)?.append(this.$refresh);
+
+		this.$array.on("change", async (event) => {
+			if (this.isLoading) return;
+			switch (event.action) {
+				case "add": {
+					let shortcut = {
+						name: SAHYG.Utils.createRandomId(),
+						clicked: "0",
+					};
+					this.shortcuts.push(shortcut);
+					this.edit(
+						this.$array.rows.find((row) => row.id === event.editedRow),
+						shortcut
+					);
+					break;
+				}
+				case "clear": {
+					let response = await SAHYG.Api.post(location.pathname + "/clear");
+					if (!response?.success) break;
+
+					SAHYG.createElement("sahyg-toast", {
+						type: "success",
+						content: await SAHYG.translate("SUCCESS_CLEAR_SHORTCUTS", { count: response?.content?.deletedCount || "" }),
+					}).show();
+				}
+			}
+		});
+	}
+	async loadShortcuts() {
+		this.isLoading = true;
+		this.loader = SAHYG.Components.Loader.center();
+
+		this.shortcuts = (await SAHYG.Api.get(location.pathname + "/list"))?.content;
+
+		if (!this.shortcuts) return;
 
 		this.loader.remove();
 
-		await Promise.all(this.shortcuts.map(async (shortcut) => this.$body.append(await this.row(shortcut))));
-
-		this.updateCount();
-
-		this.$new.on("click", this.add.bind(this));
-		this.$refresh.on("click", this.refresh.bind(this));
-		this.$search.on("input", this.search.bind(this));
+		for (let shortcut of this.shortcuts) {
+			await this.addRow(shortcut);
+		}
+		this.isLoading = false;
 	}
-	copy({ target }) {
-		navigator.clipboard.writeText(target.closest(".row").$0(".url a").getAttribute("href")).then(async () => {
-			SAHYG.Components.toast.Toast.success({
-				message: await SAHYG.translate("COPIED"),
-			}).show();
+	async addRow(shortcut) {
+		shortcut.url = `https://${location.host}/s/${shortcut.name}`;
+
+		let row = await this.$array.addRow({
+			clicked: String(shortcut.clicked),
+			target: shortcut.target,
+			url: shortcut.url,
+		});
+		row.shortcut = shortcut;
+
+		row.$enableButton = row.$.$0('[button-id="enable"]');
+		row.$enableButton.setAttribute("icon", shortcut.enabled ? String.fromCharCode(0xf14a) : String.fromCharCode(0xf0c8));
+		row.$enableButton.on("click", this.toggle.bind(this, row, shortcut));
+
+		row.$copy = row.$.$0('[button-id="copy"]');
+		row.$copy.on("click", this.copy.bind(this, shortcut.url));
+
+		row.$edit = row.$.$0('[button-id="edit"]');
+		row.$edit.on("click", this.edit.bind(this, row, shortcut));
+
+		row.$remove = row.$.$0('[button-id="remove"]');
+		row.$remove.on("click", this.remove.bind(this, row, shortcut));
+	}
+	copy(url) {
+		navigator.clipboard.writeText(url).then(async () => {
+			SAHYG.createElement("sahyg-toast", { type: "success", content: await SAHYG.translate("COPIED") }).show();
 		});
 		return false;
 	}
-	toggle({ target }) {
-		let row = target.closest(".row");
-		let name = row.getAttribute("data-name");
-		let shortcut = this.shortcuts.find((shortcut) => shortcut.name == name);
-		SAHYG.Api.post("/shortener/" + (shortcut.enabled ? "disable" : "enable"), { name })
+	toggle(row, shortcut) {
+		SAHYG.Api.post("/shortener/" + (shortcut.enabled ? "disable" : "enable"), { name: shortcut.name })
 			.then(async () => {
-				let button = row.$0(".enable btn");
-				if (shortcut.enabled) button.removeClass("enabled").addClass("disabled").innerHTML = "\uf0c8";
-				else button.removeClass("disabled").addClass("enabled").innerHTML = "\uf14a";
+				row.$enableButton.setAttribute("icon", !shortcut.enabled ? String.fromCharCode(0xf14a) : String.fromCharCode(0xf0c8));
 
 				shortcut.enabled = !shortcut.enabled;
 
-				SAHYG.Components.toast.Toast.success({
-					message: await SAHYG.translate("UPDATE_SUCCESS"),
+				SAHYG.createElement("sahyg-toast", {
+					type: "success",
+					content: await SAHYG.translate("UPDATE_SUCCESS"),
 				}).show();
 			})
 			.catch(console.error);
 		return false;
 	}
-	async refresh() {
-		this.$body.children.remove();
-		this.loader = SAHYG.Components.loader.center();
+	async edit(row, shortcut) {
+		let dialog = SAHYG.createElement("sahyg-input-dialog", {
+			inputs: [
+				{
+					type: "text",
+					id: "name",
+					label: await SAHYG.translate("NAME"),
+					defaultValue: shortcut.name || null,
+					options: {
+						placeholder: await SAHYG.translate("NAME"),
+						borderBottom: true,
+					},
+				},
+				{
+					type: "text",
+					id: "target",
+					label: await SAHYG.translate("TARGET"),
+					defaultValue: shortcut.target || null,
+					options: {
+						placeholder: await SAHYG.translate("TARGET"),
+						borderBottom: true,
+						type: "url",
+					},
+				},
+			],
+		});
 
-		this.shortcuts = await SAHYG.Api.get("/shortener/list");
+		let result = await dialog.show().toPromise();
 
-		this.loader.remove();
+		if (!result) {
+			if (!shortcut.target) this.$array.removeRow(row.id);
+			return;
+		}
 
-		await Promise.all(this.shortcuts.map(async (shortcut) => this.$body.append(await this.row(shortcut))));
+		let response;
+		if (!shortcut.target)
+			response = await SAHYG.Api.post(location.pathname + "/add", {
+				name: result.data.name,
+				target: result.data.target,
+			});
+		else
+			response = await SAHYG.Api.post(location.pathname + "/edit", {
+				name: result.data.name,
+				target: result.data.target,
+				oldName: shortcut.name,
+			});
 
-		this.updateCount();
+		if (!response?.success) {
+			if (!shortcut.target) this.$array.removeRow(row.id);
+			return;
+		}
 
-		SAHYG.Components.toast.Toast.success({
-			message: await SAHYG.translate("REFRESHED"),
+		shortcut.name = result.data.name;
+		shortcut.target = result.data.target;
+		shortcut.url = `https://${location.host}/s/${shortcut.name}`;
+		shortcut.clicked = String(shortcut.clicked);
+
+		this.updateRow(row, shortcut);
+
+		SAHYG.createElement("sahyg-toast", {
+			type: "success",
+			content: await SAHYG.translate(shortcut.name ? "SAVE_SUCCESS" : "ADD_SUCCESS"),
 		}).show();
 	}
-	async row({ enabled, name, target, clicked }) {
-		return SAHYG.createElement(
-			"div",
-			{ class: "row", "data-name": name },
-			SAHYG.createElement(
-				"div",
-				{ class: "cell enable" },
-				SAHYG.createElement(
-					"btn",
-					{ class: enabled ? "enabled" : "disabled", "data-tooltip": await SAHYG.translate("ENABLE/DISABLE") },
-					enabled ? "\uf14a" : "\uf0c8"
-				).on("click", this.toggle.bind(this))
-			),
-			SAHYG.createElement(
-				"div",
-				{ class: "cell url" },
-				SAHYG.createElement("a", { href: `https://${location.host}/s/${name}`, target: "_blank" }, `https://${location.host}/s/${name}`)
-			),
-			SAHYG.createElement("div", { class: "cell target" }, SAHYG.createElement("a", { href: target, target: "_blank" }, target)),
-			SAHYG.createElement("div", { class: "cell clicked" }, clicked),
-			SAHYG.createElement(
-				"div",
-				{ class: "cell commands" },
-				SAHYG.createElement("btn", { class: "copy", "data-tooltip": await SAHYG.translate("COPY_URL") }, "\uf0c5").on(
-					"click",
-					this.copy.bind(this)
-				),
-				SAHYG.createElement("btn", { class: "edit", "data-tooltip": await SAHYG.translate("EDIT") }, "\uf304").on(
-					"click",
-					this.edit.bind(this)
-				),
-				SAHYG.createElement("btn", { class: "remove", "data-tooltip": await SAHYG.translate("REMOVE") }, "\uf2ed").on(
-					"click",
-					this.remove.bind(this)
-				)
-			)
+	async updateRow(row, shortcut) {
+		if (row.values.url !== shortcut.url) this.$array.updateCell(row.id, "url", shortcut.url);
+		if (row.values.target !== shortcut.target) this.$array.updateCell(row.id, "target", shortcut.target);
+		if (row.values.clicked !== shortcut.clicked) this.$array.updateCell(row.id, "clicked", shortcut.clicked);
+
+		console.log(
+			row.values,
+			shortcut,
+			row.values.url !== shortcut.url,
+			row.values.target !== shortcut.target,
+			row.values.clicked !== shortcut.clicked
 		);
 	}
-	async add() {
-		SAHYG.Components.popup.Popup.input(await SAHYG.translate("ADD"), [
-			{
-				name: "name",
-				label: await SAHYG.translate("NAME"),
-				placeholder: await SAHYG.translate("NAME"),
-				type: "text",
-				defaultValue: Math.random().toString(16).substring(2, 12),
-			},
-			{
-				name: "target",
-				label: await SAHYG.translate("TARGET"),
-				placeholder: await SAHYG.translate("TARGET"),
-				type: "url",
-				defaultValue: "",
-			},
-		]).then((data) => {
-			if (!data) return;
-			SAHYG.Api.post("/shortener/add", {
-				name: data.name,
-				target: data.target,
-			})
-				.then(async () => {
-					this.shortcuts.push({ name: data.name, target: data.target, enabled: true, clicked: 0 });
-					this.$body.append(await this.row({ name: data.name, target: data.target, enabled: true, clicked: 0 }));
-					this.updateCount();
+	async refresh() {
+		if (this.isLoading) return;
+		this.isLoading = true;
 
-					SAHYG.Components.toast.Toast.success({
-						message: await SAHYG.translate("ADD_SUCCESS"),
-					}).show();
-				})
-				.catch(console.error);
-		});
+		await this.$array.clearRows(true);
+		await this.loadShortcuts();
+
+		SAHYG.createElement("sahyg-toast", { type: "success", content: await SAHYG.translate("REFRESHED") }).show();
 	}
-	async edit({ target }) {
-		let row = target.closest(".row");
-		let name = row.getAttribute("data-name");
-		let shortcut = this.shortcuts.find((shortcut) => shortcut.name == name);
-		if (!shortcut) return;
+	async remove(row, shortcut) {
+		let confirm = await SAHYG.createElement("sahyg-confirm-dialog", {
+			content: await SAHYG.translate("CONFIRM_DELETE_SHORTCUT", { name: shortcut.name }),
+		})
+			.show()
+			.toPromise();
+		if (!confirm) return;
 
-		SAHYG.Components.popup.Popup.input(await SAHYG.translate("EDIT"), [
-			{
-				name: "name",
-				label: await SAHYG.translate("NAME"),
-				placeholder: await SAHYG.translate("NAME"),
-				type: "text",
-				defaultValue: shortcut.name,
-			},
-			{
-				name: "target",
-				label: await SAHYG.translate("TARGET"),
-				placeholder: await SAHYG.translate("TARGET"),
-				type: "url",
-				defaultValue: shortcut.target,
-			},
-		]).then((data) => {
-			if (!data) return;
-			SAHYG.Api.post("/shortener/edit", {
-				name: data.name,
-				target: data.target,
-				oldName: shortcut.name,
-			})
-				.then(async () => {
-					await this.updateRow(row, { enabled: shortcut.enabled, target: data.target, name: data.name, clicked: shortcut.clicked });
+		let response = await SAHYG.Api.post(location.pathname + "/delete", { name: shortcut.name });
+		if (!response?.success) return;
 
-					SAHYG.Components.toast.Toast.success({
-						message: await SAHYG.translate("UPDATE_SUCCESS"),
-					}).show();
-				})
-				.catch(console.error);
-		});
-	}
-	async updateRow(row, { enabled, name, target, clicked }) {
-		row.innerHTML = (await this.row({ enabled, name, target, clicked })).innerHTML;
-	}
-	async remove({ target }) {
-		console.log(target)
-		let row = target.closest(".row");
-		let name = row.getAttribute("data-name");
-		let shortcut = this.shortcuts.find((shortcut) => shortcut.name == name);
-		let shortcutIndex = this.shortcuts.findIndex((shortcut) => shortcut.name == name);
+		this.$array.removeRow(row.id);
+		this.shortcuts.splice(
+			this.shortcuts.indexOf((sc) => sc.id === shortcut.id),
+			1
+		);
 
-		SAHYG.Components.popup.Popup.confirm(
-			await SAHYG.translate("CONFIRM_DELETE_SHORTCUT", {
-				name: name,
-			})
-		).then(({ confirm }) => {
-			if (!confirm) return;
-
-			SAHYG.Api.post("/shortener/delete", {
-				name: shortcut.name,
-				target: shortcut.target,
-			})
-				.then(async () => {
-					this.shortcuts.splice(shortcutIndex, 1);
-					row.remove();
-					this.updateCount();
-
-					SAHYG.Components.toast.Toast.success({
-						message: await SAHYG.translate("DELETE_SUCCESS"),
-					}).show();
-				})
-				.catch(console.error);
-		});
-	}
-	async search() {
-		this.$body.children.remove();
-
-		let search = this.$search.value;
-		let shortcuts = this.shortcuts.filter((shortcut) => shortcut.name.includes(search) || shortcut.target.includes(search));
-
-		await Promise.all(shortcuts.map(async (shortcut) => this.$body.append(await this.row(shortcut))));
-
-		this.updateCount();
-	}
-	updateCount() {
-		this.$count.textContent = this.$body.children.length;
-		this.$countMax.textContent = this.shortcuts.length;
+		SAHYG.createElement("sahyg-toast", {
+			type: "success",
+			content: await SAHYG.translate("DELETE_SUCCESS"),
+		}).show();
 	}
 };
 

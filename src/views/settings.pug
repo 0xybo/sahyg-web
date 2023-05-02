@@ -3,7 +3,7 @@ extends main.pug
 mixin loginRequired()
 	div.login-required
 		a(href="/login")
-			input.login.full(type="button", value=i18n("LOGIN"))
+			SAHYG-button.login(full-color=true, content=i18n("LOGIN"))
 
 append HEAD
 	+meta("Settings", "Settings page")
@@ -18,79 +18,6 @@ append CONSTANTS
 	meta(name="settings_max_avatar_size", content=maxAvatarSize, type="number")
 
 append BODY 
-	//- - let tabs = [{id: "general", "title": "i18n:GENERAL"}] 
-	//- - if(WebRequest.userExists) tabs.push({id: "profile", "title": "i18n:PROFILE"}, {id: "share", "title": "i18n:SHARE"})
-	//- 
-	//- 	if WebRequest.userExists
-	//- 		
-	//- 			if (settings.username.display)
-	//- 				div.setting.username(data-editable=settings.username.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("USERNAME")}
-	//- 						div.description !{i18n("SETTINGS_USERNAME_DESCRIPTION")}
-	//- 					div.value 
-	//- 						+c_text("username", "key", i18n("USERNAME"), WebRequest.user.username)
-	//- 			if (settings.firstname.display)
-	//- 				div.setting.firstname(data-editable=settings.firstname.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("FIRSTNAME")}
-	//- 						div.description !{i18n("SETTINGS_FIRSTNAME_DESCRIPTION")}
-	//- 					div.value 
-	//- 						+c_text("firstname", "user", i18n("FIRSTNAME"), WebRequest.user.firstname)
-	//- 			if (settings.lastname.display)
-	//- 				div.setting.lastname(data-editable=settings.lastname.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("LASTNAME")}
-	//- 						div.description !{i18n("SETTINGS_LASTNAME_DESCRIPTION")}
-	//- 					div.value 
-	//- 						+c_text("lastname", "user", i18n("LASTNAME"), WebRequest.user.lastname)
-	//- 			if (settings.email.display)
-	//- 				div.setting.email(data-editable=settings.email.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("EMAIL")}
-	//- 						div.description !{i18n("SETTINGS_EMAIL_DESCRIPTION")}
-	//- 					div.value 
-	//- 						+c_text("email", "email", i18n("EMAIL"),WebRequest.user.email)
-	//- 			if (settings.about.display)
-	//- 				div.about(data-editable=settings.about.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("ABOUT")}
-	//- 						div.description 
-	//- 							| !{i18n("SETTINGS_ABOUT_DESCRIPTION")}
-	//- 							br
-	//- 							span.chart-counter !{WebRequest.user.about.length}
-	//- 							| / 1024
-	//- 					div.value
-	//- 						div.ta.no-padding
-	//- 							textarea#about !{WebRequest.user.about}
-	//- 			if (settings.custom.display)
-	//- 				div.custom(data-editable=settings.custom.edit)
-	//- 					div.informations
-	//- 						div.title !{i18n("CUSTOM")}
-	//- 						div.description !{i18n("SETTINGS_CUSTOM_DESCRIPTION")}
-	//- 					div.value
-	//- 						+c_list([
-	//- 							{type: "text", name: "customLinkName", displayName: i18n("NAME"), placeholder: i18n("NAME"), contentType: undefined},
-	//- 							{type: "text", name: "customLinkValue", displayName: i18n("VALUE"), placeholder: i18n("VALUE"), contentType: undefined},
-	//- 						], Object.entries(WebRequest.user.custom).map(([name, value]) => {return {customLinkName: name, customLinkValue: value}}))
-	//- 		div.category(data-horizontal-tabs-id="share")
-	//- 			each shareableItem in Web.config.get("shareableUserProperties")
-	//- 				if (!shareableItem.startsWith("custom"))
-	//- 					div(class="setting shareable-"+shareableItem)
-	//- 						div.informations
-	//- 							div.title !{i18n(shareableItem.toUpperCase())}
-	//- 							div.description !{i18n(`SHARE_${shareableItem.toUpperCase()}_DESCRIPTION`)}
-	//- 						div.value
-	//- 							+c_boolean(shareableItem, WebRequest.user.shared.includes(shareableItem))
-	//- 				else 
-	//- 					each val, key in WebRequest.user.custom
-	//- 						div(class="setting shareable-custom."+key)
-	//- 							div.informations
-	//- 								div.title !{i18n("CUSTOM")} : !{key}
-	//- 								div.description 
-	//- 							div.value
-	//- 								+c_boolean("custom."+key, WebRequest.user.shared.includes("custom."+key))
-
 	sahyg-tabs#tab(
 		orientation="vertical"
 		tabs=tabs
@@ -100,12 +27,17 @@ append BODY
 			div.tab-title !{i18n("GENERAL")}
 		div(sahyg-tab="profile")
 			if (WebRequest.userExists)
-				div.tab-title !{i18n("Profile")}
+				div.tab-title !{i18n("PROFILE")}
 			else
 				+loginRequired()
-		div(sahyg-tab="shared")
+		div(sahyg-tab="security")
 			if (WebRequest.userExists)
-				div.tab-title !{i18n("SHARE")}
+				div.tab-title !{i18n("SECURITY")}
+			else
+				+loginRequired()
+		div(sahyg-tab="confidentiality")
+			if (WebRequest.userExists)
+				div.tab-title !{i18n("CONFIDENTIALITY")}
 			else
 				+loginRequired()
 

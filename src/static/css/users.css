@@ -1,17 +1,3 @@
-c-horizontal-tabs {
-	max-width: 80rem;
-	width: 100%;
-	margin: 0 auto;
-}
-[data-horizontal-tabs-id="users"] c-input-array-current {
-    min-width: 50rem;
-}
-[data-horizontal-tabs-id="groups"] c-input-array-current {
-    min-width: 30rem;
-}
-c-input-array {
-	margin: 0 auto;
-}
-c-input-array-field btn.edit {
-	font-size: 1.5rem;
+[sahyg-tab="users"], [sahyg-tab="groups"] {
+    max-width: 60rem;
 }

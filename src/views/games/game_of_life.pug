@@ -1,6 +1,4 @@
 extends ../main.pug
-//- include ../components/inputs.pug
-include ../components/navigation.pug
 
 append HEAD
 	+meta(i18n("GAME_OF_LIFE"), i18n("GAME_OF_LIFE_DESCRIPTION"))
@@ -12,30 +10,18 @@ append HEAD
 	title !{i18n("GAME_OF_LIFE")} | !{Web.config.get("text.title")}
 
 block BODY
-	+c_pageTitle("i18n:GAME_OF_LIFE")
+	sahyg-page-title !{i18n("GAME_OF_LIFE")}
 	game-container 
 		.canvas-container 
 			.canvas
 		.commands 
 			.buttons
-				btn.btn-full.rules
-					span.lafs &#xf02d;
-					| !{i18n("RULES")}
-				btn.btn-full.resume 
-					span.lafs &#xf04b;
-					| !{i18n("RESUME")}
-				btn.btn-full.pause.disabled 
-					span.lafs &#xf04c;
-					| !{i18n("PAUSE")}
-				btn.btn-full.next 
-					span.lafs &#xf054;
-					| !{i18n("NEXT")}
-				btn.btn-full.clear 
-					span.lafs &#xf51a;
-					| !{i18n("CLEAR")}
-				btn.btn-full.share
-					span.lafs &#xf0c1;
-					| !{i18n("SHARE")}
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf02d) content=i18n("RULES")).rules
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf04b) content=i18n("RESUME")).resume 
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf04c) content=i18n("PAUSE")).pause.disabled 
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf054) content=i18n("NEXT")).next 
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf51a) content=i18n("CLEAR")).clear 
+				sahyg-button(full-color=true icon=String.fromCharCode(0xf0c1) content=i18n("SHARE")).share
 				div.generation 
 					| !{i18n("GENERATION")} :
 					span.value 0

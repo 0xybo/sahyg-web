@@ -36,8 +36,9 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 		meta(name="revised" content="")
 
 		<!-- SAHYG Meta -->
-		//- meta(name="sahyg-api-domain", content=Web.config.get("api.domain"))
-		meta(name="sahyg-api-domain", content=Web.config.get("domain"))
+		meta(name="sahyg-api-domain", content=Web.config.get("domains.api"))
+		meta(name="sahyg-stats-domain", content=Web.config.get("domains.stats"))
+		meta(name="sahyg-stats-token", content=Web.config.get("statsToken"))
 		meta(name="sahyg-environment", content=Web.config.get("env.NODE_ENV"))
 		meta(name="sahyg-username", content=WebRequest.user.username)
 
@@ -48,14 +49,9 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 
 		<!-- Global Stylesheet -->
 		link(rel="stylesheet" href="/css/main.css")
-		link(rel="stylesheet" href="/css/theme.css")
 
 		<!-- Global Script -->
-		script(src="/js/lib/jquery.min.js")
-		script(src="/js/lib/popper.min.js")
-		script(src="/js/lib/tippy-bundle.umd.min.js")
-		script(src="/js/lib/axios.min.js")
-		//- script(src="/js/lib/jquery.mobile.min.js")
+		script(src="/js/lib/lib.bundle.js") 
 		script(src="/js/main.js") 
 
 		<!-- Page-specific script, stylesheet, title, meta, ... -->
@@ -63,22 +59,27 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 
 		title !{Web.config.get("text.title")}
 	body
-		noscript
-			popups
-				popup(class="visible")
-					div(class="backdrop")
-					div(class="container")
-						div(class="header")
-							h3(class="title") ⚠️ Alerte
-						div(class="content") This site need javascript
-						div(class="buttons")
-							span Enable Javascript and reload
-		div#components
-			block COMPONENTS
-			include components/svg.pug
+		noscript 
+			style.
+				popup{display:flex;position:fixed;top:0;left:0;width:100%;height:100%;align-items:center;justify-content:center;z-index:10;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+				popup .backdrop{background:var(--backdrop-color);position:fixed;width:100vw;height:100vh;top:0;left:0}
+				popup .container{transform:scale(1);opacity:1;box-shadow:0px 0px 5px 0px var(--background-color);border-radius:.5rem;overflow:hidden;min-width:min(100vw,30rem);min-height:min(100vh,17rem);display:flex;flex-direction:column}
+				popup .header{padding:1.5rem 1.5rem 1rem;display:flex;align-items:center;width:100%;background-color:var(--background-tertiary-color)}
+				popup .header .title{font-size:1.375rem;font-weight:600;font-family:var(--font-header);color:var(--color-primary-text);line-height:35.2px;width:100%;height:100%;overflow:hidden;text-overflow:ellipsis}
+				popup .content{padding:1rem 1.5rem;max-width:100%;text-overflow:ellipsis;overflow:hidden;overflow-wrap:break-word;overflow-y:scroll;-ms-flex:1;flex:1;width:100%}
+				popup .buttons{background-color:var(--background-secondary-color);padding:0 1.5rem;width:100%;display:flex;align-items:center;-ms-flex-direction:row;flex-direction:row;height:4rem;justify-content:flex-end;min-height:4rem}
+			popup
+				div.backdrop
+				div.container
+					div.header
+						h3.title ⚠️ Alert
+					div.content This site need javascript
+					div.buttons
+						span Enable Javascript and reload
 		header 
 			menu-icon(status="closed")
-				icon(data-tooltip=i18n("MENU"))
+				sahyg-tooltip-target(content=i18n("MENU"))
+					icon
 			header-title
 				a(href="/") 
 					img(src="/img/favicon.svg" alt="icon")
@@ -86,21 +87,24 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 			header-menu
 				div.container
 					div.commands
-						div.theme(data-tooltip=i18n("THEME"))
-						div.locale
-							img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"]) data-tooltip=i18n("LANGUAGE"), alt="icon "+WebResponse.locale)
-							dropdown
-								each props, locale in Web.config.get("locales")
-									img(id=locale class=(locale == WebResponse.locale? "current" : "") src=props.flag alt="icon "+locale)
-						a.settings(href="/settings" data-tooltip=i18n("SETTINGS"))
+						sahyg-tooltip-target(content=i18n("THEME"))
+							div.theme
+						sahyg-tooltip-target(content=i18n("LANGUAGE"))
+							div.locale
+								img.current(src=Web.config.get(["locales", WebResponse.locale, "flag"]), alt="icon "+WebResponse.locale)
+								dropdown
+									each props, locale in Web.config.get("locales")
+										img(id=locale class=(locale == WebResponse.locale? "current" : "") src=props.flag alt="icon "+locale)
+						sahyg-tooltip-target(content=i18n("SETTINGS"))
+							a.settings(href="/settings")
 					div.menus 
 						each item in headerLinks
 							if item.type == "simple"
 								div 
-									a(href=item.link) !{item.text.startsWith("i18n:")? i18n(item.text.substring(5)) : item.text}
+									a(href=item.link) !{conditionalI18n(item.text)}
 							else if item.type == "dropdown"
-								div.expandable
-									a !{item.text.startsWith("i18n:")? i18n(item.text.substring(5)) : item.text}
+								div.expandable.expanded
+									a !{conditionalI18n(item.text)}
 									div.menu
 										each sub in item.dropdown
 											a.item(href=sub.link)
@@ -113,16 +117,17 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 
 												div.body
 													div.title 
-														| !{sub.text.startsWith("i18n:")? i18n(sub.text.substring(5)) : sub.text}
+														| !{conditionalI18n(sub.text)}
 													div.description
-														| !{sub.description.startsWith("i18n:")? i18n(sub.description.substring(5)) : sub.description}
+														| !{sub.description? conditionalI18n(sub.description): ""}
 			div.right-content
 				if (!WebRequest.userExists) 
 					div.authentication
 						a.login(href="/login") 
-							sahyg-button.rounded.link !{i18n("LOGIN")}
+							sahyg-button(rounded=true, outline=true, content=i18n("LOGIN"), icon=String.fromCharCode(0xf2f6), content-min-width=768)
 						a.signup(href="/signup") 
-							sahyg-button.rounded.link !{i18n("SIGNUP")}
+							sahyg-button(rounded=true, outline=true, content=i18n("SIGNUP"), icon=String.fromCharCode(0xf234), content-min-width=768)
+
 				else 
 					div.account
 						div.avatar
@@ -158,7 +163,8 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 				div.grid
 					div.column
 						span !{i18n("MADE_WITH")}
-							heart(data-tooltip="❤️" data-tooltip-delay="[1000, 0]") ❤️
+							heart
+								sahyg-tooltip-target(content="❤️" delay=[1000, 0]) ❤️
 						span !{i18n("BY")} 
 							a.ul(href="/user/alban") !{Web.config.get("author.shortName")}
 						span !{i18n("VERSION")} : !{Web.config.get("releaseNotes.0.version")}
@@ -171,13 +177,7 @@ html(theme=WebRequest.theme lang=WebRequest.locale connected=Boolean(WebRequest.
 									if content.type == "link"
 										a.ul(href=content.content.href) !{content.content.text.startsWith("i18n:")? i18n(content.content.text.substring(5)): content.content.text}
 					div.column
-						span.lafs.return-top(data-tooltip=i18n("RETURN_TOP")) &#xf0aa;
-		popup-container
-			popups
-			toasts
-			tooltips
-			right-click
-			menus
-		#popups
-		hidden-content
+						span.lafs.return-top
+							sahyg-tooltip-target(content=i18n("RETURN_TOP")) &#xf0aa;
+		sahyg-toasts
 

@@ -233,9 +233,7 @@ SAHYG.Classes.Users = class Users {
 					.$0(`.row[row-id="${event.editedRow}"] [button-id="edit"]`)
 					.on("click", this.edit.bind(this, row, user))
 					.click();
-				this.$array.$container
-					.$0(`.row[row-id="${event.editedRow}"] [button-id="remove"]`)
-					.on("click", this.remove.bind(this, row, user));
+				this.$array.$container.$0(`.row[row-id="${event.editedRow}"] [button-id="remove"]`).on("click", this.remove.bind(this, row, user));
 				break;
 			}
 		}
@@ -327,7 +325,7 @@ SAHYG.Classes.Groups = class Groups {
 			.toPromise();
 
 		if (!result) {
-			if (!user.id) this.$array.removeRow(row.id);
+			if (!group.id) this.$array.removeRow(row.id);
 			return;
 		}
 
@@ -372,9 +370,7 @@ SAHYG.Classes.Groups = class Groups {
 					.$0(`.row[row-id="${event.editedRow}"] [button-id="edit"]`)
 					.on("click", this.edit.bind(this, row, group))
 					.click();
-				this.$array.$container
-					.$0(`.row[row-id="${event.editedRow}"] [button-id="remove"]`)
-					.on("click", this.remove.bind(this, row, group));
+				this.$array.$container.$0(`.row[row-id="${event.editedRow}"] [button-id="remove"]`).on("click", this.remove.bind(this, row, group));
 				break;
 			}
 		}

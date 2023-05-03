@@ -95,7 +95,7 @@ class Shortener extends Page {
 		if (req.params.user) {
 			let user = await this.Web.db.User({ username: req.params.user });
 			if (!user) return void res.WebResponse.error("NOT_FOUND");
-			if (target._id != user._id && !(await target.checkPermissions(["WEB_ADMIN_SETTINGS_PAGE"])))
+			if (target._id != user._id && !(await target.checkPermissions(["WEB_ADMIN_SHORTENER_PAGE"])))
 				return void res.WebResponse.error("UNAUTHORIZED");
 			target = user;
 		}

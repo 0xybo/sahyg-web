@@ -3921,12 +3921,12 @@ SAHYG.Components.Viewer = class Viewer extends HTMLElement {
 		}
 	}
 	toggleZoom() {
-		if (!this.$image.hasClass("large")) {
+		if (this.$image.hasClass("large")) {
 			this.$image.style.width = this.width + "px";
-			this.$image.addClass("large");
+			this.$image.removeClass("large");
 		} else {
 			this.$image.style.width = "";
-			this.$image.removeClass("large");
+			this.$image.addClass("large");
 		}
 	}
 	show() {

@@ -46,7 +46,7 @@ class Web {
 	async init() {
 		this.i18n = new I18n(this.config.get("i18n"));
 
-		// delete all uploaded file 
+		// delete all uploaded file
 		let uploadsDirectory = this.config.get("paths.uploads");
 		try {
 			let files = await readdir(uploadsDirectory);
